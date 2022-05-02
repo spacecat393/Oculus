@@ -6,14 +6,9 @@ import me.jellysquid.mods.sodium.client.render.chunk.tasks.ChunkRenderRebuildTas
 import me.jellysquid.mods.sodium.client.render.pipeline.context.ChunkRenderCacheLocal;
 import me.jellysquid.mods.sodium.client.util.task.CancellationSource;
 import net.coderbot.iris.compat.sodium.impl.block_id.ChunkBuildBuffersExt;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -21,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(ChunkRenderRebuildTask.class)
 public class MixinChunkRenderRebuildTask {
-    @Redirect(method = "performBuild", at = @At(value = "INVOKE",
+    /*@Redirect(method = "performBuild", at = @At(value = "INVOKE",
             target = "net/minecraft/client/renderer/ItemBlockRenderTypes.getChunkRenderType (" +
                         "Lnet/minecraft/world/level/block/state/BlockState;" +
                     ")Lnet/minecraft/client/renderer/RenderType;"))
@@ -46,10 +41,10 @@ public class MixinChunkRenderRebuildTask {
         }
 
         return ItemBlockRenderTypes.getRenderLayer(fluidState);
-    }
+    }*/
 
     @Inject(method = "performBuild",
-            at = @At(value = "INVOKE", target = "net/minecraft/world/level/block/Block.isEntityBlock()Z"))
+            at = @At(value = "INVOKE", target = "net/minecraft/world/level/block/state/BlockState.hasTileEntity()Z"))
     private void iris$resetId(ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers,
                               CancellationSource cancellationSource, CallbackInfoReturnable<ChunkBuildResult<?>> cir) {
         if (buffers instanceof ChunkBuildBuffersExt) {
