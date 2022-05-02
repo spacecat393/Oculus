@@ -2,13 +2,14 @@ package net.coderbot.iris.mixin;
 
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.compat.sodium.SodiumVersionCheck;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.fml.loading.FMLLoader;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,10 +24,8 @@ public class MixinTitleScreen {
 	public void iris$showSodiumIncompatScreen(CallbackInfo ci) {
 		String reason;
 
-		if (!Iris.isSodiumInstalled() && !FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (!Iris.isSodiumInstalled() && FMLLoader.isProduction()) {
 			reason = "iris.sodium.failure.reason.notFound";
-		} else if (Iris.isSodiumInvalid()) {
-			reason = "iris.sodium.failure.reason.incompatible";
 		} else {
 			return;
 		}

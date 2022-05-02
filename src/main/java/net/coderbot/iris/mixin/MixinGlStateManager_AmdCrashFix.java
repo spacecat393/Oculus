@@ -15,8 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MixinGlStateManager_AmdCrashFix {
 	@Redirect(method = "glShaderSource(ILjava/lang/CharSequence;)V",
 			at = @At(value = "INVOKE",
-					target = "org/lwjgl/opengl/GL20.glShaderSource (ILjava/lang/CharSequence;)V",
-					remap = false))
+					target = "org/lwjgl/opengl/GL20.glShaderSource (ILjava/lang/CharSequence;)V"))
 	private static void iris$safeShaderSource(int glId, CharSequence source) {
 		ShaderWorkarounds.safeShaderSource(glId, source);
 	}

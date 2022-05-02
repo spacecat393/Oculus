@@ -5,12 +5,9 @@ build/
 out/
 classes/
 
-# brachyura
-.brachyura
-*.jfr
+# eclipse
 
-# custom sodium
-/custom_sodium/
+*.launch
 
 # idea
 
@@ -27,17 +24,10 @@ bin/
 .classpath
 .project
 
-# eclipse
+# macos
 
-*.launch
+*.DS_Store
 
 # fabric
 
 run/
-/logs/latest.log
-
-# macOS
-
-.DS_Store
-.AppleDouble
-.LSOverride

@@ -68,6 +68,9 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 	@Shadow
 	public abstract void putShort(int i, short s);
 
+	@Shadow
+	protected abstract void ensureCapacity(int p_181670_1_);
+	
 	@Inject(method = "begin", at = @At("HEAD"))
 	private void iris$onBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		extending = IrisApi.getInstance().isShaderPackInUse() && (format == DefaultVertexFormat.BLOCK || format == IrisVertexFormats.TERRAIN || format == DefaultVertexFormat.NEW_ENTITY || format == IrisVertexFormats.ENTITY);
@@ -108,6 +111,7 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 			return;
 		}
 
+		this.ensureCapacity(15);
 		this.putShort(0, currentBlock);
 		this.putShort(2, currentRenderType);
 		this.nextElement();
