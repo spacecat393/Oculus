@@ -1,9 +1,11 @@
 package net.coderbot.iris.pipeline;
 
-import net.coderbot.iris.layer.GbufferProgram;
+import net.coderbot.iris.gbuffer_overrides.matching.InputAvailability;
+import net.coderbot.iris.gbuffer_overrides.state.RenderTargetStateListener;
 import net.coderbot.iris.mixin.LevelRendererAccessor;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.minecraft.client.Camera;
+
 import java.util.List;
 import java.util.OptionalInt;
 
@@ -15,16 +17,16 @@ public interface WorldRenderingPipeline {
 
 	WorldRenderingPhase getPhase();
 
+	void beginSodiumTerrainRendering();
+	void endSodiumTerrainRendering();
 	void setPhase(WorldRenderingPhase phase);
-
-    void beginShadowRender();
-	void endShadowRender();
+	void setInputs(InputAvailability availability);
+	void syncProgram();
+	RenderTargetStateListener getRenderTargetStateListener();
 
 	void beginHand();
 
 	void beginTranslucents();
-	void pushProgram(GbufferProgram program);
-	void popProgram(GbufferProgram program);
 	void finalizeLevelRendering();
 	void destroy();
 

@@ -1,14 +1,14 @@
 package net.coderbot.iris.mixin.rendertype;
 
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
 
 @Mixin(RenderType.class)
-public class MixinFixEyesTranslucency {
+public class MixinRenderType_FixEyesTranslucency {
 	// Minecraft interprets an alpha value of zero as a signal to disable the alpha test.
 	// However, we actually want to reject all nonzero alpha values.
 	//

@@ -2,11 +2,13 @@ package net.coderbot.iris.pipeline;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
-import net.coderbot.iris.layer.GbufferProgram;
+import net.coderbot.iris.gbuffer_overrides.matching.InputAvailability;
+import net.coderbot.iris.gbuffer_overrides.state.RenderTargetStateListener;
 import net.coderbot.iris.mixin.LevelRendererAccessor;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+
 import java.util.List;
 import java.util.OptionalInt;
 
@@ -45,18 +47,33 @@ public class FixedFunctionWorldRenderingPipeline implements WorldRenderingPipeli
 	}
 
 	@Override
+	public void beginSodiumTerrainRendering() {
+
+	}
+
+	@Override
+	public void endSodiumTerrainRendering() {
+
+	}
+
+	@Override
 	public void setPhase(WorldRenderingPhase phase) {
 
 	}
 
 	@Override
-	public void beginShadowRender() {
-		// stub: nothing to do here
+	public void setInputs(InputAvailability availability) {
+
 	}
 
 	@Override
-	public void endShadowRender() {
-		// stub: nothing to do here
+	public void syncProgram() {
+
+	}
+
+	@Override
+	public RenderTargetStateListener getRenderTargetStateListener() {
+		return RenderTargetStateListener.NOP;
 	}
 
 	@Override
@@ -66,16 +83,6 @@ public class FixedFunctionWorldRenderingPipeline implements WorldRenderingPipeli
 
 	@Override
 	public void beginTranslucents() {
-		// stub: nothing to do here
-	}
-
-	@Override
-	public void pushProgram(GbufferProgram program) {
-		// stub: nothing to do here
-	}
-
-	@Override
-	public void popProgram(GbufferProgram program) {
 		// stub: nothing to do here
 	}
 

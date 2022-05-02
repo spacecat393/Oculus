@@ -13,7 +13,6 @@ import net.coderbot.iris.gl.program.ProgramBuilder;
 import net.coderbot.iris.gl.program.ProgramSamplers;
 import net.coderbot.iris.gl.sampler.SamplerLimits;
 import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
-import net.coderbot.iris.rendertarget.FramebufferBlitter;
 import net.coderbot.iris.rendertarget.RenderTarget;
 import net.coderbot.iris.rendertarget.RenderTargets;
 import net.coderbot.iris.samplers.IrisImages;
@@ -22,12 +21,12 @@ import net.coderbot.iris.shaderpack.PackRenderTargetDirectives;
 import net.coderbot.iris.shaderpack.ProgramDirectives;
 import net.coderbot.iris.shaderpack.ProgramSet;
 import net.coderbot.iris.shaderpack.ProgramSource;
-import net.coderbot.iris.shadows.ShadowMapRenderer;
+import net.coderbot.iris.shadows.ShadowRenderTargets;
 import net.coderbot.iris.uniforms.CommonUniforms;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AbstractTexture;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30C;
@@ -53,7 +52,7 @@ public class FinalPassRenderer {
 	public FinalPassRenderer(ProgramSet pack, RenderTargets renderTargets, IntSupplier noiseTexture,
 							 FrameUpdateNotifier updateNotifier, ImmutableSet<Integer> flippedBuffers,
 							 CenterDepthSampler centerDepthSampler,
-							 Supplier<ShadowMapRenderer> shadowMapRendererSupplier,
+							 Supplier<ShadowRenderTargets> shadowTargetsSupplier,
 							 Object2ObjectMap<String, IntSupplier> customTextureIds,
 							 ImmutableSet<Integer> flippedAtLeastOnce) {
 		this.updateNotifier = updateNotifier;
@@ -70,7 +69,7 @@ public class FinalPassRenderer {
 			Pass pass = new Pass();
 			ProgramDirectives directives = source.getDirectives();
 
-			pass.program = createProgram(source, flippedBuffers, flippedAtLeastOnce, shadowMapRendererSupplier);
+			pass.program = createProgram(source, flippedBuffers, flippedAtLeastOnce, shadowTargetsSupplier);
 			pass.stageReadsFromAlt = flippedBuffers;
 			pass.mipmappedBuffers = directives.getMipmappedBuffers();
 
@@ -134,11 +133,28 @@ public class FinalPassRenderer {
 		final int baseWidth = main.width;
 		final int baseHeight = main.height;
 
-		FullScreenQuadRenderer.INSTANCE.begin();
-
-		main.bindWrite(true);
+		// Note that since DeferredWorldRenderingPipeline uses the depth texture of the main Minecraft framebuffer,
+		// we'll be writing to that depth buffer directly automatically and won't need to futz around with copying
+		// depth buffer content.
+		//
+		// Previously, we had our own depth texture and then copied its content to the main Minecraft framebuffer.
+		// This worked with vanilla, but broke with mods that used the stencil buffer.
+		//
+		// This approach is a fairly succinct solution to the issue of having to deal with the main Minecraft
+		// framebuffer potentially having a depth-stencil buffer or similar - we'll automatically enable that to
+		// work properly since we re-use the depth buffer instead of trying to make our own.
+		//
+		// This is not a concern for depthtex1 / depthtex2 since the copy call extracts the depth values, and the
+		// shader pack only ever uses them to read the depth values.
 
 		if (this.finalPass != null) {
+			// If there is a final pass, we use the shader-based full screen quad rendering pathway instead
+			// of just copying the color buffer.
+
+			main.bindWrite(true);
+
+			FullScreenQuadRenderer.INSTANCE.begin();
+
 			if (!finalPass.mipmappedBuffers.isEmpty()) {
 				RenderSystem.activeTexture(GL15C.GL_TEXTURE0);
 
@@ -149,24 +165,23 @@ public class FinalPassRenderer {
 
 			finalPass.program.use();
 			FullScreenQuadRenderer.INSTANCE.renderQuad();
-		}
 
-		FullScreenQuadRenderer.end();
-
-		if (finalPass == null) {
-			// If there are no passes, we somehow need to transfer the content of the Iris render targets into the main
-			// Minecraft framebuffer.
-			//
-			// Thus, the following call transfers the content of colortex0 and the depth buffer into the main Minecraft
-			// framebuffer.
-			//
-			// TODO: What if colortex0 has a weird size or format?
-			FramebufferBlitter.copyFramebufferContent(this.baseline, main);
+			FullScreenQuadRenderer.end();
 		} else {
-			// We still need to copy the depth buffer content as finalized in the gbuffer pass to the main framebuffer.
+			// If there are no passes, we somehow need to transfer the content of the Iris color render targets into
+			// the main Minecraft framebuffer.
 			//
-			// This is needed for things like on-screen overlays to work properly.
-			FramebufferBlitter.copyDepthBufferContent(this.baseline, main);
+			// Thus, the following call transfers the content of colortex0 into the main Minecraft framebuffer.
+			//
+			// Note that glCopyTexSubImage2D is not as strict as glBlitFramebuffer, so we don't have to worry about
+			// colortex0 having a weird format. This should just work.
+			//
+			// We could have used a shader here, but it should be about the same performance either way:
+			// https://stackoverflow.com/a/23994979/18166885
+			this.baseline.bindAsReadBuffer();
+
+			RenderSystem.bindTexture(main.getColorTextureId());
+			GlStateManager._glCopyTexSubImage2D(GL11C.GL_TEXTURE_2D, 0, 0, 0, 0, 0, baseWidth, baseHeight);
 		}
 
 		RenderSystem.activeTexture(GL15C.GL_TEXTURE0);
@@ -238,7 +253,7 @@ public class FinalPassRenderer {
 
 	// TODO: Don't just copy this from DeferredWorldRenderingPipeline
 	private Program createProgram(ProgramSource source, ImmutableSet<Integer> flipped, ImmutableSet<Integer> flippedAtLeastOnceSnapshot,
-								  Supplier<ShadowMapRenderer> shadowMapRendererSupplier) {
+								  Supplier<ShadowRenderTargets> shadowTargetsSupplier) {
 		// TODO: Properly handle empty shaders
 		Objects.requireNonNull(source.getVertexSource());
 		Objects.requireNonNull(source.getFragmentSource());
@@ -262,8 +277,8 @@ public class FinalPassRenderer {
 		IrisSamplers.addCompositeSamplers(customTextureSamplerInterceptor, renderTargets);
 
 		if (IrisSamplers.hasShadowSamplers(customTextureSamplerInterceptor)) {
-			IrisSamplers.addShadowSamplers(customTextureSamplerInterceptor, shadowMapRendererSupplier.get());
-			IrisImages.addShadowColorImages(builder, shadowMapRendererSupplier.get());
+			IrisSamplers.addShadowSamplers(customTextureSamplerInterceptor, shadowTargetsSupplier.get());
+			IrisImages.addShadowColorImages(builder, shadowTargetsSupplier.get());
 		}
 
 		// TODO: Don't duplicate this with CompositeRenderer
