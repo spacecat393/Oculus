@@ -53,11 +53,11 @@ public class MixinParticleEngine implements PhasedParticleEngine {
 	@Shadow
 	@Final
 	private static List<ParticleRenderType> RENDER_ORDER;
-
+	
 	@Shadow
 	@Final
 	private Map<ParticleRenderType, Queue<Particle>> particles;
-	
+
 	private static final List<ParticleRenderType> OPAQUE_PARTICLE_RENDER_TYPES;
 
 	static {

@@ -20,8 +20,16 @@ import java.net.URISyntaxException;
 
 @Mixin(TitleScreen.class)
 public class MixinTitleScreen {
+	private static boolean iris$hasFirstInit;
+
 	@Inject(method = "init", at = @At("RETURN"))
 	public void iris$showSodiumIncompatScreen(CallbackInfo ci) {
+		if (iris$hasFirstInit) {
+			return;
+		}
+
+		iris$hasFirstInit = true;
+
 		String reason;
 
 		if (!Iris.isSodiumInstalled() && FMLLoader.isProduction()) {

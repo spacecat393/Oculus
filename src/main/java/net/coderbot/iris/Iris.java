@@ -1,11 +1,13 @@
 package net.coderbot.iris;
 
 import com.google.common.base.Throwables;
+import com.mojang.blaze3d.platform.GlDebug;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
 import net.coderbot.iris.config.IrisConfig;
 import net.coderbot.iris.gl.GLDebug;
+import net.coderbot.iris.gl.shader.StandardMacros;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.coderbot.iris.pipeline.DeferredWorldRenderingPipeline;
 import net.coderbot.iris.pipeline.FixedFunctionWorldRenderingPipeline;
@@ -20,7 +22,6 @@ import net.coderbot.iris.shaderpack.option.OptionSet;
 import net.coderbot.iris.shaderpack.option.Profile;
 import net.coderbot.iris.shaderpack.option.values.MutableOptionValues;
 import net.coderbot.iris.shaderpack.option.values.OptionValues;
-import net.irisshaders.iris.api.v0.IrisApi;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -87,7 +88,7 @@ public class Iris {
 	// Used in favor of queueDefaultShaderPackOptionValues() for resetting as the
 	// behavior is more concrete and therefore is more likely to repair a user's issues
 	private static boolean resetShaderPackOptions = false;
-
+	
 	private static String IRIS_VERSION;
 
 	public Iris() {
@@ -120,13 +121,15 @@ public class Iris {
 		try {
 			irisConfig.initialize();
 		} catch (IOException e) {
-			logger.error("Failed to initialize Iris configuration, default values will be used instead");
+			logger.error("Failed to initialize Oculus configuration, default values will be used instead");
 			logger.error("", e);
 		}
 
 		reloadKeybind = new KeyMapping("iris.keybind.reload", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "iris.keybinds");
 		toggleShadersKeybind = new KeyMapping("iris.keybind.toggleShaders", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "iris.keybinds");
 		shaderpackScreenKeybind = new KeyMapping("iris.keybind.shaderPackSelection", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "iris.keybinds");
+
+		setupCommands(Minecraft.getInstance());
 
 		initialized = true;
 	}
@@ -136,6 +139,40 @@ public class Iris {
 		ClientRegistry.registerKeyBinding(reloadKeybind);
 		ClientRegistry.registerKeyBinding(toggleShadersKeybind);
 		ClientRegistry.registerKeyBinding(shaderpackScreenKeybind);
+	}
+
+	private void setupCommands(Minecraft instance) {
+		// TODO: Add back commands when Fabric Maven stops dying
+		/*ClientCommandManager.DISPATCHER.register(ClientCommandManager.literal("iris").then(ClientCommandManager.literal("debug").then(
+			ClientCommandManager.argument("enabled", BoolArgumentType.bool()).executes(context -> {
+				boolean enable = BoolArgumentType.getBool(context, "enabled");
+
+				Iris.setDebug(enable);
+
+				return 0;
+			})
+		)).then(ClientCommandManager.literal("enabled").then(ClientCommandManager.argument("option", BoolArgumentType.bool()).executes(context -> {
+			try {
+				toggleShaders(instance, BoolArgumentType.getBool(context, "option"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return 0;
+		}))).then(ClientCommandManager.literal("reload").executes(context -> {
+			try {
+				reload();
+
+				if (instance.player != null) {
+					instance.player.displayClientMessage(new TranslatableComponent("iris.shaders.reloaded"), false);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				return -1;
+			}
+
+			return 0;
+		})));*/
 	}
 
 	/**
@@ -148,10 +185,27 @@ public class Iris {
 			return;
 		}
 
-		setDebug(irisConfig.isDebugEnabled());
+		setDebug(irisConfig.areDebugOptionsEnabled());
 
 		// Only load the shader pack when we can access OpenGL
 		loadShaderpack();
+	}
+
+	/**
+	 * Called when the title screen is initialized for the first time.
+	 */
+	public static void onLoadingComplete() {
+		if (!initialized) {
+			Iris.logger.warn("Iris::onLoadingComplete was called, but Iris::onEarlyInitialize was not called." +
+				" Trying to avoid a crash but this is an odd state.");
+			return;
+		}
+
+		// Initialize the pipeline now so that we don't increase world loading time. Just going to guess that
+		// the player is in the overworld.
+		// See: https://github.com/IrisShaders/Iris/issues/323
+		lastDimension = DimensionId.OVERWORLD;
+		Iris.getPipelineManager().preparePipeline(DimensionId.OVERWORLD);
 	}
 
 	public static void handleKeybinds(Minecraft minecraft) {
@@ -164,7 +218,7 @@ public class Iris {
 				}
 
 			} catch (Exception e) {
-				logger.error("Error while reloading Shaders for Iris!", e);
+				logger.error("Error while reloading Shaders for Oculus!", e);
 
 				if (minecraft.player != null) {
 					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.reloaded.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
@@ -179,7 +233,6 @@ public class Iris {
 				if (minecraft.player != null) {
 					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.toggled.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
 				}
-
 				setShadersDisabled();
 				currentPackName = "(off) [fallback, check your logs for errors]";
 			}
@@ -209,7 +262,7 @@ public class Iris {
 		}
 
 		if (!irisConfig.areShadersEnabled()) {
-			logger.info("Shaders are disabled because enableShaders is set to false in iris.properties");
+			logger.info("Shaders are disabled because enableShaders is set to false in oculuus.properties");
 
 			setShadersDisabled();
 
@@ -235,6 +288,7 @@ public class Iris {
 		
 		if(sodiumInstalled)
 			SodiumWorldRenderer.hasChanges = true;
+		
 	}
 
 	private static boolean loadExternalShaderpack(String name) {
@@ -306,7 +360,7 @@ public class Iris {
 		resetShaderPackOptions = false;
 
 		try {
-			currentPack = new ShaderPack(shaderPackPath, changedConfigs);
+			currentPack = new ShaderPack(shaderPackPath, changedConfigs, StandardMacros.createStandardEnvironmentDefines());
 
 			MutableOptionValues changedConfigsValues = currentPack.getShaderPackOptions().getOptionValues().mutableCopy();
 
@@ -370,7 +424,8 @@ public class Iris {
 		if (enable) {
 			success = GLDebug.setupDebugMessageCallback();
 		} else {
-			success = GLDebug.disableDebugMessages();
+			GlDebug.enableDebugCallback(Minecraft.getInstance().options.glDebugVerbosity, false);
+			success = 1;
 		}
 
 		logger.info("Debug functionality is " + (enable ? "enabled, logging will be more verbose!" : "disabled."));
@@ -507,6 +562,10 @@ public class Iris {
 		resetShaderPackOptions = true;
 	}
 
+	public static boolean shouldResetShaderPackOptionsOnNextReload() {
+		return resetShaderPackOptions;
+	}
+
 	public static void reload() throws IOException {
 		// allows shaderpacks to be changed at runtime
 		irisConfig.initialize();
@@ -516,7 +575,14 @@ public class Iris {
 
 		// Load the new shaderpack
 		loadShaderpack();
+
+		// Very important - we need to re-create the pipeline straight away.
+		// https://github.com/IrisShaders/Iris/issues/1330
+		if (Minecraft.getInstance().level != null) {
+			Iris.getPipelineManager().preparePipeline(Iris.getCurrentDimension());
+		}
 	}
+
 
 	/**
 	 * Destroys and deallocates all created OpenGL resources. Useful as part of a reload.
@@ -540,7 +606,7 @@ public class Iris {
 		}
 	}
 
-	public static DimensionId lastDimension = DimensionId.OVERWORLD;
+	public static DimensionId lastDimension = null;
 
 	public static DimensionId getCurrentDimension() {
 		ClientLevel level = Minecraft.getInstance().level;
@@ -621,21 +687,16 @@ public class Iris {
 			color = ChatFormatting.RED;
 		} else if (version.contains("+rev.")) {
 			color = ChatFormatting.LIGHT_PURPLE;
-		} else if (version.endsWith("-pre")) {
-			color = ChatFormatting.BLUE;
 		} else {
 			color = ChatFormatting.GREEN;
 		}
 
 		return color + version;
 	}
-  
+
+
 	public static boolean isSodiumInstalled() {
 		return sodiumInstalled;
-	}
-
-	public static boolean isPackActive() {
-		return IrisApi.getInstance().isShaderPackInUse();
 	}
 
 	public static Path getShaderpacksDirectory() {

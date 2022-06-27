@@ -1,4 +1,4 @@
-package net.coderbot.iris.pipeline;
+package net.coderbot.iris.pipeline.patcher;
 
 import net.coderbot.iris.gbuffer_overrides.matching.InputAvailability;
 import net.coderbot.iris.gl.shader.ShaderType;
@@ -13,6 +13,8 @@ public class AttributeShaderTransformer {
 
 		StringTransformations transformations = new StringTransformations(source);
 
+		// gl_MultiTexCoord1 and gl_MultiTexCoord2 are both ways to refer to the lightmap texture coordinate.
+		// See https://github.com/IrisShaders/Iris/issues/1149
 		if (!inputs.lightmap) {
 			transformations.replaceExact("gl_MultiTexCoord1", "vec4(240.0, 240.0, 0.0, 1.0)");
 			transformations.replaceExact("gl_MultiTexCoord2", "vec4(240.0, 240.0, 0.0, 1.0)");
@@ -28,6 +30,18 @@ public class AttributeShaderTransformer {
 
 		if (inputs.overlay) {
 			patchOverlayColor(transformations, type, hasGeometry);
+		}
+
+		if (transformations.contains("gl_MultiTexCoord3") && !transformations.contains("mc_midTexCoord")
+			&& type == ShaderType.VERTEX) {
+			// gl_MultiTexCoord3 is a super legacy alias of mc_midTexCoord. We don't do this replacement if
+			// we think mc_midTexCoord could be defined just we can't handle an existing declaration robustly.
+			//
+			// But basically the proper way to do this is to define mc_midTexCoord only if it's not defined, and if
+			// it is defined, figure out its type, then replace all occurrences of gl_MultiTexCoord3 with the correct
+			// conversion from mc_midTexCoord's declared type to vec4.
+			transformations.replaceExact("gl_MultiTexCoord3", "mc_midTexCoord");
+			transformations.injectLine(Transformations.InjectionPoint.BEFORE_CODE, "attribute vec4 mc_midTexCoord;");
 		}
 
 		return transformations.toString();

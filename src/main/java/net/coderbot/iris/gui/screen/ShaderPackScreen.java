@@ -48,6 +48,7 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 	private static final int COMMENT_PANEL_WIDTH = 314;
 
 	private final Screen parent;
+	private final MutableComponent irisTextComponent;
 
 	private ShaderPackSelectionList shaderPackList;
 
@@ -66,11 +67,24 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 	private boolean optionMenuOpen = false;
 
 	private boolean dropChanges = false;
+	private static String development = "Development Environment";
+	private MutableComponent developmentComponent;
+	private MutableComponent updateComponent;
 
 	public ShaderPackScreen(Screen parent) {
 		super(new TranslatableComponent("options.iris.shaderPackSelection.title"));
 
 		this.parent = parent;
+
+		String irisName = Iris.MODNAME + " " + Iris.getVersion();
+
+		if (irisName.contains("-development-environment")) {
+			this.developmentComponent = new TextComponent("Development Environment").withStyle(ChatFormatting.GOLD);
+			irisName = irisName.replace("-development-environment", "");
+		}
+
+		this.irisTextComponent = new TextComponent(irisName).withStyle(ChatFormatting.GRAY);
+
 		refreshForChangedPack();
 	}
 
@@ -122,8 +136,18 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 			render.run();
 		}
 		TOP_LAYER_RENDER_QUEUE.clear();
-	}
 
+		if (this.developmentComponent != null) {
+			this.font.drawShadow(poseStack, developmentComponent, 2, this.height - 10, 0xFFFFFF);
+			this.font.drawShadow(poseStack, irisTextComponent, 2, this.height - 20, 0xFFFFFF);
+		} else if (this.updateComponent != null) {
+			this.font.drawShadow(poseStack, updateComponent, 2, this.height - 10, 0xFFFFFF);
+			this.font.drawShadow(poseStack, irisTextComponent, 2, this.height - 20, 0xFFFFFF);
+		} else {
+			this.font.drawShadow(poseStack, irisTextComponent, 2, this.height - 10, 0xFFFFFF);
+		}
+	}
+	
 	@Override
 	protected void init() {
 		super.init();
@@ -383,7 +407,6 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 	@Override
 	public void onClose() {
 		if (!dropChanges) {
-			// TODO: Don't apply changes unnecessarily
 			applyChanges();
 		} else {
 			discardChanges();
@@ -415,10 +438,16 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 			Iris.clearShaderPackOptionQueue();
 		}
 
-		Iris.getIrisConfig().setShaderPackName(name);
-
 		boolean enabled = this.shaderPackList.getTopButtonRow().shadersEnabled;
-		IrisApi.getInstance().getConfig().setShadersEnabledAndApply(enabled);
+
+		String previousPackName = Iris.getIrisConfig().getShaderPackName().orElse(null);
+		boolean previousShadersEnabled = Iris.getIrisConfig().areShadersEnabled();
+
+		// Only reload if the pack would be different from before, or shaders were toggled, or options were changed, or if we're about to reset options.
+		if (!name.equals(previousPackName) || enabled != previousShadersEnabled || !Iris.getShaderPackOptionQueue().isEmpty() || Iris.shouldResetShaderPackOptionsOnNextReload()) {
+			Iris.getIrisConfig().setShaderPackName(name);
+			IrisApi.getInstance().getConfig().setShadersEnabledAndApply(enabled);
+		}
 
 		refreshForChangedPack();
 	}
