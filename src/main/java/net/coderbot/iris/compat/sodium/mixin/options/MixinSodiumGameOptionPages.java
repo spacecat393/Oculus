@@ -26,8 +26,8 @@ public class MixinSodiumGameOptionPages {
 
 	@Redirect(method = "general", remap = false,
 			slice = @Slice(
-					from = @At(value = "CONSTANT", args = "stringValue=View Distance"),
-					to = @At(value = "CONSTANT", args = "stringValue=Brightness")
+					from = @At(value = "CONSTANT", args = "stringValue=options.renderDistance"),
+					to = @At(value = "CONSTANT", args = "stringValue=options.gamma")
 			),
 			at = @At(value = "INVOKE", remap = false,
 					target = "me/jellysquid/mods/sodium/client/gui/options/OptionGroup$Builder.add (" +
@@ -44,8 +44,8 @@ public class MixinSodiumGameOptionPages {
 
 	@ModifyArg(method = "quality", remap = false,
 			slice = @Slice(
-					from = @At(value = "CONSTANT", args = "stringValue=Graphics Quality"),
-					to = @At(value = "CONSTANT", args = "stringValue=Clouds Quality")
+					from = @At(value = "CONSTANT", args = "stringValue=options.graphics"),
+					to = @At(value = "CONSTANT", args = "stringValue=options.renderClouds")
 			),
 			at = @At(value = "INVOKE", remap = false,
 					target = "me/jellysquid/mods/sodium/client/gui/options/OptionGroup$Builder.add (" +
