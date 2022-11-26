@@ -1,5 +1,9 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp;
 
+import static net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp.XHFPModelVertexType.STRIDE;
+
+import java.nio.ByteBuffer;
+
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferView;
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferWriterNio;
 import me.jellysquid.mods.sodium.client.render.chunk.format.ModelVertexSink;
@@ -10,10 +14,6 @@ import net.coderbot.iris.compat.sodium.impl.vertex_format.IrisModelVertexFormats
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.coderbot.iris.vertices.ExtendedDataHelper;
 import net.coderbot.iris.vertices.NormalHelper;
-
-import java.nio.ByteBuffer;
-
-import static net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp.XHFPModelVertexType.STRIDE;
 
 public class XHFPModelVertexBufferWriterNio extends VertexBufferWriterNio implements ModelVertexSink, ContextAwareVertexWriter {
 	private final QuadViewTerrain.QuadViewTerrainNio quad = new QuadViewTerrain.QuadViewTerrainNio();

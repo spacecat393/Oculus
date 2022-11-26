@@ -1,5 +1,7 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format.entity_xhfp;
 
+import java.nio.ByteBuffer;
+
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferView;
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferWriterNio;
 import me.jellysquid.mods.sodium.client.model.vertex.formats.glyph.GlyphVertexSink;
@@ -9,8 +11,6 @@ import net.coderbot.iris.vendored.joml.Vector3f;
 import net.coderbot.iris.vertices.IrisVertexFormats;
 import net.coderbot.iris.vertices.NormalHelper;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-
-import java.nio.ByteBuffer;
 
 public class GlyphVertexBufferWriterNio extends VertexBufferWriterNio implements QuadVertexSink, GlyphVertexSink {
 	private static final int STRIDE = IrisVertexFormats.TERRAIN.getVertexSize();

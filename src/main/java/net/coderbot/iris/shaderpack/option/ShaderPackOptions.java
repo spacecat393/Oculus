@@ -1,16 +1,17 @@
 package net.coderbot.iris.shaderpack.option;
 
-import com.google.common.collect.ImmutableMap;
-import net.coderbot.iris.shaderpack.include.AbsolutePackPath;
-import net.coderbot.iris.shaderpack.include.IncludeGraph;
-import net.coderbot.iris.shaderpack.option.values.MutableOptionValues;
-import net.coderbot.iris.shaderpack.option.values.OptionValues;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.ImmutableMap;
+
+import net.coderbot.iris.shaderpack.include.AbsolutePackPath;
+import net.coderbot.iris.shaderpack.include.IncludeGraph;
+import net.coderbot.iris.shaderpack.option.values.MutableOptionValues;
+import net.coderbot.iris.shaderpack.option.values.OptionValues;
 
 /**
  * A helper class that dispatches all the heavy lifting needed to discover, merge, and apply shader pack options to

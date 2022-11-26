@@ -1,9 +1,10 @@
 package net.coderbot.iris.mixin.bettermipmaps;
 
-import net.minecraft.client.renderer.texture.MipmapGenerator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
+
+import net.minecraft.client.renderer.texture.MipmapGenerator;
 
 /**
  * Implements a significantly enhanced mipmap downsampling filter.

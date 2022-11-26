@@ -1,6 +1,12 @@
 package net.coderbot.iris.gui.element.widget;
 
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+
 import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.gui.NavigationController;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
@@ -15,10 +21,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.Optional;
 
 public abstract class BaseOptionElementWidget<T extends OptionMenuElement> extends CommentedElementWidget<T> {
 	protected static final Component SET_TO_DEFAULT = new TranslatableComponent("options.iris.setToDefault").withStyle(ChatFormatting.GREEN);

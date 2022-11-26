@@ -23,7 +23,10 @@
  */
 package net.coderbot.iris.vendored.joml;
 
-import java.nio.*;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 /**
  * Helper class to do efficient memory operations on all JOML objects, NIO buffers and primitive arrays.

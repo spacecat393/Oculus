@@ -1,17 +1,18 @@
 package net.coderbot.batchedentityrendering.impl;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.datafixers.util.Pair;
-import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.datafixers.util.Pair;
+
+import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 
 public class SegmentedBufferBuilder implements MultiBufferSource, MemoryTrackingBuffer {
     private final BufferBuilder buffer;

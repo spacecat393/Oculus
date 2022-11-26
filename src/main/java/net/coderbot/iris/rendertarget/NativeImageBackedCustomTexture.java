@@ -1,16 +1,17 @@
 package net.coderbot.iris.rendertarget;
 
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.coderbot.iris.gl.IrisRenderSystem;
-import net.coderbot.iris.shaderpack.texture.CustomTextureData;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL13C;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
+
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL13C;
+
+import com.mojang.blaze3d.platform.NativeImage;
+
+import net.coderbot.iris.gl.IrisRenderSystem;
+import net.coderbot.iris.shaderpack.texture.CustomTextureData;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 
 public class NativeImageBackedCustomTexture extends DynamicTexture {
 	public NativeImageBackedCustomTexture(CustomTextureData.PngData textureData) throws IOException {

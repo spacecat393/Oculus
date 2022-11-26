@@ -1,22 +1,5 @@
 package net.coderbot.iris.gl.program;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.gl.IrisRenderSystem;
-import net.coderbot.iris.gl.uniform.DynamicLocationalUniformHolder;
-import net.coderbot.iris.gl.uniform.Uniform;
-import net.coderbot.iris.gl.uniform.UniformHolder;
-import net.coderbot.iris.gl.uniform.UniformType;
-import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
-import net.coderbot.iris.gl.state.ValueUpdateNotifier;
-import net.coderbot.iris.uniforms.SystemTimeUniforms;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBShaderImageLoadStore;
-import org.lwjgl.opengl.GL20C;
-import org.lwjgl.opengl.GL30C;
-
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +7,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBShaderImageLoadStore;
+import org.lwjgl.opengl.GL20C;
+import org.lwjgl.opengl.GL30C;
+
+import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.gl.IrisRenderSystem;
+import net.coderbot.iris.gl.state.ValueUpdateNotifier;
+import net.coderbot.iris.gl.uniform.DynamicLocationalUniformHolder;
+import net.coderbot.iris.gl.uniform.Uniform;
+import net.coderbot.iris.gl.uniform.UniformHolder;
+import net.coderbot.iris.gl.uniform.UniformType;
+import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
+import net.coderbot.iris.uniforms.SystemTimeUniforms;
+import net.minecraft.client.Minecraft;
 
 public class ProgramUniforms {
 	private static ProgramUniforms active;

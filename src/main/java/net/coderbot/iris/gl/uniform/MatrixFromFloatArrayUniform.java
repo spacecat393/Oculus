@@ -1,11 +1,12 @@
 package net.coderbot.iris.gl.uniform;
 
-import net.coderbot.iris.gl.IrisRenderSystem;
-import org.lwjgl.BufferUtils;
-
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.function.Supplier;
+
+import org.lwjgl.BufferUtils;
+
+import net.coderbot.iris.gl.IrisRenderSystem;
 
 public class MatrixFromFloatArrayUniform extends Uniform {
 	private final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);

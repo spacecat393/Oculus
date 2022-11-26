@@ -1,5 +1,8 @@
 package kroppeb.stareval.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import kroppeb.stareval.element.AccessibleExpressionElement;
 import kroppeb.stareval.element.Element;
 import kroppeb.stareval.element.ExpressionElement;
@@ -17,9 +20,6 @@ import kroppeb.stareval.element.tree.partial.UnfinishedArgsExpression;
 import kroppeb.stareval.exception.MissingTokenException;
 import kroppeb.stareval.exception.ParseException;
 import kroppeb.stareval.exception.UnexpectedTokenException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>

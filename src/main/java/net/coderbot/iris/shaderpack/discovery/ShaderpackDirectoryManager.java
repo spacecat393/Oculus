@@ -1,7 +1,5 @@
 package net.coderbot.iris.shaderpack.discovery;
 
-import net.coderbot.iris.Iris;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -10,6 +8,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import net.coderbot.iris.Iris;
 
 public class ShaderpackDirectoryManager {
 	private final Path root;

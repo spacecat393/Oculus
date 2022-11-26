@@ -1,18 +1,5 @@
 package net.coderbot.iris.gl.shader;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.GlUtil;
-import net.coderbot.iris.pipeline.HandRenderer;
-import net.coderbot.iris.pipeline.WorldRenderingPhase;
-import net.coderbot.iris.shaderpack.StringPair;
-import net.coderbot.iris.texture.format.TextureFormat;
-import net.coderbot.iris.texture.format.TextureFormatLoader;
-import net.minecraft.SharedConstants;
-import net.minecraft.Util;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20C;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +11,21 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20C;
+
+import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.GlUtil;
+
+import net.coderbot.iris.pipeline.HandRenderer;
+import net.coderbot.iris.pipeline.WorldRenderingPhase;
+import net.coderbot.iris.shaderpack.StringPair;
+import net.coderbot.iris.texture.format.TextureFormat;
+import net.coderbot.iris.texture.format.TextureFormatLoader;
+import net.minecraft.SharedConstants;
+import net.minecraft.Util;
 
 public class StandardMacros {
 	private static final Pattern SEMVER_PATTERN = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.*(?<bugfix>\\d*)(.*)");

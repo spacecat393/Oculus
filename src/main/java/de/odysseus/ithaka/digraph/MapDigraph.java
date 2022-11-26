@@ -15,11 +15,6 @@
  */
 package de.odysseus.ithaka.digraph;
 
-import it.unimi.dsi.fastutil.objects.Object2IntAVLTreeMap;
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMaps;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +24,11 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.TreeMap;
+
+import it.unimi.dsi.fastutil.objects.Object2IntAVLTreeMap;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 
 /**
  * Map-based directed graph implementation.

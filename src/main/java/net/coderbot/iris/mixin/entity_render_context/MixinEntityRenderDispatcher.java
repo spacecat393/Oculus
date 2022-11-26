@@ -1,6 +1,12 @@
 package net.coderbot.iris.mixin.entity_render_context;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import com.mojang.blaze3d.vertex.PoseStack;
+
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.fantastic.WrappingMultiBufferSource;
@@ -13,11 +19,6 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Wraps entity rendering functions in order to create additional render layers

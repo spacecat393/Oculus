@@ -26,8 +26,9 @@ package net.coderbot.iris.vendored.joml;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Interface to a read-only view of a 4-dimensional vector of single-precision floats.

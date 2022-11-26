@@ -1,15 +1,16 @@
 package net.coderbot.iris.rendertarget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.coderbot.iris.gl.GlResource;
-import net.coderbot.iris.gl.IrisRenderSystem;
-import net.coderbot.iris.gl.texture.TextureUploadHelper;
+import java.nio.ByteBuffer;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
 
-import java.nio.ByteBuffer;
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import net.coderbot.iris.gl.GlResource;
+import net.coderbot.iris.gl.IrisRenderSystem;
+import net.coderbot.iris.gl.texture.TextureUploadHelper;
 
 public class SingleColorTexture extends GlResource {
 	public SingleColorTexture(int red, int green, int blue, int alpha) {

@@ -19,14 +19,13 @@ package repack.apache.commons.collections4.multimap;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 import repack.apache.commons.collections4.MapIterator;
 import repack.apache.commons.collections4.MultiSet;
 import repack.apache.commons.collections4.MultiValuedMap;
-
-import java.util.Set;
 
 /**
  * Decorates another {@code MultiValuedMap} to provide additional behavior.

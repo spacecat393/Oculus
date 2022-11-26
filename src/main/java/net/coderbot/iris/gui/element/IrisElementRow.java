@@ -1,18 +1,20 @@
 package net.coderbot.iris.gui.element;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.coderbot.iris.gui.GuiUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.coderbot.iris.gui.GuiUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
 
 /**
  * Intended to make very simple rows of buttons easier to make

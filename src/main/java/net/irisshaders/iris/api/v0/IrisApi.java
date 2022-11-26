@@ -1,9 +1,9 @@
 package net.irisshaders.iris.api.v0;
 
-import net.coderbot.iris.apiimpl.IrisApiV0Impl;
-
 import java.nio.ByteBuffer;
 import java.util.function.IntFunction;
+
+import net.coderbot.iris.apiimpl.IrisApiV0Impl;
 
 /**
  * The entry point to the Iris API, major version 0. This is currently the latest

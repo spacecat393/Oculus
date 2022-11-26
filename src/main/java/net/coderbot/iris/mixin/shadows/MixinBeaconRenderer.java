@@ -1,14 +1,16 @@
 package net.coderbot.iris.mixin.shadows;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.coderbot.iris.shadows.ShadowRenderingState;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BeaconRenderer;
-import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.coderbot.iris.shadows.ShadowRenderingState;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BeaconRenderer;
+import net.minecraft.resources.ResourceLocation;
 
 @Mixin(BeaconRenderer.class)
 public class MixinBeaconRenderer {

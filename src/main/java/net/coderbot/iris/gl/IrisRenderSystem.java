@@ -1,9 +1,9 @@
 package net.coderbot.iris.gl;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.coderbot.iris.vendored.joml.Vector3i;
-import net.coderbot.iris.Iris;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.ARBDirectStateAccess;
 import org.lwjgl.opengl.EXTShaderImageLoadStore;
@@ -12,13 +12,14 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL40C;
-import org.lwjgl.opengl.GL42C;
 import org.lwjgl.opengl.GL45C;
 import org.lwjgl.system.MemoryUtil;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.vendored.joml.Vector3i;
 
 /**
  * This class is responsible for abstracting calls to OpenGL and asserting that calls are run on the render thread.

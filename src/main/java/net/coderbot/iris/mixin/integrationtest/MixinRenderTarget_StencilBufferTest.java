@@ -1,13 +1,14 @@
 package net.coderbot.iris.mixin.integrationtest;
 
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+
+import com.mojang.blaze3d.pipeline.RenderTarget;
 
 /**
  * Tests switching the depth texture of the main Minecraft render target to use a stencil buffer, to ensure that

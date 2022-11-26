@@ -1,11 +1,12 @@
 package net.coderbot.iris.shaderpack;
 
+import java.util.Optional;
+
 import com.google.common.collect.ImmutableList;
+
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.texture.InternalTextureFormat;
 import net.coderbot.iris.vendored.joml.Vector4f;
-
-import java.util.Optional;
 
 public class PackShadowDirectives {
 	// Bump this up if you want more shadow color buffers!

@@ -1,10 +1,11 @@
 package net.coderbot.iris.shaderpack.option;
 
-import com.google.common.collect.ImmutableMap;
-import net.coderbot.iris.Iris;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+
+import net.coderbot.iris.Iris;
 
 public class OptionSet {
 	private final ImmutableMap<String, MergedBooleanOption> booleanOptions;

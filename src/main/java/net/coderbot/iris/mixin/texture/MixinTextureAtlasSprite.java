@@ -1,13 +1,15 @@
 package net.coderbot.iris.mixin.texture;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
 import com.mojang.blaze3d.platform.NativeImage;
+
 import net.coderbot.iris.texture.mipmap.CustomMipmapGenerator;
 import net.minecraft.client.renderer.texture.MipmapGenerator;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(TextureAtlasSprite.class)
 public class MixinTextureAtlasSprite {

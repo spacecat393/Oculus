@@ -15,11 +15,6 @@
  */
 package de.odysseus.ithaka.digraph.util.fas;
 
-import de.odysseus.ithaka.digraph.Digraph;
-import de.odysseus.ithaka.digraph.Digraphs;
-import de.odysseus.ithaka.digraph.EdgeWeights;
-import de.odysseus.ithaka.digraph.MapDigraph;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
@@ -29,6 +24,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import de.odysseus.ithaka.digraph.Digraph;
+import de.odysseus.ithaka.digraph.Digraphs;
+import de.odysseus.ithaka.digraph.EdgeWeights;
+import de.odysseus.ithaka.digraph.MapDigraph;
 
 /**
  * Abstract feedback arc set provider.

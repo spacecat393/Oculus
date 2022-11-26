@@ -1,13 +1,14 @@
 package net.coderbot.iris.mixin;
 
-import net.coderbot.iris.Iris;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.coderbot.iris.Iris;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 /**
  * Small hook giving Iris a chance to check for keyboard input for its keybindings.

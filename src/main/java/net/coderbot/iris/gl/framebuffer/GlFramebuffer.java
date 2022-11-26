@@ -1,13 +1,15 @@
 package net.coderbot.iris.gl.framebuffer;
 
+import org.lwjgl.opengl.GL30C;
+
 import com.mojang.blaze3d.platform.GlStateManager;
+
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import net.coderbot.iris.gl.GlResource;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.texture.DepthBufferFormat;
 import net.coderbot.iris.texture.TextureInfoCache;
-import org.lwjgl.opengl.GL30C;
 
 public class GlFramebuffer extends GlResource {
 	private final Int2IntMap attachments;

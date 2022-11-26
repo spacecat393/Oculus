@@ -1,12 +1,14 @@
 package net.coderbot.iris.mixin.state_tracking;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import net.coderbot.iris.Iris;
-import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.pipeline.RenderTarget;
+
+import net.coderbot.iris.Iris;
+import net.minecraft.client.Minecraft;
 
 /**
  * This mixin listens for code that binds a different framebuffer from the main minecraft framebuffer, and then disables

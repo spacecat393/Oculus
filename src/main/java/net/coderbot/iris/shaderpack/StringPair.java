@@ -1,8 +1,8 @@
 package net.coderbot.iris.shaderpack;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An absurdly simple class for storing pairs of strings because Java lacks pair / tuple types.

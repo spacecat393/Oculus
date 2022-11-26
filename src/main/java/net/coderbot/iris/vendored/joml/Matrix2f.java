@@ -24,13 +24,12 @@
 package net.coderbot.iris.vendored.joml;
 
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 

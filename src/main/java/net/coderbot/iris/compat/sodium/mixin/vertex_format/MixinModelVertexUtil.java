@@ -1,9 +1,10 @@
 package net.coderbot.iris.compat.sodium.mixin.vertex_format;
 
-import me.jellysquid.mods.sodium.client.render.chunk.format.ModelVertexUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+
+import me.jellysquid.mods.sodium.client.render.chunk.format.ModelVertexUtil;
 
 /**
  * A ridiculous solution to an impossible problem

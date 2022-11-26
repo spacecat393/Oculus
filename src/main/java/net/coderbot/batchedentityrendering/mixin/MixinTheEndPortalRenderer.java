@@ -1,17 +1,19 @@
 package net.coderbot.batchedentityrendering.mixin;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.coderbot.batchedentityrendering.impl.Groupable;
-import net.coderbot.batchedentityrendering.impl.wrappers.TaggingRenderTypeWrapper;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
-import net.minecraft.world.level.block.entity.TheEndPortalBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.coderbot.batchedentityrendering.impl.Groupable;
+import net.coderbot.batchedentityrendering.impl.wrappers.TaggingRenderTypeWrapper;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
+import net.minecraft.world.level.block.entity.TheEndPortalBlockEntity;
 
 /**
  * Vanilla end portal rendering in 1.16 and below is layered, so this is needed. It's not needed in 1.17 though.

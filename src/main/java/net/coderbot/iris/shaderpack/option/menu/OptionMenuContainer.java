@@ -1,17 +1,18 @@
 package net.coderbot.iris.shaderpack.option.menu;
 
-import com.google.common.collect.Lists;
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.shaderpack.ShaderProperties;
-import net.coderbot.iris.shaderpack.option.ProfileSet;
-import net.coderbot.iris.shaderpack.option.ShaderPackOptions;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.google.common.collect.Lists;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.shaderpack.ShaderProperties;
+import net.coderbot.iris.shaderpack.option.ProfileSet;
+import net.coderbot.iris.shaderpack.option.ShaderPackOptions;
 
 public class OptionMenuContainer {
 	public final OptionMenuElementScreen mainScreen;

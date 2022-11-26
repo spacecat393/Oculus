@@ -1,15 +1,16 @@
 package net.coderbot.iris.shaderpack.include;
 
-import com.google.common.collect.ImmutableList;
-import net.coderbot.iris.shaderpack.loading.ProgramArrayId;
-import net.coderbot.iris.shaderpack.loading.ProgramId;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.google.common.collect.ImmutableList;
+
+import net.coderbot.iris.shaderpack.loading.ProgramArrayId;
+import net.coderbot.iris.shaderpack.loading.ProgramId;
 
 /**
  * Enumerates the possible program source file names to

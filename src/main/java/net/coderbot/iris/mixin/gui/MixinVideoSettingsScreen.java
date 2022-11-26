@@ -1,14 +1,15 @@
 package net.coderbot.iris.mixin.gui;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+
 import net.coderbot.iris.gui.option.IrisVideoSettings;
 import net.coderbot.iris.gui.option.ShaderPackSelectionButtonOption;
 import net.minecraft.client.Option;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.VideoSettingsScreen;
 import net.minecraft.network.chat.Component;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(VideoSettingsScreen.class)
 public abstract class MixinVideoSettingsScreen extends Screen {

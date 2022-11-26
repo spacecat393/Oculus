@@ -1,12 +1,14 @@
 package net.coderbot.iris.texture.util;
 
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
+import java.io.File;
+
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 
 public class TextureExporter {
 	public static void exportTextures(String directory, String filename, int textureId, int mipLevel, int width, int height) {

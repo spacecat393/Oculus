@@ -2,16 +2,18 @@
 
 package net.coderbot.iris.gl.shader;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.coderbot.iris.gl.GLDebug;
-import net.coderbot.iris.gl.GlResource;
-import net.coderbot.iris.gl.IrisRenderSystem;
+import java.util.Locale;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.KHRDebug;
 
-import java.util.Locale;
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import net.coderbot.iris.gl.GLDebug;
+import net.coderbot.iris.gl.GlResource;
+import net.coderbot.iris.gl.IrisRenderSystem;
 
 /**
  * A compiled OpenGL shader object.

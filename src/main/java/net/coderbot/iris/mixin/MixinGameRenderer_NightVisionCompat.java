@@ -1,12 +1,13 @@
 package net.coderbot.iris.mixin;
 
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 
 // Priority of 1010 (> 1000) to run after other mod mixins. In particular, Night Vision Flash Be Gone overwrites this
 // method, so we need to run after it so that our injection silently fails instead of crashing the game.

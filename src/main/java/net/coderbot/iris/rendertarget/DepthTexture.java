@@ -1,12 +1,13 @@
 package net.coderbot.iris.rendertarget;
 
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL13C;
+
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.coderbot.iris.gl.GlResource;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.texture.DepthBufferFormat;
-import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL13C;
 
 public class DepthTexture extends GlResource {
 	public DepthTexture(int width, int height, DepthBufferFormat format) {

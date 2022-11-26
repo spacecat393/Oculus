@@ -1,7 +1,8 @@
 package net.coderbot.iris.texture.pbr;
 
-import net.minecraft.client.renderer.texture.AbstractTexture;
 import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.client.renderer.texture.AbstractTexture;
 
 public interface PBRTextureHolder {
 	@NotNull

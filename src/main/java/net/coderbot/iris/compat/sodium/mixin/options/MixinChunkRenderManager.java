@@ -1,11 +1,12 @@
 package net.coderbot.iris.compat.sodium.mixin.options;
 
-import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
-import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderManager;
-import net.coderbot.iris.Iris;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
+import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
+import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderManager;
+import net.coderbot.iris.Iris;
 
 /**
  * Disables fog occlusion when a shader pack is enabled, since shaders are not guaranteed to actually implement fog.

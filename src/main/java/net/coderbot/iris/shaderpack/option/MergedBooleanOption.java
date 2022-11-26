@@ -1,7 +1,8 @@
 package net.coderbot.iris.shaderpack.option;
 
-import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.Nullable;
+
+import com.google.common.collect.ImmutableSet;
 
 public class MergedBooleanOption {
     private final BooleanOption option;

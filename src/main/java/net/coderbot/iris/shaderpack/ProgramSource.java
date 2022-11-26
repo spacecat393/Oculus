@@ -1,8 +1,8 @@
 package net.coderbot.iris.shaderpack;
 
-import net.coderbot.iris.gl.blending.BlendModeOverride;
-
 import java.util.Optional;
+
+import net.coderbot.iris.gl.blending.BlendModeOverride;
 
 public class ProgramSource {
 	private final String name;

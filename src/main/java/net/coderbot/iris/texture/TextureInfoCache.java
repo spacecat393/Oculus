@@ -1,12 +1,14 @@
 package net.coderbot.iris.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.nio.IntBuffer;
+
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL20C;
 
-import java.nio.IntBuffer;
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class TextureInfoCache {
 	public static final TextureInfoCache INSTANCE = new TextureInfoCache();

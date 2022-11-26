@@ -1,11 +1,11 @@
 package net.coderbot.iris.shaderpack.loading;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import net.coderbot.iris.gl.blending.BlendMode;
 import net.coderbot.iris.gl.blending.BlendModeFunction;
 import net.coderbot.iris.gl.blending.BlendModeOverride;
-
-import java.util.Objects;
-import java.util.Optional;
 
 public enum ProgramId {
 	Shadow(ProgramGroup.Shadow, ""),

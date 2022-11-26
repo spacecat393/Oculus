@@ -1,9 +1,10 @@
 package net.coderbot.iris.texture.pbr.loader;
 
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 public interface PBRTextureLoader<T extends AbstractTexture> {
 	/**

@@ -1,16 +1,17 @@
 package net.coderbot.iris.rendertarget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.coderbot.iris.gl.GlResource;
-import net.coderbot.iris.gl.IrisRenderSystem;
-import net.coderbot.iris.gl.texture.TextureUploadHelper;
+import java.nio.ByteBuffer;
+import java.util.Random;
+
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
 import org.lwjgl.opengl.GL20C;
 
-import java.nio.ByteBuffer;
-import java.util.Random;
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import net.coderbot.iris.gl.GlResource;
+import net.coderbot.iris.gl.IrisRenderSystem;
+import net.coderbot.iris.gl.texture.TextureUploadHelper;
 
 /**
  * An extremely simple noise texture. Each color channel contains a uniform random value from 0 to 255. Essentially just

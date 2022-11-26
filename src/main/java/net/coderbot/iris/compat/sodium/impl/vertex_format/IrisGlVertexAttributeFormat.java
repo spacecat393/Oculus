@@ -1,8 +1,9 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format;
 
+import org.lwjgl.opengl.GL20C;
+
 import me.jellysquid.mods.sodium.client.gl.attribute.GlVertexAttributeFormat;
 import net.coderbot.iris.compat.sodium.mixin.vertex_format.GlVertexAttributeFormatAccessor;
-import org.lwjgl.opengl.GL20C;
 
 public class IrisGlVertexAttributeFormat {
 	public static final GlVertexAttributeFormat BYTE =

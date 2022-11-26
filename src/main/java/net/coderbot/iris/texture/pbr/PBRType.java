@@ -1,8 +1,9 @@
 package net.coderbot.iris.texture.pbr;
 
-import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.resources.ResourceLocation;
 
 public enum PBRType {
 	NORMAL("_n", 0x7F7FFFFF),

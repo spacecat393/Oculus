@@ -1,12 +1,13 @@
 package net.coderbot.iris.pipeline;
 
+import java.util.Objects;
+import java.util.function.IntSupplier;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
 import net.coderbot.iris.vendored.joml.Vector4f;
 import net.minecraft.client.Minecraft;
-
-import java.util.Objects;
-import java.util.function.IntSupplier;
 
 public class ClearPass {
 	private final Vector4f color;

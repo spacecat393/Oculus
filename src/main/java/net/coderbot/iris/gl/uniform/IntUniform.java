@@ -1,9 +1,9 @@
 package net.coderbot.iris.gl.uniform;
 
+import java.util.function.IntSupplier;
+
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.state.ValueUpdateNotifier;
-
-import java.util.function.IntSupplier;
 
 public class IntUniform extends Uniform {
 	private int cachedValue;

@@ -1,15 +1,5 @@
 package net.coderbot.batchedentityrendering.impl;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.coderbot.batchedentityrendering.impl.ordering.GraphTranslucencyRenderOrderManager;
-import net.coderbot.batchedentityrendering.impl.ordering.RenderOrderManager;
-import net.coderbot.iris.fantastic.WrappingMultiBufferSource;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.profiling.ProfilerFiller;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +8,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
+import net.coderbot.batchedentityrendering.impl.ordering.GraphTranslucencyRenderOrderManager;
+import net.coderbot.batchedentityrendering.impl.ordering.RenderOrderManager;
+import net.coderbot.iris.fantastic.WrappingMultiBufferSource;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSource implements MemoryTrackingBuffer, Groupable, WrappingMultiBufferSource {
 	private static final int NUM_BUFFERS = 32;

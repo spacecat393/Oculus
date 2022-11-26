@@ -1,8 +1,9 @@
 package net.coderbot.iris.compat.sodium.mixin.vertex_format;
 
-import me.jellysquid.mods.sodium.client.gl.attribute.GlVertexAttributeFormat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
+
+import me.jellysquid.mods.sodium.client.gl.attribute.GlVertexAttributeFormat;
 
 @Mixin(GlVertexAttributeFormat.class)
 public interface GlVertexAttributeFormatAccessor {

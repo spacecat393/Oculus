@@ -1,9 +1,9 @@
 package kroppeb.stareval.element.tree.partial;
 
-import kroppeb.stareval.element.ExpressionElement;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import kroppeb.stareval.element.ExpressionElement;
 
 public class UnfinishedArgsExpression extends PartialExpression {
 	public final List<ExpressionElement> tokens = new ArrayList<>();

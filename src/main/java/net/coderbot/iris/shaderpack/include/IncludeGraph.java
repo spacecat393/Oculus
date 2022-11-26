@@ -1,11 +1,5 @@
 package net.coderbot.iris.shaderpack.include;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.shaderpack.error.RusticError;
-import net.coderbot.iris.shaderpack.transform.line.LineTransform;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,6 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.shaderpack.error.RusticError;
+import net.coderbot.iris.shaderpack.transform.line.LineTransform;
 
 /**
  * A directed graph data structure that holds the loaded source of all shader programs

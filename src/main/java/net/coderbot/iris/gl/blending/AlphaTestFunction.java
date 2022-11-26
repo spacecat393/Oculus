@@ -1,8 +1,8 @@
 package net.coderbot.iris.gl.blending;
 
-import org.lwjgl.opengl.GL11;
-
 import java.util.Optional;
+
+import org.lwjgl.opengl.GL11;
 
 public enum AlphaTestFunction {
 	NEVER(GL11.GL_NEVER),

@@ -2,6 +2,7 @@ package net.coderbot.iris.gl.program;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.ProgramManager;
+
 import net.coderbot.iris.gl.GlResource;
 
 public final class Program extends GlResource {

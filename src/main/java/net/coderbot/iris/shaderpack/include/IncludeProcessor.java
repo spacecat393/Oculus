@@ -1,11 +1,11 @@
 package net.coderbot.iris.shaderpack.include;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 // TODO: Write tests for this code
 public class IncludeProcessor {

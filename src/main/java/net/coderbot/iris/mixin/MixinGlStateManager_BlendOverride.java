@@ -1,11 +1,13 @@
 package net.coderbot.iris.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.coderbot.iris.gl.blending.BlendModeStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import net.coderbot.iris.gl.blending.BlendModeStorage;
 
 @Mixin(GlStateManager.class)
 public class MixinGlStateManager_BlendOverride {

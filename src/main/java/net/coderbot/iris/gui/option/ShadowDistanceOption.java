@@ -1,13 +1,13 @@
 package net.coderbot.iris.gui.option;
 
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 import net.minecraft.client.Options;
 import net.minecraft.client.ProgressOption;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
-
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class ShadowDistanceOption extends ProgressOption {
 

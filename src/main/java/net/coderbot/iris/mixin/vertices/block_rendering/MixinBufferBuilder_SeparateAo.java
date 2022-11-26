@@ -1,14 +1,16 @@
 package net.coderbot.iris.mixin.vertices.block_rendering;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultedVertexConsumer;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.coderbot.iris.block_rendering.BlockRenderingSettings;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import java.util.Arrays;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.Arrays;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultedVertexConsumer;
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.coderbot.iris.block_rendering.BlockRenderingSettings;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 
 /**
  * Allows directional shading and ambient occlusion data to be stored separately in the vertex format.

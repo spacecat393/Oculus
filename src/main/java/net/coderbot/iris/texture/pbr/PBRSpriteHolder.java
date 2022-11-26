@@ -1,7 +1,8 @@
 package net.coderbot.iris.texture.pbr;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 public class PBRSpriteHolder {
 	protected TextureAtlasSprite normalSprite;

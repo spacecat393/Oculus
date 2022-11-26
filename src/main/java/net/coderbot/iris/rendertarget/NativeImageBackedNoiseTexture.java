@@ -1,10 +1,11 @@
 package net.coderbot.iris.rendertarget;
 
-import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-
 import java.util.Objects;
 import java.util.Random;
+
+import com.mojang.blaze3d.platform.NativeImage;
+
+import net.minecraft.client.renderer.texture.DynamicTexture;
 
 public class NativeImageBackedNoiseTexture extends DynamicTexture {
 	public NativeImageBackedNoiseTexture(int size) {

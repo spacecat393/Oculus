@@ -1,5 +1,7 @@
 package net.coderbot.iris.vertices;
 
+import org.jetbrains.annotations.NotNull;
+
 /*
  * Copyright (c) 2016, 2017, 2018, 2019 FabricMC
  *
@@ -18,7 +20,6 @@ package net.coderbot.iris.vertices;
 
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class NormalHelper {
 	private NormalHelper() { }

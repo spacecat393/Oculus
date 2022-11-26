@@ -1,10 +1,10 @@
 package net.coderbot.iris.shaderpack.option.values;
 
+import java.util.Optional;
+
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.shaderpack.OptionalBoolean;
 import net.coderbot.iris.shaderpack.option.OptionSet;
-
-import java.util.Optional;
 
 public interface OptionValues {
 	OptionalBoolean getBooleanValue(String name);

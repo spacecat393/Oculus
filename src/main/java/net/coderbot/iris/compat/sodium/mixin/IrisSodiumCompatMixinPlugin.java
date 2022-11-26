@@ -1,13 +1,13 @@
 package net.coderbot.iris.compat.sodium.mixin;
 
-import net.minecraftforge.fml.loading.FMLLoader;
+import java.util.List;
+import java.util.Set;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import java.util.List;
-import java.util.Set;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 /**
  * Semi-critical mixin config plugin, disables mixins if Sodium isn't present,

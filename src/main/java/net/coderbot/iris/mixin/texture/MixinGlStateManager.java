@@ -1,9 +1,7 @@
 package net.coderbot.iris.mixin.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.coderbot.iris.texture.TextureInfoCache;
-import net.coderbot.iris.texture.TextureTracker;
-import net.coderbot.iris.texture.pbr.PBRTextureManager;
+import java.nio.IntBuffer;
+
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -12,7 +10,11 @@ import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.nio.IntBuffer;
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import net.coderbot.iris.texture.TextureInfoCache;
+import net.coderbot.iris.texture.TextureTracker;
+import net.coderbot.iris.texture.pbr.PBRTextureManager;
 
 @Mixin(GlStateManager.class)
 public class MixinGlStateManager {

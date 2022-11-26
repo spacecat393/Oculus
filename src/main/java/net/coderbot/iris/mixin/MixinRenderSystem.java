@@ -1,13 +1,15 @@
 package net.coderbot.iris.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.gl.GLDebug;
-import net.coderbot.iris.gl.IrisRenderSystem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.gl.GLDebug;
+import net.coderbot.iris.gl.IrisRenderSystem;
 
 @Mixin(RenderSystem.class)
 public class MixinRenderSystem {

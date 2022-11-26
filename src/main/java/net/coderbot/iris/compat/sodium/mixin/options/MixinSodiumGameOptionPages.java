@@ -1,12 +1,5 @@
 package net.coderbot.iris.compat.sodium.mixin.options;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
-import me.jellysquid.mods.sodium.client.gui.options.Option;
-import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
-import me.jellysquid.mods.sodium.client.gui.options.storage.MinecraftOptionsStorage;
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.compat.sodium.impl.options.IrisSodiumOptions;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,6 +7,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
+import me.jellysquid.mods.sodium.client.gui.options.Option;
+import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
+import me.jellysquid.mods.sodium.client.gui.options.storage.MinecraftOptionsStorage;
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.compat.sodium.impl.options.IrisSodiumOptions;
 
 /**
  * Adds the Iris-specific options / option changes to the Sodium game options pages.

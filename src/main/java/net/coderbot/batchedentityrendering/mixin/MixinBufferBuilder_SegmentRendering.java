@@ -1,8 +1,8 @@
 package net.coderbot.batchedentityrendering.mixin;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.coderbot.batchedentityrendering.impl.BufferBuilderExt;
+import java.nio.ByteBuffer;
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -11,8 +11,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.nio.ByteBuffer;
-import java.util.List;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.coderbot.batchedentityrendering.impl.BufferBuilderExt;
 
 @Mixin(BufferBuilder.class)
 public class MixinBufferBuilder_SegmentRendering implements BufferBuilderExt {

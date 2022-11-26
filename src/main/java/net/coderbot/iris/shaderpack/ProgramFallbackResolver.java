@@ -1,11 +1,12 @@
 package net.coderbot.iris.shaderpack;
 
-import net.coderbot.iris.shaderpack.loading.ProgramId;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+
+import net.coderbot.iris.shaderpack.loading.ProgramId;
 
 public class ProgramFallbackResolver {
 	private final ProgramSet programs;

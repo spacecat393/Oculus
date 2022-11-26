@@ -1,8 +1,18 @@
 package net.coderbot.iris.postprocess;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.function.IntSupplier;
+
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL21C;
+
 import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
 import net.coderbot.iris.gl.program.Program;
@@ -13,17 +23,8 @@ import net.coderbot.iris.gl.texture.DepthCopyStrategy;
 import net.coderbot.iris.gl.texture.InternalTextureFormat;
 import net.coderbot.iris.gl.texture.PixelType;
 import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
-import net.coderbot.iris.rendertarget.RenderTargets;
 import net.coderbot.iris.uniforms.SystemTimeUniforms;
 import net.minecraft.client.Minecraft;
-import org.apache.commons.io.IOUtils;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL21C;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.function.IntSupplier;
 
 public class CenterDepthSampler {
 	private static final double LN2 = Math.log(2);

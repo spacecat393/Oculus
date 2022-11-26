@@ -1,11 +1,12 @@
 package net.coderbot.iris.shaderpack.option.values;
 
-import com.google.common.collect.ImmutableMap;
-import net.coderbot.iris.shaderpack.OptionalBoolean;
-import net.coderbot.iris.shaderpack.option.OptionSet;
-
 import java.util.HashMap;
 import java.util.Optional;
+
+import com.google.common.collect.ImmutableMap;
+
+import net.coderbot.iris.shaderpack.OptionalBoolean;
+import net.coderbot.iris.shaderpack.option.OptionSet;
 
 public class ImmutableOptionValues implements OptionValues {
 	private final OptionSet options;

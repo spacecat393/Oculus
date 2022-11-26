@@ -1,10 +1,11 @@
 package net.coderbot.iris.shaderpack.option;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Objects;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+import com.google.common.collect.ImmutableList;
 
 public class StringOption extends BaseOption {
 	private final String defaultValue;

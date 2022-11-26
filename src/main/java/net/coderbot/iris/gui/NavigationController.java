@@ -1,10 +1,10 @@
 package net.coderbot.iris.gui;
 
-import net.coderbot.iris.gui.element.ShaderPackOptionList;
-import net.coderbot.iris.shaderpack.option.menu.OptionMenuContainer;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
+
+import net.coderbot.iris.gui.element.ShaderPackOptionList;
+import net.coderbot.iris.shaderpack.option.menu.OptionMenuContainer;
 
 public class NavigationController {
 	private final OptionMenuContainer container;

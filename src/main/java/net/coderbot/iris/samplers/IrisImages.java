@@ -1,14 +1,15 @@
 package net.coderbot.iris.samplers;
 
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+
 import com.google.common.collect.ImmutableSet;
+
 import net.coderbot.iris.gl.image.ImageHolder;
 import net.coderbot.iris.gl.texture.InternalTextureFormat;
 import net.coderbot.iris.rendertarget.RenderTarget;
 import net.coderbot.iris.rendertarget.RenderTargets;
 import net.coderbot.iris.shadows.ShadowRenderTargets;
-
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 
 public class IrisImages {
 	public static void addRenderTargetImages(ImageHolder images, Supplier<ImmutableSet<Integer>> flipped,

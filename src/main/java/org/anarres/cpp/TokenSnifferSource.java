@@ -16,9 +16,10 @@
  */
 package org.anarres.cpp;
 
+import static org.anarres.cpp.Token.EOF;
+
 import java.io.IOException;
 import java.util.List;
-import static org.anarres.cpp.Token.EOF;
 
 @Deprecated
 /* pp */ class TokenSnifferSource extends Source {

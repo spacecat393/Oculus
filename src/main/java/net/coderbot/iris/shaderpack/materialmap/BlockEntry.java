@@ -1,12 +1,13 @@
 package net.coderbot.iris.shaderpack.materialmap;
 
-import net.coderbot.iris.Iris;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
+
+import net.coderbot.iris.Iris;
 
 public class BlockEntry {
 	private final NamespacedId id;

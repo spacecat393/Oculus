@@ -1,6 +1,7 @@
 package net.coderbot.iris.gl.blending;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 
 public class DepthColorStorage {

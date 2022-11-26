@@ -1,16 +1,18 @@
 package net.coderbot.iris.mixin.vertices.immediate;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.coderbot.iris.vertices.ExtendingBufferBuilder;
-import net.coderbot.iris.vertices.ImmediateState;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.coderbot.iris.vertices.ExtendingBufferBuilder;
+import net.coderbot.iris.vertices.ImmediateState;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 
 /**
  * Quick optimization to disable the extended vertex format outside of level rendering if we're using a BufferSource.

@@ -1,13 +1,14 @@
 package net.coderbot.iris.shaderpack.option;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import net.coderbot.iris.shaderpack.option.values.OptionValues;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import net.coderbot.iris.shaderpack.option.values.OptionValues;
 
 public final class Profile {
 	public final String name;

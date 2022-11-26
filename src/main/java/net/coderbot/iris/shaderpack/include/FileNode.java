@@ -1,10 +1,11 @@
 package net.coderbot.iris.shaderpack.include;
 
+import java.util.Objects;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import net.coderbot.iris.shaderpack.transform.line.LineTransform;
 
-import java.util.Objects;
+import net.coderbot.iris.shaderpack.transform.line.LineTransform;
 
 public class FileNode {
 	private final AbsolutePackPath path;

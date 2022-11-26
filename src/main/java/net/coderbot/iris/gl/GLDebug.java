@@ -5,7 +5,9 @@
 
 package net.coderbot.iris.gl;
 
-import net.coderbot.iris.Iris;
+import java.io.PrintStream;
+import java.util.function.Consumer;
+
 import org.lwjgl.opengl.AMDDebugOutput;
 import org.lwjgl.opengl.ARBDebugOutput;
 import org.lwjgl.opengl.GL;
@@ -17,8 +19,7 @@ import org.lwjgl.opengl.GLDebugMessageCallback;
 import org.lwjgl.opengl.KHRDebug;
 import org.lwjgl.system.APIUtil;
 
-import java.io.PrintStream;
-import java.util.function.Consumer;
+import net.coderbot.iris.Iris;
 
 public final class GLDebug {
 	/**

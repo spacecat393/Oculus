@@ -1,10 +1,5 @@
 package net.coderbot.iris.shaderpack.option;
 
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.IrisLogging;
-import net.coderbot.iris.shaderpack.option.values.OptionValues;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -12,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+
+import org.jetbrains.annotations.Nullable;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.IrisLogging;
+import net.coderbot.iris.shaderpack.option.values.OptionValues;
 
 public class ProfileSet {
 	private final LinkedHashMap<String, Profile> orderedProfiles; // The order that profiles should cycle through

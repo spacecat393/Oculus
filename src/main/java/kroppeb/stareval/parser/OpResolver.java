@@ -1,9 +1,9 @@
 package kroppeb.stareval.parser;
 
+import java.util.Map;
+
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import kroppeb.stareval.exception.ParseException;
-
-import java.util.Map;
 
 /**
  * OpResolver maps the trailing characters identifying an operator to an actual operator.

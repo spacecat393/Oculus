@@ -1,14 +1,16 @@
 package net.coderbot.iris.mixin.vertices;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.coderbot.iris.block_rendering.BlockRenderingSettings;
-import net.coderbot.iris.vertices.ImmediateState;
-import net.coderbot.iris.vertices.IrisVertexFormats;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.coderbot.iris.block_rendering.BlockRenderingSettings;
+import net.coderbot.iris.vertices.ImmediateState;
+import net.coderbot.iris.vertices.IrisVertexFormats;
 
 /**
  * Ensures that the correct state for the extended vertex format is set up when needed.

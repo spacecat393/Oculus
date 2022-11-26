@@ -15,9 +15,6 @@
  */
 package de.odysseus.ithaka.digraph.io.dot;
 
-import de.odysseus.ithaka.digraph.Digraph;
-import de.odysseus.ithaka.digraph.DigraphProvider;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -25,6 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import de.odysseus.ithaka.digraph.Digraph;
+import de.odysseus.ithaka.digraph.DigraphProvider;
 
 public class DotExporter {
 	private static class Cluster<V, G extends Digraph<V>> {

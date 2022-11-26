@@ -15,12 +15,12 @@
  */
 package de.odysseus.ithaka.digraph.io.tgf;
 
-import de.odysseus.ithaka.digraph.Digraph;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.odysseus.ithaka.digraph.Digraph;
 
 public class TgfExporter {
 	private final String newline;

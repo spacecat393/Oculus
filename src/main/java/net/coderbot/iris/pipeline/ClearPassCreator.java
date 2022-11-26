@@ -1,7 +1,15 @@
 package net.coderbot.iris.pipeline;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.lwjgl.opengl.GL21C;
+
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.coderbot.iris.rendertarget.RenderTarget;
@@ -11,12 +19,6 @@ import net.coderbot.iris.shaderpack.PackShadowDirectives;
 import net.coderbot.iris.shadows.ShadowRenderTargets;
 import net.coderbot.iris.vendored.joml.Vector2i;
 import net.coderbot.iris.vendored.joml.Vector4f;
-import org.lwjgl.opengl.GL21C;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ClearPassCreator {
 	public static ImmutableList<ClearPass> createClearPasses(RenderTargets renderTargets, boolean fullClear,

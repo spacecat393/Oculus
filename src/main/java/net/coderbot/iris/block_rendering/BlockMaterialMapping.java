@@ -1,5 +1,9 @@
 package net.coderbot.iris.block_rendering;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -16,10 +20,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class BlockMaterialMapping {
 	public static Object2IntMap<BlockState> createBlockStateIdMap(Int2ObjectMap<List<BlockEntry>> blockPropertiesMap) {

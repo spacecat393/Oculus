@@ -1,10 +1,11 @@
 package net.coderbot.iris.mixin.vertices;
 
-import com.mojang.blaze3d.vertex.VertexFormatElement;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 
 /**
  * Fixes generic vertex attributes, previously it was only possible to use a vertex attribute with a location of 0.

@@ -1,11 +1,11 @@
 package net.coderbot.iris.shaderpack;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
-
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.BiConsumer;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 
 /**
  * Properties backed by a {@link java.util.LinkedHashMap}, in order to preserve iteration order

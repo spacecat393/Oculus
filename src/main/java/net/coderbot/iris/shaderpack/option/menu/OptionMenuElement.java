@@ -1,11 +1,11 @@
 package net.coderbot.iris.shaderpack.option.menu;
 
+import java.util.Map;
+
 import net.coderbot.iris.shaderpack.ShaderProperties;
 import net.coderbot.iris.shaderpack.option.MergedBooleanOption;
 import net.coderbot.iris.shaderpack.option.MergedStringOption;
 import net.coderbot.iris.shaderpack.option.ShaderPackOptions;
-
-import java.util.Map;
 
 public abstract class OptionMenuElement {
 	public static final OptionMenuElement EMPTY = new OptionMenuElement() {};

@@ -1,14 +1,15 @@
 package net.coderbot.iris.block_rendering;
 
+import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
+
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.coderbot.iris.shaderpack.materialmap.NamespacedId;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 public class BlockRenderingSettings {
 	public static final BlockRenderingSettings INSTANCE = new BlockRenderingSettings();

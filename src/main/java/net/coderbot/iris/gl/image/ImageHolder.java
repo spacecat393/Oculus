@@ -1,8 +1,8 @@
 package net.coderbot.iris.gl.image;
 
-import net.coderbot.iris.gl.texture.InternalTextureFormat;
-
 import java.util.function.IntSupplier;
+
+import net.coderbot.iris.gl.texture.InternalTextureFormat;
 
 public interface ImageHolder {
 	boolean hasImage(String name);

@@ -25,12 +25,11 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import repack.apache.commons.collections4.Bag;
 import repack.apache.commons.collections4.CollectionUtils;
 import repack.apache.commons.collections4.set.UnmodifiableSet;
-
-import java.util.Set;
 
 /**
  * Abstract implementation of the {@link Bag} interface to simplify the creation

@@ -1,5 +1,11 @@
 package net.coderbot.iris.compat.sodium.impl.shader_overrides;
 
+import java.util.EnumMap;
+import java.util.Locale;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gl.shader.GlProgram;
 import me.jellysquid.mods.sodium.client.gl.shader.GlShader;
@@ -17,11 +23,6 @@ import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
 import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.coderbot.iris.shadows.ShadowRenderingState;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.EnumMap;
-import java.util.Locale;
-import java.util.Optional;
 
 public class IrisChunkProgramOverrides {
 	private static final ShaderConstants EMPTY_CONSTANTS = ShaderConstants.builder().build();

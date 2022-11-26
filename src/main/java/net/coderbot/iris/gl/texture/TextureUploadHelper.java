@@ -1,7 +1,8 @@
 package net.coderbot.iris.gl.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import org.lwjgl.opengl.GL20C;
+
+import com.mojang.blaze3d.platform.GlStateManager;
 
 public class TextureUploadHelper {
 	private TextureUploadHelper() {

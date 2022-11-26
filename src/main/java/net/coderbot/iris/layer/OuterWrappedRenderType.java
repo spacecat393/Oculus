@@ -1,13 +1,14 @@
 package net.coderbot.iris.layer;
 
+import java.util.Objects;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
 import net.coderbot.iris.mixin.rendertype.RenderTypeAccessor;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.Optional;
 
 public class OuterWrappedRenderType extends RenderType implements WrappableRenderType {
 	private final RenderStateShard extra;

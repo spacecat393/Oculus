@@ -1,12 +1,10 @@
 package net.coderbot.iris.mixin.fantastic;
 
-import com.google.common.collect.ImmutableList;
-import net.coderbot.iris.fantastic.IrisParticleRenderTypes;
-import net.coderbot.iris.fantastic.ParticleRenderingPhase;
-import net.coderbot.iris.fantastic.PhasedParticleEngine;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.ParticleRenderType;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,11 +12,14 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import com.google.common.collect.ImmutableList;
+
+import net.coderbot.iris.fantastic.IrisParticleRenderTypes;
+import net.coderbot.iris.fantastic.ParticleRenderingPhase;
+import net.coderbot.iris.fantastic.PhasedParticleEngine;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleRenderType;
 
 /**
  * Extends the ParticleEngine class to allow multiple phases of particle rendering.

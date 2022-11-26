@@ -17,7 +17,6 @@
 package repack.apache.commons.collections4.map;
 
 import java.io.Serializable;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;

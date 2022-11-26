@@ -1,9 +1,9 @@
 package net.coderbot.iris.shaderpack.option;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public abstract class BaseOption {
 	@NotNull

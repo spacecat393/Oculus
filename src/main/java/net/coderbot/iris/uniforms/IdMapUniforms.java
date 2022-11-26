@@ -1,5 +1,9 @@
 package net.coderbot.iris.uniforms;
 
+import static net.coderbot.iris.gl.uniform.UniformUpdateFrequency.PER_FRAME;
+
+import org.jetbrains.annotations.NotNull;
+
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import net.coderbot.iris.gl.uniform.DynamicUniformHolder;
 import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
@@ -13,9 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
-
-import static net.coderbot.iris.gl.uniform.UniformUpdateFrequency.PER_FRAME;
 
 public final class IdMapUniforms {
 

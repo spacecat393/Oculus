@@ -19,8 +19,8 @@ package repack.apache.commons.collections4.bidimap;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import repack.apache.commons.collections4.BidiMap;

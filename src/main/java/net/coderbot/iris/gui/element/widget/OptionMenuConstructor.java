@@ -1,5 +1,9 @@
 package net.coderbot.iris.gui.element.widget;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.gui.NavigationController;
@@ -17,10 +21,6 @@ import net.coderbot.iris.shaderpack.option.menu.OptionMenuStringOptionElement;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuSubElementScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class OptionMenuConstructor {
 	private static final Map<Class<? extends OptionMenuElement>, WidgetProvider<OptionMenuElement>> WIDGET_CREATORS = new HashMap<>();

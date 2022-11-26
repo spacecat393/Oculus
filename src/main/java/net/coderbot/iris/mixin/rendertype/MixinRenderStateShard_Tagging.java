@@ -1,10 +1,5 @@
 package net.coderbot.iris.mixin.rendertype;
 
-import net.coderbot.iris.gbuffer_overrides.matching.SpecialCondition;
-import net.coderbot.iris.layer.GbufferPrograms;
-import net.coderbot.iris.pipeline.WorldRenderingPhase;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -12,6 +7,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.coderbot.iris.gbuffer_overrides.matching.SpecialCondition;
+import net.coderbot.iris.layer.GbufferPrograms;
+import net.coderbot.iris.pipeline.WorldRenderingPhase;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 
 @Mixin(RenderStateShard.class)
 public class MixinRenderStateShard_Tagging {

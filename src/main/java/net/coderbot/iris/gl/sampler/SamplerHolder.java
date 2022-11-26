@@ -1,8 +1,8 @@
 package net.coderbot.iris.gl.sampler;
 
-import net.coderbot.iris.gl.state.ValueUpdateNotifier;
-
 import java.util.function.IntSupplier;
+
+import net.coderbot.iris.gl.state.ValueUpdateNotifier;
 
 public interface SamplerHolder {
 	void addExternalSampler(int textureUnit, String... names);

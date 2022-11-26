@@ -1,8 +1,8 @@
 package net.irisshaders.iris.api.v0;
 
-import com.mojang.blaze3d.vertex.VertexFormat;
-
 import java.nio.ByteBuffer;
+
+import com.mojang.blaze3d.vertex.VertexFormat;
 
 public interface IrisTextVertexSink {
 	/**

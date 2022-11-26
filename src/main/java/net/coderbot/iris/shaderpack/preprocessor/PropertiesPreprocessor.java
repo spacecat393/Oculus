@@ -1,14 +1,5 @@
 package net.coderbot.iris.shaderpack.preprocessor;
 
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.shaderpack.StringPair;
-import net.coderbot.iris.shaderpack.option.ShaderPackOptions;
-import org.anarres.cpp.Feature;
-import org.anarres.cpp.LexerException;
-import org.anarres.cpp.Preprocessor;
-import org.anarres.cpp.StringLexerSource;
-import org.anarres.cpp.Token;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.anarres.cpp.Feature;
+import org.anarres.cpp.LexerException;
+import org.anarres.cpp.Preprocessor;
+import org.anarres.cpp.StringLexerSource;
+import org.anarres.cpp.Token;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.shaderpack.StringPair;
+import net.coderbot.iris.shaderpack.option.ShaderPackOptions;
 
 public class PropertiesPreprocessor {
 	// Derived from ShaderProcessor.glslPreprocessSource, which is derived from GlShader from Canvas, licenced under LGPL

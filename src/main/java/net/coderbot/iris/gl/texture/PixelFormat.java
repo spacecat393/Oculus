@@ -1,11 +1,12 @@
 package net.coderbot.iris.gl.texture;
 
-import net.coderbot.iris.gl.GlVersion;
+import java.util.Optional;
+
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
 import org.lwjgl.opengl.GL30C;
 
-import java.util.Optional;
+import net.coderbot.iris.gl.GlVersion;
 
 public enum PixelFormat {
 	RED(GL11C.GL_RED, GlVersion.GL_11, false),

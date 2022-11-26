@@ -1,8 +1,9 @@
 package net.coderbot.batchedentityrendering.mixin;
 
-import net.minecraft.client.renderer.RenderStateShard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+
+import net.minecraft.client.renderer.RenderStateShard;
 
 @Mixin(RenderStateShard.class)
 public interface RenderStateShardAccessor {

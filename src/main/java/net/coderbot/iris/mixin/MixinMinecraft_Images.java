@@ -1,5 +1,13 @@
 package net.coderbot.iris.mixin;
 
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.rendertarget.NativeImageBackedCustomTexture;
 import net.coderbot.iris.shaderpack.texture.CustomTextureData;
@@ -7,13 +15,6 @@ import net.coderbot.iris.shaderpack.texture.TextureFilteringData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.resources.ResourceLocation;
-import org.apache.commons.io.IOUtils;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.io.IOException;
 
 /**
  * This Mixin is responsible for registering the "widgets" texture used in Iris' GUI's.

@@ -1,16 +1,16 @@
 package net.coderbot.iris.texture.format;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
+
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.texture.mipmap.CustomMipmapGenerator;
 import net.coderbot.iris.texture.pbr.PBRType;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.opengl.GL11;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public interface TextureFormat {
 	String getName();

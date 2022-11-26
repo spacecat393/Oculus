@@ -27,8 +27,9 @@ package net.coderbot.iris.vendored.joml;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Interface to a read-only view of a 3x3 matrix of double-precision floats.

@@ -16,11 +16,51 @@
  */
 package org.anarres.cpp;
 
+import static org.anarres.cpp.Token.AND_EQ;
+import static org.anarres.cpp.Token.ARROW;
+import static org.anarres.cpp.Token.CCOMMENT;
+import static org.anarres.cpp.Token.CHARACTER;
+import static org.anarres.cpp.Token.CPPCOMMENT;
+import static org.anarres.cpp.Token.DEC;
+import static org.anarres.cpp.Token.DIV_EQ;
+import static org.anarres.cpp.Token.ELLIPSIS;
+import static org.anarres.cpp.Token.EOF;
+import static org.anarres.cpp.Token.EQ;
+import static org.anarres.cpp.Token.GE;
+import static org.anarres.cpp.Token.HASH;
+import static org.anarres.cpp.Token.HEADER;
+import static org.anarres.cpp.Token.IDENTIFIER;
+import static org.anarres.cpp.Token.INC;
+import static org.anarres.cpp.Token.INVALID;
+import static org.anarres.cpp.Token.LAND;
+import static org.anarres.cpp.Token.LAND_EQ;
+import static org.anarres.cpp.Token.LE;
+import static org.anarres.cpp.Token.LOR;
+import static org.anarres.cpp.Token.LOR_EQ;
+import static org.anarres.cpp.Token.LSH;
+import static org.anarres.cpp.Token.LSH_EQ;
+import static org.anarres.cpp.Token.MOD_EQ;
+import static org.anarres.cpp.Token.MULT_EQ;
+import static org.anarres.cpp.Token.NE;
+import static org.anarres.cpp.Token.NL;
+import static org.anarres.cpp.Token.NUMBER;
+import static org.anarres.cpp.Token.OR_EQ;
+import static org.anarres.cpp.Token.PASTE;
+import static org.anarres.cpp.Token.PLUS_EQ;
+import static org.anarres.cpp.Token.RANGE;
+import static org.anarres.cpp.Token.RSH;
+import static org.anarres.cpp.Token.RSH_EQ;
+import static org.anarres.cpp.Token.SQSTRING;
+import static org.anarres.cpp.Token.STRING;
+import static org.anarres.cpp.Token.SUB_EQ;
+import static org.anarres.cpp.Token.WHITESPACE;
+import static org.anarres.cpp.Token.XOR_EQ;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+
 import javax.annotation.Nonnull;
-import static org.anarres.cpp.Token.*;
 
 /** Does not handle digraphs. */
 public class LexerSource extends Source {

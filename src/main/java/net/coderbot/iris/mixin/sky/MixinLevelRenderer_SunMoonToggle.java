@@ -1,12 +1,5 @@
 package net.coderbot.iris.mixin.sky;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.pipeline.WorldRenderingPipeline;
-import net.minecraft.client.renderer.LevelRenderer;
 import org.lwjgl.opengl.GL11C;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,6 +7,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.pipeline.WorldRenderingPipeline;
+import net.minecraft.client.renderer.LevelRenderer;
 
 /**
  * Allows pipelines to disable the sun, moon, or both.

@@ -1,8 +1,16 @@
 package net.coderbot.iris.gl.program;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.IntSupplier;
+
+import org.lwjgl.opengl.GL20C;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.sampler.SamplerBinding;
@@ -11,12 +19,6 @@ import net.coderbot.iris.gl.sampler.SamplerLimits;
 import net.coderbot.iris.gl.state.ValueUpdateNotifier;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.coderbot.iris.shaderpack.PackRenderTargetDirectives;
-import org.lwjgl.opengl.GL20C;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.IntSupplier;
 
 public class ProgramSamplers {
 	private static ProgramSamplers active;

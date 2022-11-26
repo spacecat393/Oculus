@@ -1,8 +1,15 @@
 package net.coderbot.iris.shaderpack.option;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.coderbot.iris.shaderpack.OptionalBoolean;
@@ -10,12 +17,6 @@ import net.coderbot.iris.shaderpack.include.AbsolutePackPath;
 import net.coderbot.iris.shaderpack.option.values.OptionValues;
 import net.coderbot.iris.shaderpack.parsing.ParsedString;
 import net.coderbot.iris.shaderpack.transform.line.LineTransform;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This class encapsulates the source code of a single shader source file along with the

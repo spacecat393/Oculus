@@ -1,9 +1,10 @@
 package net.coderbot.iris.gl.uniform;
 
-import com.mojang.math.Vector3f;
-import net.coderbot.iris.gl.IrisRenderSystem;
-
 import java.util.function.Supplier;
+
+import com.mojang.math.Vector3f;
+
+import net.coderbot.iris.gl.IrisRenderSystem;
 
 public class VanillaVector3Uniform extends Uniform {
 	private final Vector3f cachedValue;

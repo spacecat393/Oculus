@@ -26,8 +26,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 import repack.apache.commons.collections4.CollectionUtils;
 import repack.apache.commons.collections4.IteratorUtils;
@@ -44,8 +45,6 @@ import repack.apache.commons.collections4.keyvalue.AbstractMapEntry;
 import repack.apache.commons.collections4.keyvalue.UnmodifiableMapEntry;
 import repack.apache.commons.collections4.multiset.AbstractMultiSet;
 import repack.apache.commons.collections4.multiset.UnmodifiableMultiSet;
-
-import java.util.Set;
 
 /**
  * Abstract implementation of the {@link MultiValuedMap} interface to simplify

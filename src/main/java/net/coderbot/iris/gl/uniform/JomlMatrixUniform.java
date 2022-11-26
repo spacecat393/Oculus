@@ -1,11 +1,12 @@
 package net.coderbot.iris.gl.uniform;
 
-import net.coderbot.iris.gl.IrisRenderSystem;
-import net.coderbot.iris.vendored.joml.Matrix4f;
-import org.lwjgl.BufferUtils;
-
 import java.nio.FloatBuffer;
 import java.util.function.Supplier;
+
+import org.lwjgl.BufferUtils;
+
+import net.coderbot.iris.gl.IrisRenderSystem;
+import net.coderbot.iris.vendored.joml.Matrix4f;
 
 public class JomlMatrixUniform extends Uniform {
 	private final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);

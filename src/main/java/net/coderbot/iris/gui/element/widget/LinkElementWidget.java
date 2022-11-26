@@ -1,6 +1,11 @@
 package net.coderbot.iris.gui.element.widget;
 
+import java.util.Optional;
+
+import org.lwjgl.glfw.GLFW;
+
 import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.gui.NavigationController;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
@@ -12,9 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.Optional;
 
 public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElement> {
 	private static final Component ARROW = new TextComponent(">");

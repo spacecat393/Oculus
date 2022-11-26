@@ -1,12 +1,13 @@
 package net.coderbot.iris.compat.sodium.mixin.shader_overrides;
 
-import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgram;
-import net.coderbot.iris.gl.IrisRenderSystem;
+import java.nio.FloatBuffer;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.nio.FloatBuffer;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgram;
+import net.coderbot.iris.gl.IrisRenderSystem;
 
 /**
  * Modifies {@link ChunkProgram} to handle cases where uniforms might not be present in the target program.

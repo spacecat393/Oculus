@@ -1,7 +1,7 @@
 package net.coderbot.iris.shadows.frustum.advanced;
 
-import net.coderbot.iris.vendored.joml.Math;
 import net.coderbot.iris.shadows.frustum.BoxCuller;
+import net.coderbot.iris.vendored.joml.Math;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.coderbot.iris.vendored.joml.Vector4f;

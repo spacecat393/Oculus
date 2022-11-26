@@ -1,7 +1,13 @@
 package net.coderbot.iris.texture.pbr.loader;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Pair;
+
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.mixin.texture.AnimationMetadataSectionAccessor;
 import net.coderbot.iris.mixin.texture.TextureAtlasAccessor;
@@ -25,10 +31,6 @@ import net.minecraft.client.resources.metadata.animation.AnimationMetadataSectio
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 	public static final ChannelMipmapGenerator LINEAR_MIPMAP_GENERATOR = new ChannelMipmapGenerator(

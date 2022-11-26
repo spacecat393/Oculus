@@ -1,15 +1,16 @@
 package net.coderbot.iris.mixin.optimized_stitching;
 
-import net.minecraft.client.renderer.texture.Stitcher;
-import net.minecraft.client.renderer.texture.Stitcher.Holder;
-import net.minecraft.client.renderer.texture.Stitcher.Region;
-import net.minecraft.util.Mth;
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.List;
+import net.minecraft.client.renderer.texture.Stitcher;
+import net.minecraft.client.renderer.texture.Stitcher.Holder;
+import net.minecraft.client.renderer.texture.Stitcher.Region;
+import net.minecraft.util.Mth;
 
 @Mixin(Stitcher.class)
 public class MixinStitcher {

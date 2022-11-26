@@ -1,11 +1,13 @@
 package net.coderbot.iris.postprocess;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20C;
+
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+
 import net.coderbot.iris.gl.IrisRenderSystem;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20C;
 
 /**
  * Renders a full-screen textured quad to the screen. Used in composite / deferred rendering.

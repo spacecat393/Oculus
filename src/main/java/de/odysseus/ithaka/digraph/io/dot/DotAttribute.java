@@ -15,7 +15,7 @@
  */
 package de.odysseus.ithaka.digraph.io.dot;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.Writer;
 

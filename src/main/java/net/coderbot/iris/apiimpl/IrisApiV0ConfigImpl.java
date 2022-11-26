@@ -1,10 +1,10 @@
 package net.coderbot.iris.apiimpl;
 
+import java.io.IOException;
+
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.config.IrisConfig;
 import net.irisshaders.iris.api.v0.IrisApiConfig;
-
-import java.io.IOException;
 
 public class IrisApiV0ConfigImpl implements IrisApiConfig {
 	@Override

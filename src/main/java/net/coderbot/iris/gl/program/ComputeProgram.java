@@ -1,14 +1,16 @@
 package net.coderbot.iris.gl.program;
 
+import org.lwjgl.opengl.GL43C;
+
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.ProgramManager;
+
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.GlResource;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.coderbot.iris.vendored.joml.Vector2f;
 import net.coderbot.iris.vendored.joml.Vector3i;
-import org.lwjgl.opengl.GL43C;
 
 public final class ComputeProgram extends GlResource {
 	private final ProgramUniforms uniforms;

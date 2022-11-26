@@ -1,13 +1,13 @@
 package net.coderbot.iris.gl.uniform;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+
 import net.coderbot.iris.gl.state.ValueUpdateNotifier;
 import net.coderbot.iris.vendored.joml.Vector2i;
 import net.coderbot.iris.vendored.joml.Vector4f;
 import net.coderbot.iris.vendored.joml.Vector4i;
-
-import java.util.function.DoubleSupplier;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 
 public interface DynamicLocationalUniformHolder extends LocationalUniformHolder, DynamicUniformHolder {
 	DynamicLocationalUniformHolder addDynamicUniform(Uniform uniform, ValueUpdateNotifier notifier);

@@ -1,12 +1,13 @@
 package net.coderbot.iris.compat.sodium.mixin.vertex_format;
 
-import me.jellysquid.mods.sodium.client.render.chunk.format.ChunkMeshAttribute;
-import net.coderbot.iris.compat.sodium.impl.vertex_format.IrisChunkMeshAttributes;
 import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
+
+import me.jellysquid.mods.sodium.client.render.chunk.format.ChunkMeshAttribute;
+import net.coderbot.iris.compat.sodium.impl.vertex_format.IrisChunkMeshAttributes;
 
 /**
  * Uses some rather hacky shenanigans to add a few new enum values to {@link ChunkMeshAttribute} corresponding to our

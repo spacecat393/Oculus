@@ -1,7 +1,13 @@
 package net.coderbot.iris.shaderpack;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -9,11 +15,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.texture.InternalTextureFormat;
 import net.coderbot.iris.vendored.joml.Vector4f;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 public class PackRenderTargetDirectives {
 	public static final ImmutableList<String> LEGACY_RENDER_TARGETS = ImmutableList.of(

@@ -1,10 +1,9 @@
 package net.coderbot.iris.shaderpack;
 
-import net.coderbot.iris.gl.blending.BlendModeOverride;
+import java.util.Optional;
+
 import net.coderbot.iris.vendored.joml.Vector2f;
 import net.coderbot.iris.vendored.joml.Vector3i;
-
-import java.util.Optional;
 
 public class ComputeSource {
 	private final String name;

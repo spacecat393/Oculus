@@ -1,14 +1,15 @@
 package net.coderbot.iris.mixin.sky;
 
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.shaderpack.CloudSetting;
-import net.minecraft.client.CloudStatus;
-import net.minecraft.client.Options;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.shaderpack.CloudSetting;
+import net.minecraft.client.CloudStatus;
+import net.minecraft.client.Options;
 
 /**
  * Allows the current pipeline to override the cloud video mode setting.

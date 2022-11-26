@@ -1,5 +1,9 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp;
 
+import static net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp.XHFPModelVertexType.STRIDE;
+
+import org.lwjgl.system.MemoryUtil;
+
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferView;
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferWriterUnsafe;
 import me.jellysquid.mods.sodium.client.render.chunk.format.ModelVertexSink;
@@ -10,9 +14,6 @@ import net.coderbot.iris.compat.sodium.impl.vertex_format.IrisModelVertexFormats
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.coderbot.iris.vertices.ExtendedDataHelper;
 import net.coderbot.iris.vertices.NormalHelper;
-import org.lwjgl.system.MemoryUtil;
-
-import static net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp.XHFPModelVertexType.STRIDE;
 
 public class XHFPModelVertexBufferWriterUnsafe extends VertexBufferWriterUnsafe implements ModelVertexSink, ContextAwareVertexWriter {
 	private final QuadViewTerrain.QuadViewTerrainUnsafe quad = new QuadViewTerrain.QuadViewTerrainUnsafe();

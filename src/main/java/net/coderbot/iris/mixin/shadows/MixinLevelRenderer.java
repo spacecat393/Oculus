@@ -1,14 +1,15 @@
 package net.coderbot.iris.mixin.shadows;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.coderbot.iris.shadows.CullingDataCache;
-import net.minecraft.client.renderer.LevelRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import net.coderbot.iris.shadows.CullingDataCache;
+import net.minecraft.client.renderer.LevelRenderer;
 
 @Mixin(LevelRenderer.class)
 public class MixinLevelRenderer implements CullingDataCache {

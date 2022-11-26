@@ -1,10 +1,10 @@
 package net.coderbot.iris.gl.uniform;
 
+import java.util.function.Supplier;
+
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.state.ValueUpdateNotifier;
 import net.coderbot.iris.vendored.joml.Vector2i;
-
-import java.util.function.Supplier;
 
 public class Vector2IntegerJomlUniform extends Uniform {
 	private Vector2i cachedValue;
