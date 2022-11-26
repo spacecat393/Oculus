@@ -7,7 +7,7 @@ body:
       value: |
         Thanks for taking the time to fill out this bug report!
         
-        Before continuing to make the issue, please make sure there are no similar issues on [the issue tracker](https://github.com/IrisShaders/Iris/issues). If there are, consider contributing your information in there instead!
+        Before continuing to make the issue, please make sure there are no similar issues on [the issue tracker](https://github.com/Asek3/Oculus/issues). If there are, consider contributing your information in there instead!
   - type: textarea
     id: what-happened
     attributes:
@@ -40,19 +40,19 @@ body:
     validations:
       required: true
   - type: input
-    id: iris-version
+    id: oculus-version
     attributes:
-      label: Iris Version
-      description: What version of Iris are you running? Every part is important! If you do not know what version you are using, look at the file name in your "mods" folder.
-      placeholder: ex. iris-mc1.17-1.1.3.jar
+      label: Oculus Version
+      description: What version of Oculus are you running? Every part is important! If you do not know what version you are using, look at the file name in your "mods" folder.
+      placeholder: ex. oculus-mc1.18.2-1.2.5a.jar
     validations:
       required: true
   - type: input
-    id: sodium-version
+    id: rubidium-version
     attributes:
-      label: Sodium Version
-      description: What version of Sodium are you running along with Iris? Every part is important! If you do not know what version you are using, look at the file name in your "mods" folder. If you aren't running Sodium please put N/A.
-      placeholder: ex. sodium-fabric-mc1.17.1-0.3.3+build.8.jar
+      label: Rubidium Version
+      description: What version of Rubidium are you running along with Oculus? Every part is important! If you do not know what version you are using, look at the file name in your "mods" folder. If you aren't running Rubidium please put N/A.
+      placeholder: ex. rubidium-0.5.3a.jar
     validations:
       required: true
   - type: input
