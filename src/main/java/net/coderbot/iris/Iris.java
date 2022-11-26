@@ -225,7 +225,7 @@ public class Iris {
 				}
 
 			} catch (Exception e) {
-				logger.error("Error while reloading Shaders for Iris!", e);
+				logger.error("Error while reloading Shaders for Oculus!", e);
 
 				if (minecraft.player != null) {
 					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.reloaded.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
@@ -269,7 +269,7 @@ public class Iris {
 		}
 
 		if (!irisConfig.areShadersEnabled()) {
-			logger.info("Shaders are disabled because enableShaders is set to false in iris.properties");
+			logger.info("Shaders are disabled because enableShaders is set to false in oculus.properties");
 
 			setShadersDisabled();
 
