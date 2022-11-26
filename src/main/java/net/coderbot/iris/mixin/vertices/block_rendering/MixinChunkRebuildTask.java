@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.vertices.BlockSensitiveBufferBuilder;
+import net.coderbot.iris.vertices.ExtendedDataHelper;
 import net.minecraft.client.renderer.ChunkBufferBuilderPack;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -60,12 +61,11 @@ public class MixinChunkRebuildTask {
 	}
 
 	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/block/BlockRenderDispatcher;renderLiquid(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/BlockAndTintGetter;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/level/material/FluidState;)Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void iris$onRenderLiquid(float cameraX, float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, ChunkBufferBuilderPack buffers, CallbackInfoReturnable<Set<BlockEntity>> cir, int i, BlockPos blockPos, BlockPos blockPos2, VisGraph chunkOcclusionDataBuilder, Set<BlockEntity> set, RenderChunkRegion chunkRendererRegion, PoseStack poseStack, Random random, BlockRenderDispatcher blockRenderManager, Iterator<BlockPos> var15, BlockPos blockPos3, BlockState blockState, Block block, FluidState fluidState, IModelData modelData, Iterator iterator, RenderType renderType, BufferBuilder bufferBuilder2) {
-		if (bufferBuilder2 instanceof BlockSensitiveBufferBuilder) {
-			lastBufferBuilder = ((BlockSensitiveBufferBuilder) bufferBuilder2);
-			// All fluids have a ShadersMod render type of 1, to match behavior of Minecraft 1.7 and earlier.
+	private void iris$onRenderLiquid(float cameraX, float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, ChunkBufferBuilderPack buffers, CallbackInfoReturnable<Set<BlockEntity>> cir, int i, BlockPos blockPos, BlockPos blockPos2, VisGraph chunkOcclusionDataBuilder, Set<BlockEntity> set, RenderChunkRegion chunkRendererRegion, PoseStack poseStack, Random random, BlockRenderDispatcher blockRenderManager, Iterator<BlockPos> var15, BlockPos pos, BlockState blockState, Block block, FluidState fluidState, IModelData modelData, Iterator iterator, RenderType renderType, BufferBuilder bufferBuilder) {
+		if (bufferBuilder instanceof BlockSensitiveBufferBuilder) {
+			lastBufferBuilder = ((BlockSensitiveBufferBuilder) bufferBuilder);
 			// TODO: We're using createLegacyBlock? That seems like something that Mojang wants to deprecate.
-			lastBufferBuilder.beginBlock(resolveBlockId(fluidState.createLegacyBlock()), (short) 1);
+			lastBufferBuilder.beginBlock(resolveBlockId(fluidState.createLegacyBlock()), ExtendedDataHelper.FLUID_RENDER_TYPE, pos.getX() & 0xF, pos.getY() & 0xF, pos.getZ() & 0xF);
 		}
 	}
 
@@ -78,11 +78,10 @@ public class MixinChunkRebuildTask {
 	}
 
 	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/block/BlockRenderDispatcher;renderModel(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/BlockAndTintGetter;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLjava/util/Random;Lnet/minecraftforge/client/model/data/IModelData;)Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void iris$onRenderBlock(float cameraX, float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, ChunkBufferBuilderPack buffers, CallbackInfoReturnable<Set<BlockEntity>> cir, int i, BlockPos blockPos, BlockPos blockPos2, VisGraph chunkOcclusionDataBuilder, Set<BlockEntity> set, RenderChunkRegion chunkRendererRegion, PoseStack poseStack, Random random, BlockRenderDispatcher blockRenderManager, Iterator<BlockPos> var15, BlockPos blockPos3, BlockState blockState, Block block, FluidState fluidState, IModelData modelData, Iterator iterator, RenderType renderType, RenderType renderType2, BufferBuilder bufferBuilder2) {
-		if (bufferBuilder2 instanceof BlockSensitiveBufferBuilder) {
-			lastBufferBuilder = ((BlockSensitiveBufferBuilder) bufferBuilder2);
-			// TODO: Resolve render types for normal blocks?
-			lastBufferBuilder.beginBlock(resolveBlockId(blockState), (short) -1);
+	private void iris$onRenderBlock(float cameraX, float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, ChunkBufferBuilderPack buffers, CallbackInfoReturnable<Set<BlockEntity>> cir, int i, BlockPos blockPos, BlockPos blockPos2, VisGraph chunkOcclusionDataBuilder, Set<BlockEntity> set, RenderChunkRegion chunkRendererRegion, PoseStack poseStack, Random random, BlockRenderDispatcher blockRenderManager, Iterator<BlockPos> posIterator, BlockPos pos, BlockState blockState, Block block, FluidState fluidState, IModelData modelData, Iterator iterator, RenderType renderType, RenderType renderType2, BufferBuilder bufferBuilder) {
+		if (bufferBuilder instanceof BlockSensitiveBufferBuilder) {
+			lastBufferBuilder = ((BlockSensitiveBufferBuilder) bufferBuilder);
+			lastBufferBuilder.beginBlock(resolveBlockId(blockState), ExtendedDataHelper.BLOCK_RENDER_TYPE, pos.getX() & 0xF, pos.getY() & 0xF, pos.getZ() & 0xF);
 		}
 	}
 

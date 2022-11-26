@@ -5,7 +5,6 @@
   "refmap": "oculus-refmap.json",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "MixinBannerRenderer",
     "MixinBufferBuilder",
     "MixinBufferBuilder_SegmentRendering",
     "MixinRenderBuffers",

@@ -6,6 +6,8 @@ import it.unimi.dsi.fastutil.objects.Object2BooleanMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.coderbot.iris.Iris;
+import net.coderbot.iris.gl.texture.TextureScaleOverride;
+import net.coderbot.iris.vendored.joml.Vector2i;
 
 import java.util.Set;
 
@@ -17,14 +19,20 @@ public class PackDirectives {
 	private float drynessHalfLife;
 	private float eyeBrightnessHalfLife;
 	private float centerDepthHalfLife;
-	private boolean areCloudsEnabled;
+	private CloudSetting cloudSetting;
 	private boolean underwaterOverlay;
 	private boolean vignette;
+	private boolean sun;
+	private boolean moon;
 	private boolean rainDepth;
 	private boolean separateAo;
 	private boolean oldLighting;
+	private boolean concurrentCompute;
+	private boolean oldHandLight;
 	private boolean particlesBeforeDeferred;
+	private boolean prepareBeforeShadow;
 	private Object2ObjectMap<String, Object2BooleanMap<String>> explicitFlips = new Object2ObjectOpenHashMap<>();
+	private Object2ObjectMap<String, TextureScaleOverride> scaleOverrides = new Object2ObjectOpenHashMap<>();
 
 	private final PackRenderTargetDirectives renderTargetDirectives;
 	private final PackShadowDirectives shadowDirectives;
@@ -43,23 +51,32 @@ public class PackDirectives {
 
 	PackDirectives(Set<Integer> supportedRenderTargets, ShaderProperties properties) {
 		this(supportedRenderTargets, new PackShadowDirectives(properties));
-		areCloudsEnabled = properties.areCloudsEnabled();
+		cloudSetting = properties.getCloudSetting();
 		underwaterOverlay = properties.getUnderwaterOverlay().orElse(false);
 		vignette = properties.getVignette().orElse(false);
+		sun = properties.getSun().orElse(true);
+		moon = properties.getMoon().orElse(true);
 		rainDepth = properties.getRainDepth().orElse(false);
 		separateAo = properties.getSeparateAo().orElse(false);
 		oldLighting = properties.getOldLighting().orElse(false);
+		concurrentCompute = properties.getConcurrentCompute().orElse(false);
+		oldHandLight = properties.getOldHandLight().orElse(true);
 		explicitFlips = properties.getExplicitFlips();
+		scaleOverrides = properties.getTextureScaleOverrides();
 		particlesBeforeDeferred = properties.getParticlesBeforeDeferred().orElse(false);
+		prepareBeforeShadow = properties.getPrepareBeforeShadow().orElse(false);
 	}
 
 	PackDirectives(Set<Integer> supportedRenderTargets, PackDirectives directives) {
 		this(supportedRenderTargets, new PackShadowDirectives(directives.getShadowDirectives()));
-		areCloudsEnabled = directives.areCloudsEnabled();
+		cloudSetting = directives.cloudSetting;
 		separateAo = directives.separateAo;
 		oldLighting = directives.oldLighting;
+		concurrentCompute = directives.concurrentCompute;
 		explicitFlips = directives.explicitFlips;
+		scaleOverrides = directives.scaleOverrides;
 		particlesBeforeDeferred = directives.particlesBeforeDeferred;
+		prepareBeforeShadow = directives.prepareBeforeShadow;
 	}
 
 	public int getNoiseTextureResolution() {
@@ -90,8 +107,8 @@ public class PackDirectives {
 		return centerDepthHalfLife;
 	}
 
-	public boolean areCloudsEnabled() {
-		return areCloudsEnabled;
+	public CloudSetting getCloudSetting() {
+		return cloudSetting;
 	}
 
 	public boolean underwaterOverlay() {
@@ -100,6 +117,14 @@ public class PackDirectives {
 
 	public boolean vignette() {
 		return vignette;
+	}
+
+	public boolean shouldRenderSun() {
+		return sun;
+	}
+
+	public boolean shouldRenderMoon() {
+		return moon;
 	}
 
 	public boolean rainDepth() {
@@ -114,8 +139,20 @@ public class PackDirectives {
 		return oldLighting;
 	}
 
+	public boolean isOldHandLight() {
+		return oldHandLight;
+	}
+
 	public boolean areParticlesBeforeDeferred() {
 		return particlesBeforeDeferred;
+	}
+
+	public boolean getConcurrentCompute() {
+		return concurrentCompute;
+	}
+
+	public boolean isPrepareBeforeShadow() {
+		return prepareBeforeShadow;
 	}
 
 	public PackRenderTargetDirectives getRenderTargetDirectives() {
@@ -187,5 +224,31 @@ public class PackDirectives {
 		});
 
 		return explicitFlips.build();
+	}
+
+	public Vector2i getTextureScaleOverride(int index, int dimensionX, int dimensionY) {
+		final String name = "colortex" + index;
+
+		// TODO: How do custom textures interact with aliases?
+
+		Vector2i scale = new Vector2i();
+
+		if (index < PackRenderTargetDirectives.LEGACY_RENDER_TARGETS.size()) {
+			String legacyName = PackRenderTargetDirectives.LEGACY_RENDER_TARGETS.get(index);
+
+			if (scaleOverrides.containsKey(legacyName)) {
+				scale.set(scaleOverrides.get(legacyName).getX(dimensionX), scaleOverrides.get(legacyName).getY(dimensionY));
+			} else if (scaleOverrides.containsKey(name)) {
+				scale.set(scaleOverrides.get(name).getX(dimensionX), scaleOverrides.get(name).getY(dimensionY));
+			} else {
+				scale.set(dimensionX, dimensionY);
+			}
+		} else if (scaleOverrides.containsKey(name)) {
+			scale.set(scaleOverrides.get(name).getX(dimensionX), scaleOverrides.get(name).getY(dimensionY));
+		} else {
+			scale.set(dimensionX, dimensionY);
+		}
+
+		return scale;
 	}
 }

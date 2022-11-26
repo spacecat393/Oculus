@@ -1,26 +1,32 @@
 package net.coderbot.iris.mixin;
 
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.compat.sodium.SodiumVersionCheck;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ConfirmScreen;
-import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.fml.loading.FMLLoader;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.compat.sodium.SodiumVersionCheck;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 @Mixin(TitleScreen.class)
-public class MixinTitleScreen {
+public class MixinTitleScreen extends Screen {
 	private static boolean iris$hasFirstInit;
+
+	protected MixinTitleScreen(Component arg) {
+		super(arg);
+	}
 
 	@Inject(method = "init", at = @At("RETURN"))
 	public void iris$showSodiumIncompatScreen(CallbackInfo ci) {
@@ -34,7 +40,23 @@ public class MixinTitleScreen {
 
 		if (!Iris.isSodiumInstalled() && FMLLoader.isProduction()) {
 			reason = "iris.sodium.failure.reason.notFound";
+		} else if (Iris.hasNotEnoughCrashes()) {
+			Minecraft.getInstance().setScreen(new ConfirmScreen(
+				bool -> {
+					if (bool) {
+						Minecraft.getInstance().setScreen(this);
+					} else {
+						Minecraft.getInstance().stop();
+					}
+				},
+				new TranslatableComponent("iris.nec.failure.title", Iris.MODNAME).withStyle(ChatFormatting.BOLD, ChatFormatting.RED),
+				new TranslatableComponent("iris.nec.failure.description"),
+				new TranslatableComponent("options.graphics.warning.accept").withStyle(ChatFormatting.RED),
+				new TranslatableComponent("menu.quit").withStyle(ChatFormatting.BOLD)));
+			return;
 		} else {
+			Iris.onLoadingComplete();
+
 			return;
 		}
 

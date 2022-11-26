@@ -14,7 +14,7 @@ import java.nio.FloatBuffer;
 @Mixin(ChunkProgram.class)
 public class MixinChunkProgram {
 	@Redirect(method = "setup", remap = false,
-			at = @At(value = "INVOKE", target = "com/mojang/blaze3d/platform/GlStateManager.func_227718_f_ (II)V"))
+			at = @At(value = "INVOKE", target = "com/mojang/blaze3d/platform/GlStateManager.func_227718_f_ (II)V", remap = false))
 	private void iris$redirectUniform1i(int location, int value) {
 		if (location == -1) {
 			return;
@@ -45,7 +45,8 @@ public class MixinChunkProgram {
 
 	@Redirect(method = "setup", remap = false,
 			at = @At(value = "INVOKE",
-					target = "com/mojang/blaze3d/platform/GlStateManager.func_227698_c_ (IZLjava/nio/FloatBuffer;)V"))
+					target = "com/mojang/blaze3d/platform/GlStateManager.func_227698_c_ (IZLjava/nio/FloatBuffer;)V",
+					remap = false))
 	private void iris$redirectUniformMatrix4fv(int location, boolean transpose, FloatBuffer buffer) {
 		if (location == -1) {
 			return;

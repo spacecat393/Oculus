@@ -1,5 +1,26 @@
 package net.coderbot.iris;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.Stream;
+import java.util.zip.ZipError;
+import java.util.zip.ZipException;
+
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
+
 import com.google.common.base.Throwables;
 import com.mojang.blaze3d.platform.GlDebug;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -22,6 +43,7 @@ import net.coderbot.iris.shaderpack.option.OptionSet;
 import net.coderbot.iris.shaderpack.option.Profile;
 import net.coderbot.iris.shaderpack.option.values.MutableOptionValues;
 import net.coderbot.iris.shaderpack.option.values.OptionValues;
+import net.coderbot.iris.texture.pbr.PBRTextureManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -35,25 +57,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
-
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.zip.ZipError;
-import java.util.zip.ZipException;
 
 @Mod(Iris.MODID)
 public class Iris {
@@ -73,6 +76,7 @@ public class Iris {
 
 	private static ShaderPack currentPack;
 	private static String currentPackName;
+	private static boolean hasNEC = FMLLoader.getLoadingModList().getModFileById("notenoughcrashes") != null;
 	private static boolean sodiumInstalled = FMLLoader.getLoadingModList().getModFileById("rubidium") != null;
 	private static boolean initialized;
 
@@ -88,16 +92,17 @@ public class Iris {
 	// Used in favor of queueDefaultShaderPackOptionValues() for resetting as the
 	// behavior is more concrete and therefore is more likely to repair a user's issues
 	private static boolean resetShaderPackOptions = false;
-	
-	private static String IRIS_VERSION;
 
+	private static String IRIS_VERSION;
+	private static boolean fallback;
+	
 	public Iris() {
 		try {
 			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onInitializeClient);
 		}catch(Exception e) {}
 	}
-	
-	/**
+
+    /**
 	 * Called very early on in Minecraft initialization. At this point we *cannot* safely access OpenGL, but we can do
 	 * some very basic setup, config loading, and environment checks.
 	 *
@@ -187,6 +192,8 @@ public class Iris {
 
 		setDebug(irisConfig.areDebugOptionsEnabled());
 
+		PBRTextureManager.INSTANCE.init();
+
 		// Only load the shader pack when we can access OpenGL
 		loadShaderpack();
 	}
@@ -218,7 +225,7 @@ public class Iris {
 				}
 
 			} catch (Exception e) {
-				logger.error("Error while reloading Shaders for Oculus!", e);
+				logger.error("Error while reloading Shaders for Iris!", e);
 
 				if (minecraft.player != null) {
 					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.reloaded.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
@@ -234,7 +241,7 @@ public class Iris {
 					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.toggled.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
 				}
 				setShadersDisabled();
-				currentPackName = "(off) [fallback, check your logs for errors]";
+				fallback = true;
 			}
 		} else if (shaderpackScreenKeybind.consumeClick()) {
 			minecraft.setScreen(new ShaderPackScreen(null));
@@ -262,7 +269,7 @@ public class Iris {
 		}
 
 		if (!irisConfig.areShadersEnabled()) {
-			logger.info("Shaders are disabled because enableShaders is set to false in oculuus.properties");
+			logger.info("Shaders are disabled because enableShaders is set to false in iris.properties");
 
 			setShadersDisabled();
 
@@ -283,12 +290,11 @@ public class Iris {
 		if (!loadExternalShaderpack(externalName.get())) {
 			logger.warn("Falling back to normal rendering without shaders because the shaderpack could not be loaded");
 			setShadersDisabled();
-			currentPackName = "(off) [fallback, check your logs for errors]";
+			fallback = true;
 		}
 		
 		if(sodiumInstalled)
 			SodiumWorldRenderer.hasChanges = true;
-		
 	}
 
 	private static boolean loadExternalShaderpack(String name) {
@@ -377,6 +383,7 @@ public class Iris {
 			return false;
 		}
 
+		fallback = false;
 		currentPackName = name;
 
 		logger.info("Using shaderpack: " + name);
@@ -403,14 +410,17 @@ public class Iris {
 		// For example Sildurs-Vibrant-Shaders.zip/shaders
 		// While other packs have Trippy-Shaderpack-master.zip/Trippy-Shaderpack-master/shaders
 		// This makes it hard to determine what is the actual shaders dir
-		return Files.walk(root)
-				.filter(Files::isDirectory)
-				.filter(path -> path.endsWith("shaders"))
-				.findFirst();
+		try (Stream<Path> stream = Files.walk(root)) {
+			return stream
+					.filter(Files::isDirectory)
+					.filter(path -> path.endsWith("shaders"))
+					.findFirst();
+		}
 	}
 
 	private static void setShadersDisabled() {
 		currentPack = null;
+		fallback = false;
 		currentPackName = "(off)";
 
 		logger.info("Shaders are disabled");
@@ -448,10 +458,10 @@ public class Iris {
 		Properties properties = new Properties();
 
 		if (Files.exists(path)) {
-			try {
+			try (InputStream is = Files.newInputStream(path)) {
 				// NB: config properties are specified to be encoded with ISO-8859-1 by OptiFine,
 				//     so we don't need to do the UTF-8 workaround here.
-				properties.load(Files.newInputStream(path));
+				properties.load(is);
 			} catch (IOException e) {
 				// TODO: Better error handling
 				return Optional.empty();
@@ -489,8 +499,8 @@ public class Iris {
 			if (pack.equals(getShaderpacksDirectory())) {
 				return false;
 			}
-			try {
-				return Files.walk(pack)
+			try (Stream<Path> stream = Files.walk(pack)) {
+				return stream
 						.filter(Files::isDirectory)
 						// Prevent a pack simply named "shaders" from being
 						// identified as a valid pack
@@ -504,9 +514,11 @@ public class Iris {
 		if (pack.toString().endsWith(".zip")) {
 			try (FileSystem zipSystem = FileSystems.newFileSystem(pack, Iris.class.getClassLoader())) {
 				Path root = zipSystem.getRootDirectories().iterator().next();
-				return Files.walk(root)
-						.filter(Files::isDirectory)
-						.anyMatch(path -> path.endsWith("shaders"));
+				try (Stream<Path> stream = Files.walk(root)) {
+					return stream
+							.filter(Files::isDirectory)
+							.anyMatch(path -> path.endsWith("shaders"));
+				}
 			} catch (ZipError zipError) {
 				// Java 8 seems to throw a ZipError instead of a subclass of IOException
 				Iris.logger.warn("The ZIP at " + pack + " is corrupt");
@@ -640,7 +652,7 @@ public class Iris {
 		} catch (Exception e) {
 			logger.error("Failed to create shader rendering pipeline, disabling shaders!", e);
 			// TODO: This should be reverted if a dimension change causes shaders to compile again
-			currentPackName = "(off) [fallback, check your logs for details]";
+			fallback = true;
 
 			return new FixedFunctionWorldRenderingPipeline();
 		}
@@ -666,6 +678,10 @@ public class Iris {
 
 	public static IrisConfig getIrisConfig() {
 		return irisConfig;
+	}
+
+	public static boolean isFallback() {
+		return fallback;
 	}
 
 	public static String getVersion() {
@@ -694,9 +710,12 @@ public class Iris {
 		return color + version;
 	}
 
-
 	public static boolean isSodiumInstalled() {
 		return sodiumInstalled;
+	}
+
+	public static boolean hasNotEnoughCrashes() {
+		return hasNEC;
 	}
 
 	public static Path getShaderpacksDirectory() {

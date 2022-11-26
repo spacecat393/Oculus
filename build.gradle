@@ -12,6 +12,8 @@ loom {
 				"mixins.oculus.fantastic.json",
 				"mixins.oculus.vertexformat.json",
 				"mixins.oculus.bettermipmaps.json",
+				"mixins.oculus.fixes.maxfpscrash.json",
+				"mixins.oculus.optimized-stitching.json",
 				"oculus-batched-entity-rendering.mixins.json",
 				"mixins.oculus.compat.sodium.json"
 		]
@@ -28,6 +30,10 @@ group = project.maven_group
 repositories {
 }
 
+configurations {
+    toJar
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.officialMojangMappings()
@@ -36,6 +42,9 @@ dependencies {
 	compileOnly files("libs/apache-ant-1.8.2.jar")
 	compileOnly files("libs/rubidium-0.2.1-dev.jar")
 	compileOnly files("libs/flywheel-1.16-0.2.5.jar")
+	
+	implementation fileTree(include: ['*.jar'], dir: 'libs')
+	toJar fileTree(include: ['antlr4-runtime-4.10.1.jar', 'glsl-transformer-1.0.0-pre21.2.jar'], dir: 'libs')
 }
 
 processResources {
@@ -60,6 +69,7 @@ java {
 }
 
 jar {
+	from { configurations.toJar.collect { it.isDirectory() ? it : zipTree(it) } }
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
