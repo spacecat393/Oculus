@@ -1,12 +1,11 @@
 package net.coderbot.iris.mixin.texture;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.coderbot.iris.Iris;
-import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import net.minecraft.resources.ResourceLocation;
 
 @Mixin(value = ResourceLocation.class, priority = 1010)
 public class MixinResourceLocation {

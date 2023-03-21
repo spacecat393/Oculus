@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Token;
+import repack.antlr.v4.runtime.RecognitionException;
+import repack.antlr.v4.runtime.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

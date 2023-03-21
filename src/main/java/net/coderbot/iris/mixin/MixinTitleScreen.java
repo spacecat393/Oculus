@@ -1,28 +1,23 @@
 package net.coderbot.iris.mixin;
 
-import com.google.common.collect.ImmutableList;
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.compat.sodium.SodiumVersionCheck;
-import net.coderbot.iris.gui.debug.DebugLoadFailedGridScreen;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
-import net.minecraft.client.GraphicsStatus;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.AlertScreen;
-import net.minecraft.client.gui.screens.ConfirmScreen;
-import net.minecraft.client.gui.screens.PopupScreen;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.compat.sodium.SodiumVersionCheck;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 @Mixin(TitleScreen.class)
 public class MixinTitleScreen extends Screen {
@@ -42,24 +37,8 @@ public class MixinTitleScreen extends Screen {
 
 		String reason;
 
-		if (!Iris.isSodiumInstalled() && !FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (!Iris.isSodiumInstalled() && FMLLoader.isProduction()) {
 			reason = "iris.sodium.failure.reason.notFound";
-		} else if (Iris.isSodiumInvalid()) {
-			reason = "iris.sodium.failure.reason.incompatible";
-		} else if (Iris.hasNotEnoughCrashes()) {
-			Minecraft.getInstance().setScreen(new ConfirmScreen(
-				bool -> {
-					if (bool) {
-						Minecraft.getInstance().setScreen(this);
-					} else {
-						Minecraft.getInstance().stop();
-					}
-				},
-				Component.translatable("iris.nec.failure.title", Iris.MODNAME).withStyle(ChatFormatting.BOLD, ChatFormatting.RED),
-				Component.translatable("iris.nec.failure.description"),
-				Component.translatable("options.graphics.warning.accept").withStyle(ChatFormatting.RED),
-				Component.translatable("menu.quit").withStyle(ChatFormatting.BOLD)));
-			return;
 		} else {
 			Iris.onLoadingComplete();
 
@@ -75,7 +54,7 @@ public class MixinTitleScreen extends Screen {
 							throw new IllegalStateException(e);
 						}
 					} else {
-						if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+						if (!FMLLoader.isProduction()) {
 							Minecraft.getInstance().setScreen(this);
 						} else {
 							Minecraft.getInstance().stop();
@@ -85,6 +64,6 @@ public class MixinTitleScreen extends Screen {
 				Component.translatable("iris.sodium.failure.title").withStyle(ChatFormatting.RED),
 				Component.translatable(reason),
 				Component.translatable("iris.sodium.failure.download"),
-				FabricLoader.getInstance().isDevelopmentEnvironment() ? Component.literal("Continue (Development)") : Component.translatable("menu.quit")));
+				!FMLLoader.isProduction() ? Component.literal("Continue (Development)") : Component.translatable("menu.quit")));
 	}
 }

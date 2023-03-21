@@ -1,9 +1,22 @@
 package net.coderbot.iris.pipeline.newshader;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import org.apache.commons.io.IOUtils;
+
 import com.google.common.collect.ImmutableSet;
 import com.google.common.primitives.Ints;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.coderbot.iris.Iris;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
 import net.coderbot.iris.gl.blending.AlphaTest;
 import net.coderbot.iris.gl.blending.BlendModeOverride;
 import net.coderbot.iris.gl.blending.BufferBlendOverride;
@@ -14,33 +27,19 @@ import net.coderbot.iris.pipeline.newshader.fallback.FallbackShader;
 import net.coderbot.iris.pipeline.newshader.fallback.ShaderSynthesizer;
 import net.coderbot.iris.pipeline.transform.PatchShaderType;
 import net.coderbot.iris.pipeline.transform.TransformPatcher;
-import net.coderbot.iris.shaderpack.PackRenderTargetDirectives;
 import net.coderbot.iris.shaderpack.ProgramSource;
 import net.coderbot.iris.shaderpack.loading.ProgramId;
 import net.coderbot.iris.uniforms.CommonUniforms;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.coderbot.iris.uniforms.VanillaUniforms;
 import net.coderbot.iris.uniforms.builtin.BuiltinReplacementUniforms;
-import net.fabricmc.loader.api.FabricLoader;
 import net.coderbot.iris.uniforms.custom.CustomUniforms;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceProvider;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import org.apache.commons.io.IOUtils;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 public class NewShaderTests {
 	public static ExtendedShader create(WorldRenderingPipeline pipeline, String name, ProgramSource source, ProgramId programId, GlFramebuffer writingToBeforeTranslucent,
@@ -214,7 +213,7 @@ public class NewShaderTests {
 		private final String content;
 
 		private StringResource(ResourceLocation id, String content) {
-			super(new PathPackResources("<iris shaderpack shaders>", FabricLoader.getInstance().getConfigDir(), true), (IoSupplier<InputStream>) () -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+			super(new PathPackResources("<iris shaderpack shaders>", FMLPaths.CONFIGDIR.get(), true), (IoSupplier<InputStream>) () -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
 			this.id = id;
 			this.content = content;
 		}
