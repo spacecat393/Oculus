@@ -197,14 +197,12 @@ public class Iris {
 			return;
 		}
 
+		setDebug(irisConfig.areDebugOptionsEnabled());
+
 		PBRTextureManager.INSTANCE.init();
 
 		// Only load the shader pack when we can access OpenGL
 		loadShaderpack();
-	}
-
-	public static void duringRenderSystemInit() {
-		setDebug(irisConfig.areDebugOptionsEnabled());
 	}
 
 	/**
@@ -313,11 +311,6 @@ public class Iris {
 		} catch (InvalidPathException e) {
 			logger.error("Failed to load the shaderpack \"{}\" because it contains invalid characters in its path", name);
 
-			return false;
-		}
-
-		if (!isValidShaderpack(shaderPackRoot)) {
-			logger.error("Pack \"{}\" is not valid! Can't load it.", name);
 			return false;
 		}
 
@@ -496,10 +489,6 @@ public class Iris {
 		} catch (IOException e) {
 			// TODO: Better error handling
 		}
-	}
-
-	public static boolean isValidToShowPack(Path pack) {
-		return Files.isDirectory(pack) || pack.toString().endsWith(".zip");
 	}
 
 	public static boolean isValidShaderpack(Path pack) {

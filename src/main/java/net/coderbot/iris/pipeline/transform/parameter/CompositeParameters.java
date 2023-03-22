@@ -7,19 +7,18 @@ import net.coderbot.iris.helpers.Tri;
 import net.coderbot.iris.pipeline.transform.Patch;
 import net.coderbot.iris.shaderpack.texture.TextureStage;
 
-public class TextureStageParameters extends Parameters {
-	private final TextureStage stage;
-	// WARNING: adding new fields requires updating hashCode and equals methods!
+public class CompositeParameters extends Parameters {
+	public final TextureStage stage;
+	private final Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap;
 
-	public TextureStageParameters(Patch patch, TextureStage stage,
-			Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap) {
-		super(patch, textureMap);
+	public CompositeParameters(Patch patch, TextureStage stage, Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap) {
+		super(patch);
 		this.stage = stage;
+		this.textureMap = textureMap;
 	}
 
-	@Override
-	public TextureStage getTextureStage() {
-		return stage;
+	public Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> getTextureMap() {
+		return textureMap;
 	}
 
 	@Override
@@ -27,6 +26,7 @@ public class TextureStageParameters extends Parameters {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((stage == null) ? 0 : stage.hashCode());
+		result = prime * result + ((textureMap == null) ? 0 : textureMap.hashCode());
 		return result;
 	}
 
@@ -38,10 +38,8 @@ public class TextureStageParameters extends Parameters {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TextureStageParameters other = (TextureStageParameters) obj;
-		if (stage != other.stage)
-			return false;
-		return true;
+		CompositeParameters other = (CompositeParameters) obj;
+		return stage == other.stage && textureMap.equals(other.textureMap);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL31C;
 
-import java.util.Locale;
 import java.util.Optional;
 
 public enum InternalTextureFormat {
@@ -91,7 +90,7 @@ public enum InternalTextureFormat {
 
 	public static Optional<InternalTextureFormat> fromString(String name) {
 		try {
-			return Optional.of(InternalTextureFormat.valueOf(name.toUpperCase(Locale.US)));
+			return Optional.of(InternalTextureFormat.valueOf(name));
 		} catch (IllegalArgumentException e) {
 			return Optional.empty();
 		}

@@ -7,21 +7,18 @@ import net.coderbot.iris.helpers.Tri;
 import net.coderbot.iris.pipeline.transform.Patch;
 import net.coderbot.iris.shaderpack.texture.TextureStage;
 
-public class AttributeParameters extends GeometryInfoParameters {
+public class AttributeParameters extends OverlayParameters {
 	public final InputAvailability inputs;
-	// WARNING: adding new fields requires updating hashCode and equals methods!
+	private final Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap;
 
-	public AttributeParameters(Patch patch,
-			Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap,
-			boolean hasGeometry,
-			InputAvailability inputs) {
-		super(patch, textureMap, hasGeometry);
+	public AttributeParameters(Patch patch, boolean hasGeometry, InputAvailability inputs, Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap) {
+		super(patch, hasGeometry);
 		this.inputs = inputs;
+		this.textureMap = textureMap;
 	}
 
-	@Override
-	public TextureStage getTextureStage() {
-		return TextureStage.GBUFFERS_AND_SHADOW;
+	public Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> getTextureMap() {
+		return textureMap;
 	}
 
 	@Override
@@ -29,6 +26,7 @@ public class AttributeParameters extends GeometryInfoParameters {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((inputs == null) ? 0 : inputs.hashCode());
+		result = prime * result + ((textureMap == null) ? 0 : textureMap.hashCode());
 		return result;
 	}
 
@@ -45,6 +43,11 @@ public class AttributeParameters extends GeometryInfoParameters {
 			if (other.inputs != null)
 				return false;
 		} else if (!inputs.equals(other.inputs))
+			return false;
+		if (textureMap == null) {
+			if (other.textureMap != null)
+				return false;
+		} else if (!textureMap.equals(other.textureMap))
 			return false;
 		return true;
 	}

@@ -1,7 +1,5 @@
 package net.coderbot.iris.layer;
 
-import net.coderbot.batchedentityrendering.impl.BlendingStateHolder;
-import net.coderbot.batchedentityrendering.impl.TransparencyType;
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
 import net.coderbot.iris.mixin.rendertype.RenderTypeAccessor;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -11,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-public class OuterWrappedRenderType extends RenderType implements WrappableRenderType, BlendingStateHolder {
+public class OuterWrappedRenderType extends RenderType implements WrappableRenderType {
 	private final RenderStateShard extra;
 	private final RenderType wrapped;
 
@@ -89,10 +87,5 @@ public class OuterWrappedRenderType extends RenderType implements WrappableRende
 
 	private static boolean shouldSortOnUpload(RenderType type) {
 		return ((RenderTypeAccessor) type).shouldSortOnUpload();
-	}
-
-	@Override
-	public TransparencyType getTransparencyType() {
-		return ((BlendingStateHolder) wrapped).getTransparencyType();
 	}
 }

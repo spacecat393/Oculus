@@ -7,12 +7,14 @@ import net.coderbot.iris.helpers.Tri;
 import net.coderbot.iris.pipeline.transform.Patch;
 import net.coderbot.iris.shaderpack.texture.TextureStage;
 
-public class ComputeParameters extends TextureStageParameters {
-	// WARNING: adding new fields requires updating hashCode and equals methods!
+public class ComputeParameters extends Parameters {
+	private TextureStage stage;
+	private Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap;
 
-	public ComputeParameters(Patch patch, TextureStage stage,
-			Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap) {
-		super(patch, stage, textureMap);
+	public ComputeParameters(Patch patch, TextureStage stage, Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap) {
+		super(patch);
+		this.stage = stage;
+		this.textureMap = textureMap;
 	}
 
 	@Override
@@ -20,6 +22,11 @@ public class ComputeParameters extends TextureStageParameters {
 		return AlphaTest.ALWAYS;
 	}
 
-	// since this class has no fields, hashCode() and equals() are inherited from
-	// TextureStageParameters
+	public TextureStage getStage() {
+		return stage;
+	}
+
+	public Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> getTextureMap() {
+		return textureMap;
+	}
 }

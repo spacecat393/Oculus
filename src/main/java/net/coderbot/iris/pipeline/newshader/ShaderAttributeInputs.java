@@ -11,7 +11,6 @@ public class ShaderAttributeInputs {
 	private boolean light;
 	private boolean normal;
 	private boolean newLines;
-	// WARNING: adding new fields requires updating hashCode and equals methods!
 
 	public ShaderAttributeInputs(VertexFormat format, boolean isFullbright) {
 		if (format == DefaultVertexFormat.POSITION_COLOR_NORMAL) {
@@ -82,11 +81,11 @@ public class ShaderAttributeInputs {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (color ? 1231 : 1237);
-		result = prime * result + (tex ? 1231 : 1237);
-		result = prime * result + (overlay ? 1231 : 1237);
 		result = prime * result + (light ? 1231 : 1237);
-		result = prime * result + (normal ? 1231 : 1237);
 		result = prime * result + (newLines ? 1231 : 1237);
+		result = prime * result + (normal ? 1231 : 1237);
+		result = prime * result + (overlay ? 1231 : 1237);
+		result = prime * result + (tex ? 1231 : 1237);
 		return result;
 	}
 
@@ -101,15 +100,15 @@ public class ShaderAttributeInputs {
 		ShaderAttributeInputs other = (ShaderAttributeInputs) obj;
 		if (color != other.color)
 			return false;
-		if (tex != other.tex)
-			return false;
-		if (overlay != other.overlay)
-			return false;
 		if (light != other.light)
+			return false;
+		if (newLines != other.newLines)
 			return false;
 		if (normal != other.normal)
 			return false;
-		if (newLines != other.newLines)
+		if (overlay != other.overlay)
+			return false;
+		if (tex != other.tex)
 			return false;
 		return true;
 	}

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.coderbot.batchedentityrendering.impl.BatchingDebugMessageHelper;
 import net.coderbot.batchedentityrendering.impl.DrawCallTrackingRenderBuffers;
 import net.coderbot.batchedentityrendering.impl.MemoryTrackingRenderBuffers;
@@ -93,14 +92,11 @@ public class ShadowRenderer {
 	private int renderedShadowBlockEntities = 0;
 
 	private final CustomUniforms customUniforms;
-	private final boolean separateHardwareSamplers;
 
 	public ShadowRenderer(ProgramSource shadow, PackDirectives directives,
-						  ShadowRenderTargets shadowRenderTargets, ShadowCompositeRenderer compositeRenderer, CustomUniforms customUniforms, boolean separateHardwareSamplers) {
+						  ShadowRenderTargets shadowRenderTargets, ShadowCompositeRenderer compositeRenderer, CustomUniforms customUniforms) {
 
 		this.customUniforms = customUniforms;
-
-		this.separateHardwareSamplers = separateHardwareSamplers;
 
 		final PackShadowDirectives shadowDirectives = directives.getShadowDirectives();
 
@@ -199,7 +195,7 @@ public class ShadowRenderer {
 		final ImmutableList<PackShadowDirectives.DepthSamplingSettings> depthSamplingSettings =
 			shadowDirectives.getDepthSamplingSettings();
 
-		final Int2ObjectMap<PackShadowDirectives.SamplingSettings> colorSamplingSettings =
+		final ImmutableList<PackShadowDirectives.SamplingSettings> colorSamplingSettings =
 			shadowDirectives.getColorSamplingSettings();
 
 		RenderSystem.activeTexture(GL20C.GL_TEXTURE4);
@@ -208,19 +204,17 @@ public class ShadowRenderer {
 
 		configureDepthSampler(targets.getDepthTextureNoTranslucents().getTextureId(), depthSamplingSettings.get(1));
 
-		for (int i = 0; i < targets.getNumColorTextures(); i++) {
-			if (targets.get(i) != null) {
-				int glTextureId = targets.get(i).getMainTexture();
+		for (int i = 0; i < colorSamplingSettings.size(); i++) {
+			int glTextureId = targets.get(i).getMainTexture();
 
-				configureSampler(glTextureId, colorSamplingSettings.computeIfAbsent(i, a -> new PackShadowDirectives.SamplingSettings()));
-			}
+			configureSampler(glTextureId, colorSamplingSettings.get(i));
 		}
 
 		RenderSystem.activeTexture(GL20C.GL_TEXTURE0);
 	}
 
 	private void configureDepthSampler(int glTextureId, PackShadowDirectives.DepthSamplingSettings settings) {
-		if (settings.getHardwareFiltering() && !separateHardwareSamplers) {
+		if (settings.getHardwareFiltering()) {
 			// We have to do this or else shadow hardware filtering breaks entirely!
 			IrisRenderSystem.texParameteri(glTextureId, GL20C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_COMPARE_MODE, GL30C.GL_COMPARE_REF_TO_TEXTURE);
 		}
@@ -342,10 +336,6 @@ public class ShadowRenderer {
 	}
 
 	public void renderShadows(LevelRendererAccessor levelRenderer, Camera playerCamera) {
-		if (IrisVideoSettings.getOverriddenShadowDistance(IrisVideoSettings.shadowDistance) == 0) {
-			return;
-		}
-
 		Minecraft client = Minecraft.getInstance();
 
 		levelRenderer.getLevel().getProfiler().popPush("shadows");
@@ -651,29 +641,18 @@ public class ShadowRenderer {
 		targets.copyPreTranslucentDepth();
 	}
 
-	public void addDebugText(List<String> messages) {
-		if (IrisVideoSettings.getOverriddenShadowDistance(IrisVideoSettings.shadowDistance) == 0) {
-			messages.add("[" + Iris.MODNAME + "] Shadow Maps: off, shadow distance 0");
-			return;
-		}
+		public void addDebugText(List<String> messages) {
+		messages.add("[" + Iris.MODNAME + "] Shadow Maps: " + debugStringOverall);
+		messages.add("[" + Iris.MODNAME + "] Shadow Distance Terrain: " + terrainFrustumHolder.getDistanceInfo() + " Entity: " + entityFrustumHolder.getDistanceInfo());
+		messages.add("[" + Iris.MODNAME + "] Shadow Culling Terrain: " + terrainFrustumHolder.getCullingInfo() + " Entity: " + entityFrustumHolder.getCullingInfo());
+		messages.add("[" + Iris.MODNAME + "] Shadow Terrain: " + debugStringTerrain
+			+ (shouldRenderTerrain ? "" : " (no terrain) ") + (shouldRenderTranslucent ? "" : "(no translucent)"));
+		messages.add("[" + Iris.MODNAME + "] Shadow Entities: " + getEntitiesDebugString());
+		messages.add("[" + Iris.MODNAME + "] Shadow Block Entities: " + getBlockEntitiesDebugString());
 
-		if (Iris.getIrisConfig().areDebugOptionsEnabled()) {
-			messages.add("[" + Iris.MODNAME + "] Shadow Maps: " + debugStringOverall);
-			messages.add("[" + Iris.MODNAME + "] Shadow Distance Terrain: " + terrainFrustumHolder.getDistanceInfo() + " Entity: " + entityFrustumHolder.getDistanceInfo());
-			messages.add("[" + Iris.MODNAME + "] Shadow Culling Terrain: " + terrainFrustumHolder.getCullingInfo() + " Entity: " + entityFrustumHolder.getCullingInfo());
-			messages.add("[" + Iris.MODNAME + "] Shadow Terrain: " + debugStringTerrain
-				+ (shouldRenderTerrain ? "" : " (no terrain) ") + (shouldRenderTranslucent ? "" : "(no translucent)"));
-			messages.add("[" + Iris.MODNAME + "] Shadow Entities: " + getEntitiesDebugString());
-			messages.add("[" + Iris.MODNAME + "] Shadow Block Entities: " + getBlockEntitiesDebugString());
-
-			if (buffers instanceof DrawCallTrackingRenderBuffers && (shouldRenderEntities || shouldRenderPlayer)) {
-				DrawCallTrackingRenderBuffers drawCallTracker = (DrawCallTrackingRenderBuffers) buffers;
-				messages.add("[" + Iris.MODNAME + "] Shadow Entity Batching: " + BatchingDebugMessageHelper.getDebugMessage(drawCallTracker));
-			}
-		} else {
-			messages.add("[" + Iris.MODNAME + "] Shadow info: " + debugStringTerrain);
-			messages.add("[" + Iris.MODNAME + "] E: " + renderedShadowEntities);
-			messages.add("[" + Iris.MODNAME + "] BE: " + renderedShadowBlockEntities);
+		if (buffers instanceof DrawCallTrackingRenderBuffers && (shouldRenderEntities || shouldRenderPlayer)) {
+			DrawCallTrackingRenderBuffers drawCallTracker = (DrawCallTrackingRenderBuffers) buffers;
+			messages.add("[" + Iris.MODNAME + "] Shadow Entity Batching: " + BatchingDebugMessageHelper.getDebugMessage(drawCallTracker));
 		}
 	}
 

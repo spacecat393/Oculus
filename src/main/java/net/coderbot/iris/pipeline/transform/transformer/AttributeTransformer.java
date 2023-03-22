@@ -8,13 +8,13 @@ import io.github.douira.glsl_transformer.ast.node.abstract_node.ASTNode;
 import io.github.douira.glsl_transformer.ast.node.external_declaration.ExternalDeclaration;
 import io.github.douira.glsl_transformer.ast.query.Root;
 import io.github.douira.glsl_transformer.ast.query.match.AutoHintedMatcher;
+import io.github.douira.glsl_transformer.ast.query.match.Matcher;
 import io.github.douira.glsl_transformer.ast.transform.ASTInjectionPoint;
 import io.github.douira.glsl_transformer.ast.transform.ASTParser;
-import io.github.douira.glsl_transformer.parser.ParseShape;
 import net.coderbot.iris.gl.shader.ShaderType;
 import net.coderbot.iris.pipeline.transform.PatchShaderType;
 import net.coderbot.iris.pipeline.transform.parameter.AttributeParameters;
-import net.coderbot.iris.pipeline.transform.parameter.GeometryInfoParameters;
+import net.coderbot.iris.pipeline.transform.parameter.OverlayParameters;
 import net.coderbot.iris.pipeline.transform.parameter.Parameters;
 
 /**
@@ -123,14 +123,14 @@ public class AttributeTransformer {
 	}
 
 	private static final AutoHintedMatcher<ExternalDeclaration> uniformVec4EntityColor = new AutoHintedMatcher<>(
-			"uniform vec4 entityColor;", ParseShape.EXTERNAL_DECLARATION);
+			"uniform vec4 entityColor;", Matcher.externalDeclarationPattern);
 
 	// Add entity color -> overlay color attribute support.
 	public static void patchOverlayColor(
 			ASTParser t,
 			TranslationUnit tree,
 			Root root,
-			GeometryInfoParameters parameters) {
+			OverlayParameters parameters) {
 		// delete original declaration
 		root.processMatches(t, uniformVec4EntityColor, ASTNode::detachAndDelete);
 
@@ -172,8 +172,6 @@ public class AttributeTransformer {
 		} else if (parameters.type.glShaderType == ShaderType.FRAGMENT) {
 			tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_DECLARATIONS,
 					"in vec4 entityColor;", "in vec4 iris_vertexColor;");
-
-			tree.prependMainFunctionBody(t, "float iris_vertexColorAlpha = iris_vertexColor.a;");
 
 			// Different output name to avoid a name collision in the geometry shader.
 			if (parameters.hasGeometry) {

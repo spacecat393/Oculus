@@ -1,18 +1,12 @@
 package net.coderbot.iris.pipeline.transform.parameter;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import net.coderbot.iris.gl.texture.TextureType;
-import net.coderbot.iris.helpers.Tri;
 import net.coderbot.iris.pipeline.transform.Patch;
-import net.coderbot.iris.shaderpack.texture.TextureStage;
 
-public abstract class GeometryInfoParameters extends Parameters {
+public class OverlayParameters extends Parameters {
 	public final boolean hasGeometry;
-	// WARNING: adding new fields requires updating hashCode and equals methods!
 
-	public GeometryInfoParameters(Patch patch,
-			Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> textureMap, boolean hasGeometry) {
-		super(patch, textureMap);
+	public OverlayParameters(Patch patch, boolean hasGeometry) {
+		super(patch);
 		this.hasGeometry = hasGeometry;
 	}
 
@@ -32,7 +26,7 @@ public abstract class GeometryInfoParameters extends Parameters {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GeometryInfoParameters other = (GeometryInfoParameters) obj;
+		OverlayParameters other = (OverlayParameters) obj;
 		if (hasGeometry != other.hasGeometry)
 			return false;
 		return true;

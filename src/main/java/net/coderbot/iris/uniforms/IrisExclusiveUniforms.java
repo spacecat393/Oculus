@@ -107,15 +107,14 @@ public class IrisExclusiveUniforms {
 
 	private static Vector3d getEyePosition() {
 		Objects.requireNonNull(Minecraft.getInstance().getCameraEntity());
-		Vec3 pos = Minecraft.getInstance().getCameraEntity().getEyePosition(CapturedRenderingState.INSTANCE.getTickDelta());
-		return new Vector3d(pos.x, pos.y, pos.z);
+		return new Vector3d(Minecraft.getInstance().getCameraEntity().getX(), Minecraft.getInstance().getCameraEntity().getEyeY(), Minecraft.getInstance().getCameraEntity().getZ());
 	}
 
 	public static class WorldInfoUniforms {
 		public static void addWorldInfoUniforms(UniformHolder uniforms) {
 			ClientLevel level = Minecraft.getInstance().level;
 			// TODO: Use level.dimensionType() coordinates for 1.18!
-			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "bedrockLevel", () -> level.dimensionType().minY());
+			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "bedrockLevel", () -> 0);
 			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "heightLimit", () -> {
 				if (level != null) {
 					return level.getMaxBuildHeight();

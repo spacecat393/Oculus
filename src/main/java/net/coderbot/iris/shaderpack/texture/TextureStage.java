@@ -4,18 +4,6 @@ import java.util.Optional;
 
 public enum TextureStage {
 	/**
-	 * The setup passes.
-	 *
-	 * Exclusive to Iris 1.6.
-	 */
-	SETUP,
-	/**
-	 * The begin pass.
-	 *
-	 * Exclusive to Iris 1.6.
-	 */
-	BEGIN,
-	/**
 	 * The shadowcomp passes.
 	 *
 	 * While this is not documented in shaders.txt, it is a valid stage for defining custom textures.
@@ -42,10 +30,6 @@ public enum TextureStage {
 
 	public static Optional<TextureStage> parse(String name) {
 		switch (name) {
-			case "setup":
-				return Optional.of(SETUP);
-			case "begin":
-				return Optional.of(BEGIN);
 			case "shadowcomp":
 				return Optional.of(SHADOWCOMP);
 			case "prepare":

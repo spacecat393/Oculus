@@ -35,10 +35,8 @@ public class IrisChunkProgramOverrides {
 
         if (pass == IrisTerrainPass.SHADOW || pass == IrisTerrainPass.SHADOW_CUTOUT) {
             irisVertexShader = pipeline.getShadowVertexShaderSource();
-        } else if (pass == IrisTerrainPass.GBUFFER_SOLID) {
-            irisVertexShader = pipeline.getTerrainSolidVertexShaderSource();
-        } else if (pass == IrisTerrainPass.GBUFFER_CUTOUT) {
-            irisVertexShader = pipeline.getTerrainCutoutVertexShaderSource();
+        } else if (pass == IrisTerrainPass.GBUFFER_SOLID || pass == IrisTerrainPass.GBUFFER_CUTOUT) {
+            irisVertexShader = pipeline.getTerrainVertexShaderSource();
         } else if (pass == IrisTerrainPass.GBUFFER_TRANSLUCENT) {
             irisVertexShader = pipeline.getTranslucentVertexShaderSource();
         } else {
@@ -60,10 +58,8 @@ public class IrisChunkProgramOverrides {
 
         if (pass == IrisTerrainPass.SHADOW || pass == IrisTerrainPass.SHADOW_CUTOUT) {
             irisGeometryShader = pipeline.getShadowGeometryShaderSource();
-        } else if (pass == IrisTerrainPass.GBUFFER_SOLID) {
-            irisGeometryShader = pipeline.getTerrainSolidGeometryShaderSource();
-        } else if (pass == IrisTerrainPass.GBUFFER_CUTOUT) {
-            irisGeometryShader = pipeline.getTerrainCutoutGeometryShaderSource();
+        } else if (pass == IrisTerrainPass.GBUFFER_SOLID || pass == IrisTerrainPass.GBUFFER_CUTOUT) {
+            irisGeometryShader = pipeline.getTerrainGeometryShaderSource();
         } else if (pass == IrisTerrainPass.GBUFFER_TRANSLUCENT) {
             irisGeometryShader = pipeline.getTranslucentGeometryShaderSource();
         } else {
@@ -88,7 +84,7 @@ public class IrisChunkProgramOverrides {
         } else if (pass == IrisTerrainPass.SHADOW_CUTOUT) {
         	irisFragmentShader = pipeline.getShadowCutoutFragmentShaderSource();
 		} else if (pass == IrisTerrainPass.GBUFFER_SOLID) {
-            irisFragmentShader = pipeline.getTerrainSolidFragmentShaderSource();
+            irisFragmentShader = pipeline.getTerrainFragmentShaderSource();
         } else if (pass == IrisTerrainPass.GBUFFER_CUTOUT) {
         	irisFragmentShader = pipeline.getTerrainCutoutFragmentShaderSource();
 		} else if (pass == IrisTerrainPass.GBUFFER_TRANSLUCENT) {
@@ -110,10 +106,8 @@ public class IrisChunkProgramOverrides {
 	private BlendModeOverride getBlendOverride(IrisTerrainPass pass, SodiumTerrainPipeline pipeline) {
 		if (pass == IrisTerrainPass.SHADOW || pass == IrisTerrainPass.SHADOW_CUTOUT) {
 			return pipeline.getShadowBlendOverride();
-		} else if (pass == IrisTerrainPass.GBUFFER_SOLID) {
-			return pipeline.getTerrainSolidBlendOverride();
-		} else if (pass == IrisTerrainPass.GBUFFER_CUTOUT) {
-			return pipeline.getTerrainCutoutBlendOverride();
+		} else if (pass == IrisTerrainPass.GBUFFER_SOLID || pass == IrisTerrainPass.GBUFFER_CUTOUT) {
+			return pipeline.getTerrainBlendOverride();
 		} else if (pass == IrisTerrainPass.GBUFFER_TRANSLUCENT) {
 			return pipeline.getTranslucentBlendOverride();
 		} else {
@@ -124,10 +118,8 @@ public class IrisChunkProgramOverrides {
 	private List<BufferBlendOverride> getBufferBlendOverride(IrisTerrainPass pass, SodiumTerrainPipeline pipeline) {
 		if (pass == IrisTerrainPass.SHADOW || pass == IrisTerrainPass.SHADOW_CUTOUT) {
 			return pipeline.getShadowBufferOverrides();
-		} else if (pass == IrisTerrainPass.GBUFFER_SOLID) {
-			return pipeline.getTerrainSolidBufferOverrides();
-		} else if (pass == IrisTerrainPass.GBUFFER_CUTOUT) {
-			return pipeline.getTerrainCutoutBufferOverrides();
+		} else if (pass == IrisTerrainPass.GBUFFER_SOLID || pass == IrisTerrainPass.GBUFFER_CUTOUT) {
+			return pipeline.getTerrainBufferOverrides();
 		} else if (pass == IrisTerrainPass.GBUFFER_TRANSLUCENT) {
 			return pipeline.getTranslucentBufferOverrides();
 		} else {
@@ -201,9 +193,7 @@ public class IrisChunkProgramOverrides {
 	private float getAlphaReference(IrisTerrainPass pass, SodiumTerrainPipeline pipeline) {
 		if (pass == IrisTerrainPass.SHADOW || pass == IrisTerrainPass.SHADOW_CUTOUT) {
 			return pipeline.getShadowAlpha().orElse(AlphaTests.ONE_TENTH_ALPHA).getReference();
-		} else if (pass == IrisTerrainPass.GBUFFER_SOLID) {
-			return AlphaTest.ALWAYS.getReference();
-		} else if (pass == IrisTerrainPass.GBUFFER_CUTOUT) {
+		} else if (pass == IrisTerrainPass.GBUFFER_SOLID || pass == IrisTerrainPass.GBUFFER_CUTOUT) {
 			return pipeline.getTerrainCutoutAlpha().orElse(AlphaTests.ONE_TENTH_ALPHA).getReference();
 		} else if (pass == IrisTerrainPass.GBUFFER_TRANSLUCENT) {
 			return pipeline.getTranslucentAlpha().orElse(AlphaTest.ALWAYS).getReference();
@@ -296,7 +286,7 @@ public class IrisChunkProgramOverrides {
 			} else if (pass.isTranslucent()) {
 				framebuffer = pipeline.getTranslucentFramebuffer();
 			} else {
-				framebuffer = pipeline.getTerrainSolidFramebuffer();
+				framebuffer = pipeline.getTerrainFramebuffer();
 			}
 
 			if (framebuffer != null) {
