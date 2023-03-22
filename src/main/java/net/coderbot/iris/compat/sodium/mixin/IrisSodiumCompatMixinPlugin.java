@@ -1,7 +1,7 @@
 package net.coderbot.iris.compat.sodium.mixin;
 
-import net.coderbot.iris.compat.sodium.SodiumVersionCheck;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraftforge.fml.loading.FMLLoader;
+
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -15,20 +15,12 @@ import java.util.Set;
  * spamming the log if Sodium isn't present.
  */
 public class IrisSodiumCompatMixinPlugin implements IMixinConfigPlugin {
-	private boolean validSodiumVersion = false;
+	
+	public static boolean isRubidiumLoaded;
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		validSodiumVersion = FabricLoader.getInstance().getModContainer("sodium").map(sodium -> {
-			String version = sodium.getMetadata().getVersion().getFriendlyString();
-
-			return SodiumVersionCheck.isAllowedVersion(version);
-		}).orElse(false);
-
-		if (!validSodiumVersion) {
-			// We can't use Iris' logger here due to classloading issues.
-			System.err.println("[Iris] Invalid/missing version of Sodium detected, disabling compatibility mixins!");
-		}
+		isRubidiumLoaded = FMLLoader.getLoadingModList().getModFileById("rubidium") != null;
 	}
 
 	@Override
@@ -38,7 +30,7 @@ public class IrisSodiumCompatMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return validSodiumVersion;
+		return isRubidiumLoaded;
 	}
 
 	@Override

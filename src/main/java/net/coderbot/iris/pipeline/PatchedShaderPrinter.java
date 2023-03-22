@@ -7,7 +7,8 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import net.coderbot.iris.Iris;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 /**
  * Static class that deals with printing the patched_shader folder.
@@ -15,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public class PatchedShaderPrinter {
 	private static boolean outputLocationCleared = false;
 	private static int programCounter = 0;
-	public static final boolean prettyPrintShaders = FabricLoader.getInstance().isDevelopmentEnvironment()
+	public static final boolean prettyPrintShaders = !FMLLoader.isProduction()
 			|| System.getProperty("iris.prettyPrintShaders", "false").equals("true");
 
 	public static void resetPrintState() {
@@ -25,7 +26,7 @@ public class PatchedShaderPrinter {
 
 	public static void debugPatchedShaders(String name, String vertex, String geometry, String fragment, String json) {
 		if (prettyPrintShaders) {
-			final Path debugOutDir = FabricLoader.getInstance().getGameDir().resolve("patched_shaders");
+			final Path debugOutDir = FMLPaths.GAMEDIR.get().resolve("patched_shaders");
 			if (!outputLocationCleared) {
 				try {
 					if (Files.exists(debugOutDir)) {

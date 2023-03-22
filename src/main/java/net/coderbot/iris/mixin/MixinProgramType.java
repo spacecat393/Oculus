@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Program.Type.class)
 public class MixinProgramType {
-	@SuppressWarnings("target")
     @Shadow
     @Final
     @Mutable
