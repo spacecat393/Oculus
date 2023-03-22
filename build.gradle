@@ -6,7 +6,7 @@ plugins {
 
 loom {
     silentMojangMappingsLicense()
-	
+
 	forge {
 		mixinConfigs = [
 				"mixins.oculus.json",
@@ -41,10 +41,10 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.officialMojangMappings()
 	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-	
+
 	compileOnly files("libs/apache-ant-1.8.2.jar")
 	//compileOnly files("libs/rubidium-0.6.0.jar")
-	modCompileOnly "maven.modrinth:rubidium:0.6.4"
+	modImplementation "maven.modrinth:rubidium:0.6.4"
 }
 
 processResources {
