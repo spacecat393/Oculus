@@ -282,7 +282,7 @@ public class Iris {
 		}
 
 		if (!irisConfig.areShadersEnabled()) {
-			logger.info("Shaders are disabled because enableShaders is set to false in iris.properties");
+			logger.info("Shaders are disabled because enableShaders is set to false in oculus.properties");
 
 			setShadersDisabled();
 

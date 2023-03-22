@@ -10,6 +10,7 @@ authors="coderbot, IMS212, Justsnoopy30, FoundationGames"
 description='''
 Unofficial Fork of "Iris", made to work with FML
 '''
+
 [mods."sodium:options"]
 "mixin.features.entity.fast_render"=false
 "mixin.features.gui.font"=false
