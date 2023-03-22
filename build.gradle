@@ -1,0 +1,85 @@
+plugins {
+	id 'dev.architectury.loom' version '0.11.0-SNAPSHOT'
+	id 'maven-publish'
+}
+
+loom {
+    silentMojangMappingsLicense()
+	
+	forge {
+		mixinConfigs = [
+				"mixins.oculus.json",
+				"mixins.oculus.fantastic.json",
+				"mixins.oculus.vertexformat.json",
+				"mixins.oculus.bettermipmaps.json",
+				"mixins.oculus.fixes.maxfpscrash.json",
+				"mixins.oculus.optimized-stitching.json",
+				"oculus-batched-entity-rendering.mixins.json",
+				"mixins.oculus.compat.sodium.json"
+		]
+	}
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+	maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+}
+
+configurations {
+    toJar
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+	
+	compileOnly files("libs/apache-ant-1.8.2.jar")
+	modImplementation "maven.modrinth:rubidium:0.5.4"
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+java {
+	withSourcesJar()
+}
+
+jar {
+	from { configurations.toJar.collect { it.isDirectory() ? it : zipTree(it) } }
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
+
+	repositories {
+	}
+}
