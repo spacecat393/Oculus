@@ -34,7 +34,7 @@ public class MixinChunkRenderRebuildTask {
 								  CancellationSource cancellationSource, CallbackInfoReturnable<ChunkBuildResult<?>> cir,
 								  ChunkRenderData.Builder renderData, VisGraph occluder, ChunkRenderBounds.Builder bounds,
 								  WorldSlice slice, int baseX, int baseY, int baseZ,
-								  Map<BlockPos, IModelData> modelDataMap, BlockPos.MutableBlockPos pos, BlockPos renderOffset,
+								  BlockPos.MutableBlockPos pos, BlockPos renderOffset,
 								  int relY, int relZ, int relX) {
 		if (buffers instanceof ChunkBuildBuffersExt) {
 			((ChunkBuildBuffersExt) buffers).iris$setLocalPos(relX, relY, relZ);
