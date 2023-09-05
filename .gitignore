@@ -28,8 +28,4 @@ bin/
 
 *.DS_Store
 
-# fabric
-
 run/
-src/main/java/me/jellysquid/mods/sodium/client/model/light/flat/FlatLightPipeline.java
-src/main/java/me/jellysquid/mods/sodium/client/render/SodiumWorldRenderer.java

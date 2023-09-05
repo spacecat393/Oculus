@@ -4,8 +4,8 @@ plugins {
 }
 
 loom {
-    silentMojangMappingsLicense()
-	
+	silentMojangMappingsLicense()
+
 	forge {
 		mixinConfigs = [
 				"mixins.oculus.json",
@@ -28,21 +28,27 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 configurations {
-    toJar
+	toJar
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.officialMojangMappings()
 	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-		
-	compileOnly files("libs/apache-ant-1.8.2.jar")
-	compileOnly files("libs/rubidium-0.2.1-dev.jar")
-	compileOnly files("libs/flywheel-1.16-0.2.5.jar")
-	
+
+	compileOnly "org.apache.ant:ant:1.8.2"
+	modCompileOnly "maven.modrinth:rubidium:0.2.12"
+
 	implementation fileTree(include: ['*.jar'], dir: 'libs')
 	toJar fileTree(include: ['antlr4-runtime-4.10.1.jar', 'glsl-transformer-1.0.0-pre21.2.jar'], dir: 'libs')
 }
@@ -51,8 +57,8 @@ processResources {
 	inputs.property "version", project.version
 
 	filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
-    }
+		expand "version": project.version
+	}
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -60,7 +66,7 @@ tasks.withType(JavaCompile).configureEach {
 
 	def targetVersion = 8
 	if (JavaVersion.current().isJava9Compatible()) {
-		 it.options.release = targetVersion
+		it.options.release = targetVersion
 	}
 }
 
