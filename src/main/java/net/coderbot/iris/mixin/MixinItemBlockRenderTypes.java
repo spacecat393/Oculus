@@ -25,4 +25,15 @@ public class MixinItemBlockRenderTypes {
 			}
 		}
 	}
+
+	@Inject(method = "canRenderInLayer(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/client/renderer/RenderType;)Z", at = @At("HEAD"), cancellable = true)
+	private static void iris$checkCustomRenderType(BlockState arg, RenderType type, CallbackInfoReturnable<Boolean> cir) {
+		Map<Block, RenderType> idMap = BlockRenderingSettings.INSTANCE.getBlockTypeIds();
+		if (idMap != null) {
+			RenderType irisType = idMap.get(arg.getBlock());
+			if (type.equals(irisType)) {
+				cir.setReturnValue(true);
+			}
+		}
+	}
 }
