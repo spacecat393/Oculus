@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 import java.util.zip.ZipError;
 import java.util.zip.ZipException;
 
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
@@ -98,6 +100,8 @@ public class Iris {
 	public Iris() {
 		try {
 			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onInitializeClient);
+
+			MinecraftForge.EVENT_BUS.addListener(this::onKeyInput);
 		}catch(Exception ignored) {}
 	}
 
@@ -141,6 +145,10 @@ public class Iris {
 		ClientRegistry.registerKeyBinding(reloadKeybind);
 		ClientRegistry.registerKeyBinding(toggleShadersKeybind);
 		ClientRegistry.registerKeyBinding(shaderpackScreenKeybind);
+	}
+
+	public void onKeyInput(InputEvent.KeyInputEvent event) {
+		handleKeybinds(Minecraft.getInstance());
 	}
 
 	/**

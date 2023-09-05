@@ -28,7 +28,6 @@
     "MixinItemBlockRenderTypes",
     "MixinItemInHandRenderer",
     "MixinLevelRenderer",
-    "MixinMinecraft_Keybinds",
     "MixinMinecraft_Images",
     "MixinMinecraft_PipelineManagement",
     "MixinModelViewBobbing",
