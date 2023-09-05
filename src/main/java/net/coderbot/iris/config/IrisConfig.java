@@ -16,7 +16,7 @@ import net.coderbot.iris.gui.option.IrisVideoSettings;
  */
 public class IrisConfig {
 	private static final String COMMENT =
-		"This file stores configuration options for Iris, such as the currently active shaderpack";
+		"This file stores configuration options for " + Iris.MODNAME + ", such as the currently active shaderpack";
 
 	/**
 	 * The path to the current shaderpack. Null if the internal shaderpack is being used.
