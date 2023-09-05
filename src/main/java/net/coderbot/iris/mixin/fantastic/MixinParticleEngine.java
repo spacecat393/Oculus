@@ -76,7 +76,8 @@ public class MixinParticleEngine implements PhasedParticleEngine {
 		Map<ParticleRenderType, Queue<Particle>> toRender = new HashMap<>(particles);
 		if (phase == ParticleRenderingPhase.TRANSLUCENT) {
 			// Remove all known opaque particle texture sheets.
-			toRender.remove(OPAQUE_PARTICLE_RENDER_TYPES);
+			for(ParticleRenderType type : OPAQUE_PARTICLE_RENDER_TYPES)
+				toRender.remove(type);
 
 			return toRender;
 		} else if (phase == ParticleRenderingPhase.OPAQUE) {
