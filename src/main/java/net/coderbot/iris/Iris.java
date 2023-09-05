@@ -25,7 +25,6 @@ import com.google.common.base.Throwables;
 import com.mojang.blaze3d.platform.GlDebug;
 import com.mojang.blaze3d.platform.InputConstants;
 
-import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
 import net.coderbot.iris.config.IrisConfig;
 import net.coderbot.iris.gl.GLDebug;
 import net.coderbot.iris.gl.shader.StandardMacros;
@@ -76,7 +75,7 @@ public class Iris {
 
 	private static ShaderPack currentPack;
 	private static String currentPackName;
-	private static boolean sodiumInstalled = FMLLoader.getLoadingModList().getModFileById("rubidium") != null;
+	private static final boolean sodiumInstalled = FMLLoader.getLoadingModList().getModFileById("rubidium") != null;
 	private static boolean initialized;
 
 	private static PipelineManager pipelineManager;
@@ -94,11 +93,12 @@ public class Iris {
 
 	private static String IRIS_VERSION;
 	private static boolean fallback;
-	
+
+	// Wrapped in try-catch due to early initializing class
 	public Iris() {
 		try {
 			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onInitializeClient);
-		}catch(Exception e) {}
+		}catch(Exception ignored) {}
 	}
 
     /**
@@ -133,8 +133,6 @@ public class Iris {
 		toggleShadersKeybind = new KeyMapping("iris.keybind.toggleShaders", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "iris.keybinds");
 		shaderpackScreenKeybind = new KeyMapping("iris.keybind.shaderPackSelection", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "iris.keybinds");
 
-		setupCommands(Minecraft.getInstance());
-
 		initialized = true;
 	}
 	
@@ -143,40 +141,6 @@ public class Iris {
 		ClientRegistry.registerKeyBinding(reloadKeybind);
 		ClientRegistry.registerKeyBinding(toggleShadersKeybind);
 		ClientRegistry.registerKeyBinding(shaderpackScreenKeybind);
-	}
-
-	private void setupCommands(Minecraft instance) {
-		// TODO: Add back commands when Fabric Maven stops dying
-		/*ClientCommandManager.DISPATCHER.register(ClientCommandManager.literal("iris").then(ClientCommandManager.literal("debug").then(
-			ClientCommandManager.argument("enabled", BoolArgumentType.bool()).executes(context -> {
-				boolean enable = BoolArgumentType.getBool(context, "enabled");
-
-				Iris.setDebug(enable);
-
-				return 0;
-			})
-		)).then(ClientCommandManager.literal("enabled").then(ClientCommandManager.argument("option", BoolArgumentType.bool()).executes(context -> {
-			try {
-				toggleShaders(instance, BoolArgumentType.getBool(context, "option"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			return 0;
-		}))).then(ClientCommandManager.literal("reload").executes(context -> {
-			try {
-				reload();
-
-				if (instance.player != null) {
-					instance.player.displayClientMessage(new TranslatableComponent("iris.shaders.reloaded"), false);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				return -1;
-			}
-
-			return 0;
-		})));*/
 	}
 
 	/**
@@ -224,7 +188,7 @@ public class Iris {
 				}
 
 			} catch (Exception e) {
-				logger.error("Error while reloading Shaders for Oculus!", e);
+				logger.error("Error while reloading Shaders for " + MODNAME + "!", e);
 
 				if (minecraft.player != null) {
 					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.reloaded.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
@@ -291,9 +255,6 @@ public class Iris {
 			setShadersDisabled();
 			fallback = true;
 		}
-		
-		if(sodiumInstalled)
-			SodiumWorldRenderer.hasChanges = true;
 	}
 
 	private static boolean loadExternalShaderpack(String name) {
@@ -423,9 +384,6 @@ public class Iris {
 		currentPackName = "(off)";
 
 		logger.info("Shaders are disabled");
-		
-		if(sodiumInstalled)
-			SodiumWorldRenderer.hasChanges = true;
 	}
 
 	private static void setDebug(boolean enable) {
