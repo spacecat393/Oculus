@@ -40,20 +40,6 @@ public class MixinTitleScreen extends Screen {
 
 		if (!Iris.isSodiumInstalled() && FMLLoader.isProduction()) {
 			reason = "iris.sodium.failure.reason.notFound";
-		} else if (Iris.hasNotEnoughCrashes()) {
-			Minecraft.getInstance().setScreen(new ConfirmScreen(
-				bool -> {
-					if (bool) {
-						Minecraft.getInstance().setScreen(this);
-					} else {
-						Minecraft.getInstance().stop();
-					}
-				},
-				new TranslatableComponent("iris.nec.failure.title", Iris.MODNAME).withStyle(ChatFormatting.BOLD, ChatFormatting.RED),
-				new TranslatableComponent("iris.nec.failure.description"),
-				new TranslatableComponent("options.graphics.warning.accept").withStyle(ChatFormatting.RED),
-				new TranslatableComponent("menu.quit").withStyle(ChatFormatting.BOLD)));
-			return;
 		} else {
 			Iris.onLoadingComplete();
 

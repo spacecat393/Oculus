@@ -76,7 +76,6 @@ public class Iris {
 
 	private static ShaderPack currentPack;
 	private static String currentPackName;
-	private static boolean hasNEC = FMLLoader.getLoadingModList().getModFileById("notenoughcrashes") != null;
 	private static boolean sodiumInstalled = FMLLoader.getLoadingModList().getModFileById("rubidium") != null;
 	private static boolean initialized;
 
@@ -712,10 +711,6 @@ public class Iris {
 
 	public static boolean isSodiumInstalled() {
 		return sodiumInstalled;
-	}
-
-	public static boolean hasNotEnoughCrashes() {
-		return hasNEC;
 	}
 
 	public static Path getShaderpacksDirectory() {
