@@ -194,6 +194,7 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 		}
 
 		this.buttons.clear();
+		this.children.clear();
 
 		if (!this.guiHidden) {
 			if (optionMenuOpen && shaderOptionList != null) {
