@@ -38,8 +38,7 @@ public class MixinSodiumOptionsGUI extends Screen {
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void iris$onInit(Screen prevScreen, CallbackInfo ci) {
-		String shaderPacksTranslated = new TranslatableComponent("options.iris.shaderPackSelection").getString();
-		shaderPacks = new OptionPage(shaderPacksTranslated, ImmutableList.of());
+		shaderPacks = new OptionPage(new TranslatableComponent("options.iris.shaderPackSelection"), ImmutableList.of());
 		pages.add(shaderPacks);
 	}
 

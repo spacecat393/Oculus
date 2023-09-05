@@ -28,6 +28,7 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+	mavenLocal()
 	maven {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
@@ -47,7 +48,8 @@ dependencies {
 	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
 	compileOnly "org.apache.ant:ant:1.8.2"
-	modCompileOnly "maven.modrinth:rubidium:0.2.12"
+	//modCompileOnly "maven.modrinth:rubidium:0.2.12"
+	modCompileOnly "me.jellysquid.mods:Rubidium:0.2.13"
 
 	implementation fileTree(include: ['*.jar'], dir: 'libs')
 	toJar fileTree(include: ['antlr4-runtime-4.10.1.jar', 'glsl-transformer-1.0.0-pre21.2.jar'], dir: 'libs')
