@@ -9,7 +9,7 @@ uniform float lastFrameTime;
 uniform float decay;
 
 #ifdef IS_GL3
-out float output;
+out float oculus_fragColor;
 #endif
 
 void main() {
@@ -22,11 +22,11 @@ void main() {
         oldDepth = currentDepth;
     }
 
-    output = mix(oldDepth, currentDepth, decay2);
+    oculus_fragColor = mix(oldDepth, currentDepth, decay2);
     #else
     if (oldDepth != oldDepth) { // cheap isNaN
        oldDepth = currentDepth;
     }
-    gl_FragColor = vec4(mix(, currentDepth, decay2), 0, 0, 0);
+    gl_FragColor = vec4(mix(texture2D(altDepth, vec2(0.5)).r, currentDepth, decay2), 0, 0, 0);
     #endif
 }
