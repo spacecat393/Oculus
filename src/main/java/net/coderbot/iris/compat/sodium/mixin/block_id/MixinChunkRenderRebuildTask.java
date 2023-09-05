@@ -2,9 +2,15 @@ package net.coderbot.iris.compat.sodium.mixin.block_id;
 
 import java.util.Map;
 
+import net.coderbot.iris.vertices.ExtendedDataHelper;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -41,31 +47,31 @@ public class MixinChunkRenderRebuildTask {
 		}
 	}
 
-	/*@Redirect(method = "performBuild", at = @At(value = "INVOKE",
-			target = "net/minecraft/client/renderer/ItemBlockRenderTypes.getChunkRenderType(" +
-						"Lnet/minecraft/world/level/block/state/BlockState;" +
-					")Lnet/minecraft/client/renderer/RenderType;"))
-	private RenderType iris$wrapGetBlockLayer(BlockState blockState, ChunkRenderCacheLocal cache,
+	@Redirect(method = "performBuild", at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/client/renderer/ItemBlockRenderTypes;canRenderInLayer(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/client/renderer/RenderType;)Z"))
+	private boolean iris$wrapGetBlockLayer(BlockState blockState, RenderType type, ChunkRenderCacheLocal cache,
 											  ChunkBuildBuffers buffers, CancellationSource cancellationSource) {
-		if (buffers instanceof ChunkBuildBuffersExt) {
+		boolean flag = ItemBlockRenderTypes.canRenderInLayer(blockState, type);
+
+		if (flag && buffers instanceof ChunkBuildBuffersExt) {
 			((ChunkBuildBuffersExt) buffers).iris$setMaterialId(blockState, ExtendedDataHelper.BLOCK_RENDER_TYPE);
 		}
 
-		return ItemBlockRenderTypes.getChunkRenderType(blockState);
+		return flag;
 	}
 
 	@Redirect(method = "performBuild", at = @At(value = "INVOKE",
-			target = "net/minecraft/client/renderer/ItemBlockRenderTypes.getRenderLayer(" +
-						"Lnet/minecraft/world/level/material/FluidState;" +
-					")Lnet/minecraft/client/renderer/RenderType;"))
-	private RenderType iris$wrapGetFluidLayer(FluidState fluidState, ChunkRenderCacheLocal cache,
+			target = "Lnet/minecraft/client/renderer/ItemBlockRenderTypes;canRenderInLayer(Lnet/minecraft/world/level/material/FluidState;Lnet/minecraft/client/renderer/RenderType;)Z"))
+	private boolean iris$wrapGetFluidLayer(FluidState fluidState, RenderType type, ChunkRenderCacheLocal cache,
 											  ChunkBuildBuffers buffers, CancellationSource cancellationSource) {
-		if (buffers instanceof ChunkBuildBuffersExt) {
+		boolean flag = ItemBlockRenderTypes.canRenderInLayer(fluidState, type);
+
+		if (flag && buffers instanceof ChunkBuildBuffersExt) {
 			((ChunkBuildBuffersExt) buffers).iris$setMaterialId(fluidState.createLegacyBlock(), ExtendedDataHelper.FLUID_RENDER_TYPE);
 		}
 
-		return ItemBlockRenderTypes.getRenderLayer(fluidState);
-	}*/
+		return flag;
+	}
 
 	@Inject(method = "performBuild",
 			at = @At(value = "INVOKE", target = "net/minecraft/world/level/block/state/BlockState.hasTileEntity()Z"))
