@@ -93,6 +93,9 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 
 	@Shadow
 	public abstract void putShort(int i, short s);
+
+	@Shadow
+	protected abstract void switchFormat(VertexFormat format);
 	
 	@Shadow
 	protected abstract void ensureCapacity(int i);
@@ -120,10 +123,10 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 	private void iris$afterBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		if (extending) {
 			if (format == DefaultVertexFormat.NEW_ENTITY) {
-				this.format = IrisVertexFormats.ENTITY;
+				this.switchFormat(IrisVertexFormats.ENTITY);
 				this.iris$isTerrain = false;
 			} else {
-				this.format = IrisVertexFormats.TERRAIN;
+				this.switchFormat(IrisVertexFormats.TERRAIN);
 				this.iris$isTerrain = true;
 			}
 			this.currentElement = this.format.getElements().get(0);
