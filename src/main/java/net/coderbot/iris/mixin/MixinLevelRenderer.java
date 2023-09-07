@@ -210,7 +210,7 @@ public class MixinLevelRenderer {
 			to = @At(value = "INVOKE", target = "net/minecraft/client/renderer/LevelRenderer.renderHitOutline (Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V")
 		))
 	private RenderType iris$beginBlockOutline(RenderType type) {
-		return new OuterWrappedRenderType("iris:is_outline", type, IsOutlineRenderStateShard.INSTANCE);
+		return OuterWrappedRenderType.wrapExactlyOnce("iris:is_outline", type, IsOutlineRenderStateShard.INSTANCE);
 	}
 
 	@Inject(method = "renderLevel", at = @At(value = "CONSTANT", args = "stringValue=translucent"))

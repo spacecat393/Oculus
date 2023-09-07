@@ -14,12 +14,20 @@ public class OuterWrappedRenderType extends RenderType implements WrappableRende
 	private final RenderStateShard extra;
 	private final RenderType wrapped;
 
-	public OuterWrappedRenderType(String name, RenderType wrapped, RenderStateShard extra) {
+	private OuterWrappedRenderType(String name, RenderType wrapped, RenderStateShard extra) {
 		super(name, wrapped.format(), wrapped.mode(), wrapped.bufferSize(),
 			wrapped.affectsCrumbling(), shouldSortOnUpload(wrapped), wrapped::setupRenderState, wrapped::clearRenderState);
 
 		this.extra = extra;
 		this.wrapped = wrapped;
+	}
+
+	public static OuterWrappedRenderType wrapExactlyOnce(String name, RenderType wrapped, RenderStateShard extra) {
+		if (wrapped instanceof OuterWrappedRenderType) {
+			wrapped = ((OuterWrappedRenderType) wrapped).unwrap();
+		}
+
+		return new OuterWrappedRenderType(name, wrapped, extra);
 	}
 
 	@Override
