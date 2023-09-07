@@ -1,9 +1,5 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp;
 
-import static net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp.XHFPModelVertexType.STRIDE;
-
-import java.nio.ByteBuffer;
-
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferView;
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferWriterNio;
 import me.jellysquid.mods.sodium.client.render.chunk.format.ModelVertexSink;
@@ -14,6 +10,10 @@ import net.coderbot.iris.compat.sodium.impl.vertex_format.IrisModelVertexFormats
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.coderbot.iris.vertices.ExtendedDataHelper;
 import net.coderbot.iris.vertices.NormalHelper;
+
+import java.nio.ByteBuffer;
+
+import static net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp.XHFPModelVertexType.STRIDE;
 
 public class XHFPModelVertexBufferWriterNio extends VertexBufferWriterNio implements ModelVertexSink, ContextAwareVertexWriter {
 	private final QuadViewTerrain.QuadViewTerrainNio quad = new QuadViewTerrain.QuadViewTerrainNio();
@@ -41,7 +41,7 @@ public class XHFPModelVertexBufferWriterNio extends VertexBufferWriterNio implem
 				color,
 				ModelVertexUtil.denormalizeVertexTextureFloatAsShort(u),
 				ModelVertexUtil.denormalizeVertexTextureFloatAsShort(v),
-				ModelVertexUtil.encodeLightMapTexCoord(light),
+				light,
 				contextHolder.blockId,
 				contextHolder.renderType,
 				ExtendedDataHelper.computeMidBlock(x, y, z, contextHolder.localPosX, contextHolder.localPosY, contextHolder.localPosZ)
@@ -62,7 +62,8 @@ public class XHFPModelVertexBufferWriterNio extends VertexBufferWriterNio implem
 		buffer.putInt(i + 8, color);
 		buffer.putShort(i + 12, u);
 		buffer.putShort(i + 14, v);
-		buffer.putInt(i + 16, light);
+		buffer.putShort(i + 16, (short) (light & 0xFFFF));
+		buffer.putShort(i + 18, (short) (light >> 16 & 0xFFFF));
 		// NB: We don't set midTexCoord, normal, and tangent here, they will be filled in later.
 		// block ID: We only set the first 2 values, any legacy shaders using z or w will get filled in based on the GLSL spec
 		// https://www.khronos.org/opengl/wiki/Vertex_Specification#Vertex_format
