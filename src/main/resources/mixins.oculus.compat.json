@@ -6,7 +6,8 @@
   "refmap": "oculus-refmap.json",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "epicfight.MixinEpicFightRenderTypes"
+    "epicfight.MixinEpicFightRenderTypes",
+    "pixelmon.MixinNormalizedFace"
   ],
   "injectors": {
     "defaultRequire": 1
