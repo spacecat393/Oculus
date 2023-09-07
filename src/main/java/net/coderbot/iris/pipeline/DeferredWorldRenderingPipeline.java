@@ -853,6 +853,10 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 			shadowRenderTargets.destroy();
 		}
 
+		if(shadowRenderer != null) {
+			shadowRenderer.destroy();
+		}
+
 		// Destroy custom textures and the static samplers (normals, specular, and noise)
 		customTextureManager.destroy();
 		whitePixel.releaseId();

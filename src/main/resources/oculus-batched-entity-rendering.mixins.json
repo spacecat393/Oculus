@@ -5,6 +5,8 @@
   "refmap": "oculus-refmap.json",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "ChunkBufferBuilderPackAccessor",
+    "OutlineBufferSourceAccessor",
     "MixinBufferBuilder",
     "MixinBufferBuilder_SegmentRendering",
     "MixinRenderBuffers",
