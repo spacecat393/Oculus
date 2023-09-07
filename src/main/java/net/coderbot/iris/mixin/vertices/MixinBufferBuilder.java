@@ -2,6 +2,7 @@ package net.coderbot.iris.mixin.vertices;
 
 import java.nio.ByteBuffer;
 
+import net.coderbot.iris.vertices.*;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,12 +20,6 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.vendored.joml.Vector3f;
-import net.coderbot.iris.vertices.BlockSensitiveBufferBuilder;
-import net.coderbot.iris.vertices.BufferBuilderPolygonView;
-import net.coderbot.iris.vertices.ExtendedDataHelper;
-import net.coderbot.iris.vertices.ExtendingBufferBuilder;
-import net.coderbot.iris.vertices.IrisVertexFormats;
-import net.coderbot.iris.vertices.NormalHelper;
 
 /**
  * Dynamically and transparently extends the vanilla vertex formats with additional data
@@ -212,15 +207,6 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 		midU /= vertexAmount;
 		midV /= vertexAmount;
 
-		if (vertexAmount == 3) {
-			NormalHelper.computeFaceNormalTri(normal, polygon);
-		} else {
-			NormalHelper.computeFaceNormal(normal, polygon);
-		}
-		int packedNormal = NormalHelper.packNormal(normal, 0.0f);
-
-		int tangent = NormalHelper.computeTangent(normal.x, normal.y, normal.z, polygon);
-
 		int midUOffset;
 		int midVOffset;
 		int normalOffset;
@@ -237,11 +223,29 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 			tangentOffset = 4;
 		}
 
-		for (int vertex = 0; vertex < vertexAmount; vertex++) {
-			buffer.putFloat(nextElementByte - midUOffset - stride * vertex, midU);
-			buffer.putFloat(nextElementByte - midVOffset - stride * vertex, midV);
-			buffer.putInt(nextElementByte - normalOffset - stride * vertex, packedNormal);
-			buffer.putInt(nextElementByte - tangentOffset - stride * vertex, tangent);
+		if (vertexAmount == 3) {
+			// NormalHelper.computeFaceNormalTri(normal, polygon);	// Removed to enable smooth shaded triangles. Mods rendering triangles with bad normals need to recalculate their normals manually or otherwise shading might be inconsistent.
+
+			for (int vertex = 0; vertex < vertexAmount; vertex++) {
+				int packedNormal = buffer.getInt(nextElementByte - normalOffset - stride * vertex); // retrieve per-vertex normal
+
+				int tangent = NormalHelper.computeTangentSmooth(NormI8.unpackX(packedNormal), NormI8.unpackY(packedNormal), NormI8.unpackZ(packedNormal), polygon);
+
+				buffer.putFloat(nextElementByte - midUOffset - stride * vertex, midU);
+				buffer.putFloat(nextElementByte - midVOffset - stride * vertex, midV);
+				buffer.putInt(nextElementByte - tangentOffset - stride * vertex, tangent);
+			}
+		} else {
+			NormalHelper.computeFaceNormal(normal, polygon);
+			int packedNormal = NormI8.pack(normal.x, normal.y, normal.z, 0.0f);
+			int tangent = NormalHelper.computeTangent(normal.x, normal.y, normal.z, polygon);
+
+			for (int vertex = 0; vertex < vertexAmount; vertex++) {
+				buffer.putFloat(nextElementByte - midUOffset - stride * vertex, midU);
+				buffer.putFloat(nextElementByte - midVOffset - stride * vertex, midV);
+				buffer.putInt(nextElementByte - normalOffset - stride * vertex, packedNormal);
+				buffer.putInt(nextElementByte - tangentOffset - stride * vertex, tangent);
+			}
 		}
 	}
 
