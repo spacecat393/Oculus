@@ -88,9 +88,6 @@ java {
 
 jar {
 	from { configurations.toJar.collect { it.isDirectory() ? it : zipTree(it) } }
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
-	}
 }
 
 publishing {
