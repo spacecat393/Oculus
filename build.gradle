@@ -19,12 +19,13 @@ loom {
 				"mixins.oculus.compat.json"
 		]
 	}
+	mixin.defaultRefmapName = "oculus-mixins-refmap.json"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-archivesBaseName = project.archives_base_name
+archivesBaseName = "${project.archives_base_name}-mc${project.minecraft_version}"
 version = project.mod_version
 group = project.maven_group
 

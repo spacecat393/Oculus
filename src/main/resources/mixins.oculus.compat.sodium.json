@@ -1,7 +1,6 @@
 {
   "package": "net.coderbot.iris.compat.sodium.mixin",
   "plugin": "net.coderbot.iris.compat.sodium.mixin.IrisSodiumCompatMixinPlugin",
-  "refmap": "oculus-refmap.json",
   "required": true,
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
