@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import net.coderbot.batchedentityrendering.impl.MemoryTrackingRenderBuffers;
 import org.lwjgl.opengl.ARBTextureSwizzle;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30C;
@@ -648,11 +647,6 @@ public class ShadowRenderer {
 
 	private String getBlockEntitiesDebugString() {
 		return shouldRenderBlockEntities ? (renderedShadowBlockEntities + "/" + Minecraft.getInstance().level.blockEntityList.size()) : "disabled by pack";
-	}
-
-	public void destroy() {
-		targets.destroy();
-		((MemoryTrackingRenderBuffers) buffers).freeAndDeleteBuffers();
 	}
 
 	private static class MipmapPass {

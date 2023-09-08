@@ -1,7 +1,5 @@
 package net.coderbot.batchedentityrendering.mixin;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import net.minecraft.client.renderer.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,8 +13,9 @@ import net.coderbot.batchedentityrendering.impl.FullyBufferedMultiBufferSource;
 import net.coderbot.batchedentityrendering.impl.MemoryTrackingBuffer;
 import net.coderbot.batchedentityrendering.impl.MemoryTrackingRenderBuffers;
 import net.coderbot.batchedentityrendering.impl.RenderBuffersExt;
-
-import java.util.SortedMap;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.OutlineBufferSource;
+import net.minecraft.client.renderer.RenderBuffers;
 
 @Mixin(RenderBuffers.class)
 public class MixinRenderBuffers implements RenderBuffersExt, MemoryTrackingRenderBuffers, DrawCallTrackingRenderBuffers {
@@ -35,14 +34,6 @@ public class MixinRenderBuffers implements RenderBuffersExt, MemoryTrackingRende
 	@Shadow
 	@Final
 	private MultiBufferSource.BufferSource bufferSource;
-
-	@Shadow
-	@Final
-	private ChunkBufferBuilderPack fixedBufferPack;
-
-	@Shadow
-	@Final
-	private SortedMap<RenderType, BufferBuilder> fixedBuffers;
 
 	@Inject(method = "bufferSource", at = @At("HEAD"), cancellable = true)
 	private void batchedentityrendering$replaceBufferSource(CallbackInfoReturnable<MultiBufferSource.BufferSource> cir) {
@@ -113,14 +104,6 @@ public class MixinRenderBuffers implements RenderBuffersExt, MemoryTrackingRende
 	@Override
 	public int getMaxBegins() {
 		return maxBegins;
-	}
-
-	@Override
-	public void freeAndDeleteBuffers() {
-		buffered.freeAndDeleteBuffer();
-		((ChunkBufferBuilderPackAccessor) this.fixedBufferPack).getBuilders().values().forEach(bufferBuilder -> ((MemoryTrackingBuffer) bufferBuilder).freeAndDeleteBuffer());
-		fixedBuffers.values().forEach(bufferBuilder -> ((MemoryTrackingBuffer) bufferBuilder).freeAndDeleteBuffer());
-		((MemoryTrackingBuffer) ((OutlineBufferSourceAccessor) outlineBufferSource).getOutlineBufferSource()).freeAndDeleteBuffer();
 	}
 
 	@Override

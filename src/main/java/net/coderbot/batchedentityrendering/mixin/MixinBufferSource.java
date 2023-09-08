@@ -43,13 +43,4 @@ public class MixinBufferSource implements MemoryTrackingBuffer {
 
 		return allocatedSize;
 	}
-
-	@Override
-	public void freeAndDeleteBuffer() {
-		((MemoryTrackingBuffer) builder).freeAndDeleteBuffer();
-
-		for (BufferBuilder builder : fixedBuffers.values()) {
-			((MemoryTrackingBuffer) builder).freeAndDeleteBuffer();
-		}
-	}
 }

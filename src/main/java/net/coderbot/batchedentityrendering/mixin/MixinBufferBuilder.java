@@ -2,7 +2,6 @@ package net.coderbot.batchedentityrendering.mixin;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.system.MemoryUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -23,11 +22,5 @@ public class MixinBufferBuilder implements MemoryTrackingBuffer {
 	@Override
 	public int getUsedSize() {
 		return buffer.position();
-	}
-
-	@Override
-	public void freeAndDeleteBuffer() {
-		MemoryUtil.memFree(buffer);
-		buffer = null;
 	}
 }

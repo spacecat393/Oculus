@@ -176,13 +176,6 @@ public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSour
 	}
 
 	@Override
-	public void freeAndDeleteBuffer() {
-		for (SegmentedBufferBuilder builder : builders) {
-			builder.freeAndDeleteBuffer();
-		}
-	}
-
-	@Override
 	public void startGroup() {
 		renderOrderManager.startGroup();
 	}
