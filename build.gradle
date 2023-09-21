@@ -19,6 +19,7 @@ loom {
 				"mixins.oculus.compat.indium.json"
 		]
 	}
+	mixin.defaultRefmapName = "oculus-mixins-refmap.json"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -46,7 +47,6 @@ dependencies {
 	
 	//modCompileOnly "maven.modrinth:rubidium:0.6.2b"
 	modCompileOnly "me.jellysquid.mods:Rubidium:0.6.3"
-	modImplementation "maven.modrinth:rubidium:0.6.5"
 }
 
 processResources {

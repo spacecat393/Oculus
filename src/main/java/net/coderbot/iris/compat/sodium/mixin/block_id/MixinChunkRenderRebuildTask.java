@@ -22,11 +22,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraftforge.client.model.data.ModelData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.Map;
 
 /**
  * Passes additional information indirectly to the vertex writer to support the mc_Entity and at_midBlock parts of the vertex format.
@@ -42,6 +45,7 @@ public class MixinChunkRenderRebuildTask {
 								  ChunkRenderData.Builder renderData, VisGraph occluder, ChunkRenderBounds.Builder bounds, ChunkBuildBuffers buffers,
 								  ChunkRenderCacheLocal cacheLocal,
 								  WorldSlice slice, int baseX, int baseY, int baseZ, int maxX, int maxY, int maxZ,
+								  Map<BlockPos, ModelData> modelDataMap,
 								  BlockPos.MutableBlockPos pos, BlockPos.MutableBlockPos renderOffset,
 								  int relY, int relZ, int relX, BlockState blockState) {
 		if (BlockRenderingSettings.INSTANCE.shouldVoxelizeLightBlocks() && blockState.getBlock() instanceof LightBlock) {
@@ -59,7 +63,7 @@ public class MixinChunkRenderRebuildTask {
 				float u = 0;
 				float v = 0;
 				int color = 0;
-				int light = blockState.getLightEmission() << 4 | blockState.getLightEmission() << 20;
+				int light = blockState.getLightEmission(slice, pos) << 4 | blockState.getLightEmission(slice, pos) << 20;
 				bounds.addBlock(relX & 15, relY & 15, relZ & 15);
 
 				buildBuffers.getVertexSink().writeVertex(x, y, z, color, u, v, light, buildBuffers.getChunkId());
@@ -77,14 +81,13 @@ public class MixinChunkRenderRebuildTask {
 	}
 
 	@Inject(method = "performBuild", at = @At(value = "INVOKE",
-			target = "net/minecraft/client/renderer/ItemBlockRenderTypes.getChunkRenderType(" +
-						"Lnet/minecraft/world/level/block/state/BlockState;" +
-					")Lnet/minecraft/client/renderer/RenderType;"), locals = LocalCapture.CAPTURE_FAILHARD)
+			target = "Lnet/minecraft/client/resources/model/BakedModel;getRenderTypes(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/util/RandomSource;Lnet/minecraftforge/client/model/data/ModelData;)Lnet/minecraftforge/client/ChunkRenderTypeSet;"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
 	private void iris$wrapGetBlockLayer(ChunkBuildContext context,
 										CancellationSource cancellationSource, CallbackInfoReturnable<ChunkBuildResult> cir,
 										ChunkRenderData.Builder renderData, VisGraph occluder, ChunkRenderBounds.Builder bounds, ChunkBuildBuffers buffers,
 										ChunkRenderCacheLocal cacheLocal,
 										WorldSlice slice, int baseX, int baseY, int baseZ, int maxX, int maxY, int maxZ,
+										Map<BlockPos, ModelData> modelDataMap,
 										BlockPos.MutableBlockPos pos, BlockPos.MutableBlockPos renderOffset,
 										int relY, int relZ, int relX, BlockState blockState) {
 		if (context.buffers instanceof ChunkBuildBuffersExt) {
@@ -94,13 +97,14 @@ public class MixinChunkRenderRebuildTask {
 
 	@Inject(method = "performBuild", at = @At(value = "INVOKE",
 			target = "net/minecraft/client/renderer/ItemBlockRenderTypes.getRenderLayer(" +
-						"Lnet/minecraft/world/level/material/FluidState;" +
+					"Lnet/minecraft/world/level/material/FluidState;" +
 					")Lnet/minecraft/client/renderer/RenderType;"), locals = LocalCapture.CAPTURE_FAILHARD)
 	private void iris$wrapGetFluidLayer(ChunkBuildContext context,
 										CancellationSource cancellationSource, CallbackInfoReturnable<ChunkBuildResult> cir,
 										ChunkRenderData.Builder renderData, VisGraph occluder, ChunkRenderBounds.Builder bounds, ChunkBuildBuffers buffers,
 										ChunkRenderCacheLocal cacheLocal,
 										WorldSlice slice, int baseX, int baseY, int baseZ, int maxX, int maxY, int maxZ,
+										Map<BlockPos, ModelData> modelDataMap,
 										BlockPos.MutableBlockPos pos, BlockPos.MutableBlockPos renderOffset,
 										int relY, int relZ, int relX, BlockState blockState, boolean rendered, FluidState fluidState) {
 		if (context.buffers instanceof ChunkBuildBuffersExt) {

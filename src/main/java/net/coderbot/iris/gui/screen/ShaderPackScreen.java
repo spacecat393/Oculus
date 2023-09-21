@@ -94,11 +94,6 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 
 		this.irisTextComponent = Component.literal(irisName).withStyle(ChatFormatting.GRAY);
 
-		if (Iris.getUpdateChecker().getUpdateMessage().isPresent()) {
-			this.updateComponent = Component.literal("New update available!").withStyle(ChatFormatting.GREEN).withStyle(ChatFormatting.UNDERLINE);
-			irisTextComponent.append(Component.literal(" (outdated)").withStyle(ChatFormatting.RED));
-		}
-
 		refreshForChangedPack();
 	}
 
@@ -178,20 +173,6 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 		} else {
 			this.font.drawShadow(poseStack, irisTextComponent, 2, this.height - 10, 0xFFFFFF);
 		}
-	}
-
-	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		int widthValue = this.font.width("New update available!");
-		if (this.updateComponent != null && d < widthValue && e > (this.height - 10) && e < this.height) {
-			this.minecraft.setScreen(new ConfirmLinkScreen(bl -> {
-				if (bl) {
-					Iris.getUpdateChecker().getUpdateLink().ifPresent(Util.getPlatform()::openUri);
-				}
-				this.minecraft.setScreen(this);
-			}, Iris.getUpdateChecker().getUpdateLink().orElse(""), true));
-		}
-		return super.mouseClicked(d, e, i);
 	}
 
 	@Override

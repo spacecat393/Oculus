@@ -1,6 +1,6 @@
 package net.coderbot.iris.compat.indigo.mixin;
 
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -13,9 +13,11 @@ import java.util.Set;
  * since otherwise the log gets spammed with warnings.
  */
 public class IrisIndigoCompatMixinPlugin implements IMixinConfigPlugin {
+	public static boolean isReforgiumLoaded;
+
 	@Override
 	public void onLoad(String mixinPackage) {
-
+		isReforgiumLoaded = FMLLoader.getLoadingModList().getModFileById("reforgium") != null;
 	}
 
 	@Override
@@ -25,7 +27,7 @@ public class IrisIndigoCompatMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return FabricLoader.getInstance().isModLoaded("fabric-renderer-indigo");
+		return isReforgiumLoaded;
 	}
 
 	@Override

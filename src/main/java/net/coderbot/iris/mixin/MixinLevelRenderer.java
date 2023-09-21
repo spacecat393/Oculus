@@ -5,8 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.coderbot.iris.Iris;
-import net.coderbot.iris.fantastic.WrappingMultiBufferSource;
-import net.coderbot.iris.gl.program.Program;
 import net.coderbot.iris.layer.IsOutlineRenderStateShard;
 import net.coderbot.iris.layer.OuterWrappedRenderType;
 import net.coderbot.iris.pipeline.HandRenderer;
@@ -15,32 +13,15 @@ import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.coderbot.iris.shadows.frustum.fallback.NonCullingFrustum;
 import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.coderbot.iris.uniforms.SystemTimeUniforms;
-import net.coderbot.iris.vendored.joml.Vector3d;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
-import net.minecraft.client.Options;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
@@ -68,11 +49,6 @@ public class MixinLevelRenderer {
 	private void iris$setupPipeline(PoseStack poseStack, float tickDelta, long startTime, boolean renderBlockOutline,
 									Camera camera, GameRenderer gameRenderer, LightTexture lightTexture,
 									Matrix4f projection, CallbackInfo callback) {
-		if (Iris.isSodiumInvalid()) {
-			throw new IllegalStateException("An invalid version of Sodium is installed, and the warning screen somehow" +
-				" didn't work. This is a bug! Please report it to the Iris developers.");
-		}
-
 		CapturedRenderingState.INSTANCE.setGbufferModelView(poseStack.last().pose());
 		CapturedRenderingState.INSTANCE.setGbufferProjection(projection);
 		CapturedRenderingState.INSTANCE.setTickDelta(tickDelta);
@@ -90,7 +66,7 @@ public class MixinLevelRenderer {
 	// At this point we've ensured that Minecraft's main framebuffer is cleared.
 	// This is important or else very odd issues will happen with shaders that have a final pass that doesn't write to
 	// all pixels.
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = CLEAR, shift = At.Shift.AFTER, remap = false))
+	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = CLEAR, shift = At.Shift.AFTER))
 	private void iris$beginLevelRender(PoseStack poseStack, float tickDelta, long startTime, boolean renderBlockOutline,
 									   Camera camera, GameRenderer gameRenderer, LightTexture lightTexture,
 									   Matrix4f projection, CallbackInfo callback) {
@@ -204,7 +180,7 @@ public class MixinLevelRenderer {
 		pipeline.setPhase(WorldRenderingPhase.RAIN_SNOW);
 	}
 
-	@ModifyArg(method = RENDER_WEATHER, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;depthMask(Z)V", ordinal = 0, remap = false))
+	@ModifyArg(method = RENDER_WEATHER, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;depthMask(Z)V", ordinal = 0))
 	private boolean iris$writeRainAndSnowToDepthBuffer(boolean depthMaskEnabled) {
 		if (pipeline.shouldWriteRainAndSnowToDepthBuffer()) {
 			return true;

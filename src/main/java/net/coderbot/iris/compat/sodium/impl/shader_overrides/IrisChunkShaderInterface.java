@@ -18,9 +18,9 @@ import net.coderbot.iris.samplers.IrisSamplers;
 import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.coderbot.iris.uniforms.custom.CustomUniforms;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL32C;
+import repack.joml.Matrix3f;
+import repack.joml.Matrix4f;
 
 import java.util.List;
 
