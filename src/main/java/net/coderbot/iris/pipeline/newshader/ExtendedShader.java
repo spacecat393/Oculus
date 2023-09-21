@@ -234,7 +234,7 @@ public class ExtendedShader extends ShaderInstance implements ShaderInstanceInte
 	public void iris$createGeometryShader(ResourceProvider factory, ResourceLocation name) throws IOException {
 		 factory.getResource(new ResourceLocation(name.getNamespace(), name.getPath() + "_geometry.gsh")).ifPresent(geometry -> {
 			 try {
-				 this.geometry = Program.compileShader(IrisProgramTypes.GEOMETRY, name.getNamespace(), geometry.open(), geometry.sourcePackId(), new GlslPreprocessor() {
+				 this.geometry = Program.compileShader(IrisProgramTypes.GEOMETRY, name.getPath(), geometry.open(), geometry.sourcePackId(), new GlslPreprocessor() {
 					 @Nullable
 					 @Override
 					 public String applyImport(boolean bl, String string) {
