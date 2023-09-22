@@ -154,16 +154,15 @@ public class MixinLevelRenderer {
 		pipeline.setPhase(WorldRenderingPhase.NONE);
 	}
 
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_CLOUDS))
-	private void iris$beginClouds(PoseStack poseStack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projection, CallbackInfo callback) {
+	@Inject(method = RENDER_CLOUDS, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;renderClouds(Lnet/minecraft/client/multiplayer/ClientLevel;IFLcom/mojang/blaze3d/vertex/PoseStack;DDDLcom/mojang/math/Matrix4f;)Z", shift = At.Shift.AFTER))
+	private void iris$beginClouds(PoseStack poseStack, Matrix4f projection, float tickDelta, double x, double y, double z, CallbackInfo ci) {
 		pipeline.setPhase(WorldRenderingPhase.CLOUDS);
 	}
 
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_CLOUDS, shift = At.Shift.AFTER))
-	private void iris$endClouds(PoseStack poseStack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projection, CallbackInfo callback) {
+	@Inject(method = RENDER_CLOUDS, at = @At(value = "RETURN"))
+	private void iris$endClouds(PoseStack poseStack, Matrix4f projection, float tickDelta, double x, double y, double z, CallbackInfo ci) {
 		pipeline.setPhase(WorldRenderingPhase.NONE);
 	}
-
 
 	@Inject(method = "renderChunkLayer", at = @At("HEAD"))
 	private void iris$beginTerrainLayer(RenderType renderType, PoseStack poseStack, double d, double e, double f, Matrix4f projectionMatrix, CallbackInfo ci) {
