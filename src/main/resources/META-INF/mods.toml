@@ -11,5 +11,11 @@ description='''
 Unofficial Fork of "Iris", made to work with FML
 '''
 
+[[dependencies.oculus]]
+modId="forge"
+mandatory=true
+versionRange="[43.1.58,)"
+side="BOTH"
+
 [mods."sodium:options"]
 "mixin.features.sky"=false
