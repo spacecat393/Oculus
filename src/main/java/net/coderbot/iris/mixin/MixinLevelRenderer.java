@@ -162,7 +162,7 @@ public class MixinLevelRenderer {
 		pipeline.setPhase(WorldRenderingPhase.NONE);
 	}
 
-	@Inject(method = RENDER_CLOUDS, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;renderClouds(Lnet/minecraft/client/multiplayer/ClientLevel;IFLcom/mojang/blaze3d/vertex/PoseStack;DDDLcom/mojang/math/Matrix4f;)Z", shift = At.Shift.AFTER))
+	@Inject(method = RENDER_CLOUDS, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;renderClouds(Lnet/minecraft/client/multiplayer/ClientLevel;IFLcom/mojang/blaze3d/vertex/PoseStack;DDDLorg/joml/Matrix4f;)Z", shift = At.Shift.AFTER))
 	private void iris$beginClouds(PoseStack poseStack, Matrix4f projection, float tickDelta, double x, double y, double z, CallbackInfo ci) {
 		pipeline.setPhase(WorldRenderingPhase.CLOUDS);
 	}
