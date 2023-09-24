@@ -167,7 +167,7 @@ public class MixinLevelRenderer {
 		pipeline.setPhase(WorldRenderingPhase.CLOUDS);
 	}
 
-	@Inject(method = RENDER_CLOUDS, at = @At(value = "RETURN"))
+	@Inject(method = RENDER_CLOUDS, at = @At("RETURN"))
 	private void iris$endClouds(PoseStack poseStack, Matrix4f projection, float tickDelta, double x, double y, double z, CallbackInfo ci) {
 		pipeline.setPhase(WorldRenderingPhase.NONE);
 	}
@@ -182,8 +182,8 @@ public class MixinLevelRenderer {
 		pipeline.setPhase(WorldRenderingPhase.NONE);
 	}
 
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_WEATHER))
-	private void iris$beginWeather(PoseStack poseStack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projection, CallbackInfo callback) {
+	@Inject(method = RENDER_WEATHER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;renderSnowAndRain(Lnet/minecraft/client/multiplayer/ClientLevel;IFLnet/minecraft/client/renderer/LightTexture;DDD)Z", shift = At.Shift.AFTER))
+	private void iris$beginWeather(LightTexture arg, float tickDelta, double x, double y, double z, CallbackInfo callback) {
 		pipeline.setPhase(WorldRenderingPhase.RAIN_SNOW);
 	}
 
@@ -196,8 +196,8 @@ public class MixinLevelRenderer {
 		return depthMaskEnabled;
 	}
 
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_WEATHER, shift = At.Shift.AFTER))
-	private void iris$endWeather(PoseStack poseStack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projection, CallbackInfo callback) {
+	@Inject(method = RENDER_WEATHER, at = @At("RETURN"))
+	private void iris$endWeather(LightTexture arg, float tickDelta, double x, double y, double z, CallbackInfo callback) {
 		pipeline.setPhase(WorldRenderingPhase.NONE);
 	}
 
