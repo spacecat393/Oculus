@@ -11,6 +11,14 @@ description='''
 Unofficial Fork of "Iris", made to work with FML
 '''
 
+[[mods]]
+modId = "iris"
+version = "1.6.9"
+displayName = "Iris"
+description = '''
+Done for compatibility with Fabric's addon for Iris
+'''
+
 [mods."sodium:options"]
 "mixin.features.render.world.sky"=false
 "mixin.features.render.entity"=false
