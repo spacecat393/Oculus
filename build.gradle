@@ -57,8 +57,8 @@ dependencies {
 	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
 	compileOnly "org.apache.ant:ant:1.8.2"
-	//modCompileOnly "maven.modrinth:rubidium:0.2.12"
-	modCompileOnly "me.jellysquid.mods:Rubidium:0.2.13"
+	modCompileOnly "maven.modrinth:rubidium:0.2.13"
+	//modCompileOnly "me.jellysquid.mods:Rubidium:0.2.13"
 	modCompileOnly "curse.maven:epic-fight-mod-405076:4029362"
 	modCompileOnly "curse.maven:pixelmon-389487:4718641"
 
