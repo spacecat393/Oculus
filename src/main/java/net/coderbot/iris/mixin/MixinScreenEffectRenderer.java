@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ScreenEffectRenderer.class)
 public abstract class MixinScreenEffectRenderer {
-	@Inject(method = "renderFluid", at = @At(value = "HEAD"), cancellable = true)
+	@Inject(method = "renderFluid", at = @At(value = "HEAD"), cancellable = true, remap = false)
 	private static void iris$disableUnderWaterOverlayRendering(Minecraft minecraft, PoseStack poseStack, ResourceLocation texture, CallbackInfo ci) {
 		WorldRenderingPipeline pipeline = Iris.getPipelineManager().getPipelineNullable();
 
