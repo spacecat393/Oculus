@@ -5,8 +5,10 @@ plugins {
 
 loom {
     silentMojangMappingsLicense()
+	accessWidenerPath = file("src/main/resources/iris.accesswidener")
 	
 	forge {
+		convertAccessWideners = true
 		mixinConfigs = [
 				"mixins.oculus.json",
 				"mixins.oculus.fantastic.json",
@@ -38,6 +40,9 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+	maven {
+		url "https://maven.su5ed.dev/releases"
+	}
 }
 
 dependencies {

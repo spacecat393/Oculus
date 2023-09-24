@@ -24,10 +24,6 @@ import net.coderbot.iris.shaderpack.option.Profile;
 import net.coderbot.iris.shaderpack.option.values.MutableOptionValues;
 import net.coderbot.iris.shaderpack.option.values.OptionValues;
 import net.coderbot.iris.texture.pbr.PBRTextureManager;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.Version;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
@@ -36,9 +32,17 @@ import net.minecraft.client.multiplayer.ClientLevel;
 
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
-import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.network.NetworkConstants;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
@@ -60,15 +64,16 @@ import java.util.stream.Stream;
 import java.util.zip.ZipError;
 import java.util.zip.ZipException;
 
+@Mod(Iris.MODID)
 public class Iris {
-	public static final String MODID = "iris";
+	public static final String MODID = "oculus";
 
 	/**
 	 * The user-facing name of the mod. Moved into a constant to facilitate
 	 * easy branding changes (for forks). You'll still need to change this
 	 * separately in mixin plugin classes & the language files.
 	 */
-	public static final String MODNAME = "Iris";
+	public static final String MODNAME = "Oculus";
 
 	public static final IrisLogging logger = new IrisLogging(MODNAME);
 
@@ -78,9 +83,7 @@ public class Iris {
 	private static ShaderPack currentPack;
 	private static String currentPackName;
 	private static Optional<Exception> storedError = Optional.empty();
-	private static boolean sodiumInvalid;
-	private static boolean hasNEC;
-	private static boolean sodiumInstalled;
+	private static boolean sodiumInstalled = FMLLoader.getLoadingModList().getModFileById("rubidium") != null;
 	private static boolean initialized;
 
 	private static PipelineManager pipelineManager;
@@ -96,12 +99,23 @@ public class Iris {
 	// behavior is more concrete and therefore is more likely to repair a user's issues
 	private static boolean resetShaderPackOptions = false;
 
-	private static Version IRIS_VERSION;
-	private static UpdateChecker updateChecker;
+	private static String IRIS_VERSION;
 	private static boolean fallback;
 
 	// Change this for snapshots!
 	private static String backupVersionNumber = "1.19.4";
+
+	public Iris() {
+		try {
+			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onKeyRegister);
+			MinecraftForge.EVENT_BUS.addListener(this::onKeyInput);
+
+			IRIS_VERSION = ModList.get().getModContainerById(MODID).get().getModInfo().getVersion().toString();
+
+			ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		}catch (Exception ignored) {
+		}
+	}
 
 	/**
 	 * Called very early on in Minecraft initialization. At this point we *cannot* safely access OpenGL, but we can do
@@ -113,22 +127,9 @@ public class Iris {
 	 * <p>This is called right before options are loaded, so we can add key bindings here.</p>
 	 */
 	public void onEarlyInitialize() {
-		FabricLoader.getInstance().getModContainer("sodium").ifPresent(
-				modContainer -> sodiumInstalled = true
-		);
-
-		hasNEC = FabricLoader.getInstance().isModLoaded("notenoughcrashes");
-
-		ModContainer iris = FabricLoader.getInstance().getModContainer(MODID)
-				.orElseThrow(() -> new IllegalStateException("Couldn't find the mod container for Iris"));
-
-		IRIS_VERSION = iris.getMetadata().getVersion();
-
-		this.updateChecker = new UpdateChecker(IRIS_VERSION);
-
-		reloadKeybind = KeyBindingHelper.registerKeyBinding(new KeyMapping("iris.keybind.reload", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "iris.keybinds"));
-		toggleShadersKeybind = KeyBindingHelper.registerKeyBinding(new KeyMapping("iris.keybind.toggleShaders", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "iris.keybinds"));
-		shaderpackScreenKeybind = KeyBindingHelper.registerKeyBinding(new KeyMapping("iris.keybind.shaderPackSelection", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "iris.keybinds"));
+		reloadKeybind = new KeyMapping("iris.keybind.reload", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "iris.keybinds");
+		toggleShadersKeybind = new KeyMapping("iris.keybind.toggleShaders", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "iris.keybinds");
+		shaderpackScreenKeybind = new KeyMapping("iris.keybind.shaderPackSelection", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "iris.keybinds");
 
 		try {
 			if (!Files.exists(getShaderpacksDirectory())) {
@@ -139,54 +140,26 @@ public class Iris {
 			logger.warn("", e);
 		}
 
-		irisConfig = new IrisConfig(FabricLoader.getInstance().getConfigDir().resolve("iris.properties"));
+		irisConfig = new IrisConfig(FMLPaths.CONFIGDIR.get().resolve(MODID + ".properties"));
 
 		try {
 			irisConfig.initialize();
 		} catch (IOException e) {
-			logger.error("Failed to initialize Iris configuration, default values will be used instead");
+			logger.error("Failed to initialize " + MODNAME + " configuration, default values will be used instead");
 			logger.error("", e);
 		}
-
-		this.updateChecker.checkForUpdates(irisConfig);
-
-		setupCommands(Minecraft.getInstance());
 
 		initialized = true;
 	}
 
-	private void setupCommands(Minecraft instance) {
-		// TODO: Add back commands when Fabric Maven stops dying
-		/*ClientCommandManager.DISPATCHER.register(ClientCommandManager.literal("iris").then(ClientCommandManager.literal("debug").then(
-			ClientCommandManager.argument("enabled", BoolArgumentType.bool()).executes(context -> {
-				boolean enable = BoolArgumentType.getBool(context, "enabled");
+	public void onKeyRegister(RegisterKeyMappingsEvent event) {
+		event.register(reloadKeybind);
+		event.register(toggleShadersKeybind);
+		event.register(shaderpackScreenKeybind);
+	}
 
-				Iris.setDebug(enable);
-
-				return 0;
-			})
-		)).then(ClientCommandManager.literal("enabled").then(ClientCommandManager.argument("option", BoolArgumentType.bool()).executes(context -> {
-			try {
-				toggleShaders(instance, BoolArgumentType.getBool(context, "option"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			return 0;
-		}))).then(ClientCommandManager.literal("reload").executes(context -> {
-			try {
-				reload();
-
-				if (instance.player != null) {
-					instance.player.displayClientMessage(Component.translatable("iris.shaders.reloaded"), false);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				return -1;
-			}
-
-			return 0;
-		})));*/
+	public void onKeyInput(InputEvent.Key event) {
+		handleKeybinds(Minecraft.getInstance());
 	}
 
 	/**
@@ -236,7 +209,7 @@ public class Iris {
 				}
 
 			} catch (Exception e) {
-				logger.error("Error while reloading Shaders for Iris!", e);
+				logger.error("Error while reloading Shaders for " + MODNAME + "!", e);
 
 				if (minecraft.player != null) {
 					minecraft.player.displayClientMessage(Component.translatable("iris.shaders.reloaded.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
@@ -705,10 +678,6 @@ public class Iris {
 		return irisConfig;
 	}
 
-	public static UpdateChecker getUpdateChecker() {
-		return updateChecker;
-	}
-
 	public static boolean isFallback() {
 		return fallback;
 	}
@@ -718,7 +687,7 @@ public class Iris {
 			return "Version info unknown!";
 		}
 
-		return IRIS_VERSION.getFriendlyString();
+		return IRIS_VERSION;
 	}
 
 	public static String getFormattedVersion() {
@@ -752,21 +721,13 @@ public class Iris {
 		return backupVersionNumber;
 	}
 
-	public static boolean isSodiumInvalid() {
-		return sodiumInvalid;
- 	}
-
 	public static boolean isSodiumInstalled() {
 		return sodiumInstalled;
 	}
 
-	public static boolean hasNotEnoughCrashes() {
-		return hasNEC;
-	}
-
 	public static Path getShaderpacksDirectory() {
 		if (shaderpacksDirectory == null) {
-			shaderpacksDirectory = FabricLoader.getInstance().getGameDir().resolve("shaderpacks");
+			shaderpacksDirectory = FMLPaths.GAMEDIR.get().resolve("shaderpacks");
 		}
 
 		return shaderpacksDirectory;

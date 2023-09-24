@@ -7,9 +7,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GlStateManager.class)
+@Mixin(value = GlStateManager.class, remap = false)
 public class MixinGlStateManager_DepthColorOverride {
-	@Inject(method = "_colorMask", at = @At("HEAD"), cancellable = true, remap = false)
+	@Inject(method = "_colorMask", at = @At("HEAD"), cancellable = true)
 	private static void iris$colorMaskLock(boolean red, boolean green, boolean blue, boolean alpha, CallbackInfo ci) {
 		if (DepthColorStorage.isDepthColorLocked()) {
 			DepthColorStorage.deferColorMask(red, green, blue, alpha);
@@ -17,7 +17,7 @@ public class MixinGlStateManager_DepthColorOverride {
 		}
 	}
 
-	@Inject(method = "_depthMask", at = @At("HEAD"), cancellable = true, remap = false)
+	@Inject(method = "_depthMask", at = @At("HEAD"), cancellable = true)
 	private static void iris$depthMaskLock(boolean enable, CallbackInfo ci) {
 		if (DepthColorStorage.isDepthColorLocked()) {
 			DepthColorStorage.deferDepthEnable(enable);

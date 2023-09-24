@@ -240,10 +240,10 @@ public class ExtendedShader extends ShaderInstance implements ShaderInstanceInte
 	}
 
 	@Override
-	public void iris$createGeometryShader(ResourceProvider factory, String name) throws IOException {
-		 factory.getResource(new ResourceLocation("minecraft", name + "_geometry.gsh")).ifPresent(geometry -> {
+	public void iris$createGeometryShader(ResourceProvider factory, ResourceLocation name) throws IOException {
+		 factory.getResource(new ResourceLocation(name.getNamespace(), name.getPath() + "_geometry.gsh")).ifPresent(geometry -> {
 			 try {
-				 this.geometry = Program.compileShader(IrisProgramTypes.GEOMETRY, name, geometry.open(), geometry.sourcePackId(), new GlslPreprocessor() {
+				 this.geometry = Program.compileShader(IrisProgramTypes.GEOMETRY, name.getPath(), geometry.open(), geometry.sourcePackId(), new GlslPreprocessor() {
 					 @Nullable
 					 @Override
 					 public String applyImport(boolean bl, String string) {

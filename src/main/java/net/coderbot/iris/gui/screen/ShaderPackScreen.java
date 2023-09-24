@@ -1,7 +1,6 @@
 package net.coderbot.iris.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.gui.NavigationController;
@@ -18,7 +17,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -96,11 +94,6 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 		}
 
 		this.irisTextComponent = Component.literal(irisName).withStyle(ChatFormatting.GRAY);
-
-		if (Iris.getUpdateChecker().getUpdateMessage().isPresent()) {
-			this.updateComponent = Component.literal("New update available!").withStyle(ChatFormatting.GREEN).withStyle(ChatFormatting.UNDERLINE);
-			irisTextComponent.append(Component.literal(" (outdated)").withStyle(ChatFormatting.RED));
-		}
 
 		refreshForChangedPack();
 	}
@@ -181,20 +174,6 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 		} else {
 			guiGraphics.drawString(font, irisTextComponent, 2, this.height - 10, 0xFFFFFF);
 		}
-	}
-
-	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		int widthValue = this.font.width("New update available!");
-		if (this.updateComponent != null && d < widthValue && e > (this.height - 10) && e < this.height) {
-			this.minecraft.setScreen(new ConfirmLinkScreen(bl -> {
-				if (bl) {
-					Iris.getUpdateChecker().getUpdateLink().ifPresent(Util.getPlatform()::openUri);
-				}
-				this.minecraft.setScreen(this);
-			}, Iris.getUpdateChecker().getUpdateLink().orElse(""), true));
-		}
-		return super.mouseClicked(d, e, i);
 	}
 
 	@Override

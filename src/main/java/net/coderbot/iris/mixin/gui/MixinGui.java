@@ -24,43 +24,6 @@ import java.util.List;
 
 @Mixin(Gui.class)
 public class MixinGui {
-	@Shadow @Final private Minecraft minecraft;
-
-	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
-	public void iris$handleHudHidingScreens(GuiGraphics pGui0, float pFloat1, CallbackInfo ci) {
-		Screen screen = this.minecraft.screen;
-
-		if (screen instanceof HudHideable) {
-			ci.cancel();
-		}
-	}
-
-	// TODO: Move this to a more appropriate mixin
-	@Inject(method = "render", at = @At("RETURN"))
-	public void iris$displayBigSodiumWarning(GuiGraphics guiGraphics, float pFloat1, CallbackInfo ci) {
-		if (Iris.isSodiumInstalled()
-				|| Minecraft.getInstance().options.renderDebug
-				|| !Iris.getCurrentPack().isPresent()) {
-			return;
-		}
-
-		Font font = Minecraft.getInstance().font;
-
-		List<String> warningLines = new ArrayList<>();
-		warningLines.add("[" + Iris.MODNAME + "] Sodium isn't installed; you will have poor performance.");
-		warningLines.add("[" + Iris.MODNAME + "] Install Sodium if you want to run benchmarks or get higher FPS!");
-
-		for (int i = 0; i < warningLines.size(); ++i) {
-			String string = warningLines.get(i);
-
-			final int lineHeight = 9;
-			final int lineWidth = font.width(string);
-			final int y = 2 + lineHeight * i;
-
-			guiGraphics.fill(1, y - 1, 2 + lineWidth + 1, y + lineHeight - 1, 0x9050504E);
-			guiGraphics.drawString(font, string, 2, y, 0xFFFF55);
-		}
-	}
 
 	@Inject(method = "renderVignette", at = @At("HEAD"), cancellable = true)
 	private void iris$disableVignetteRendering(GuiGraphics pGui0, Entity pEntity1, CallbackInfo ci) {

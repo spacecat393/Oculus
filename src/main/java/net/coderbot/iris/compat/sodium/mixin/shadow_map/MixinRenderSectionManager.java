@@ -20,7 +20,7 @@ public class MixinRenderSectionManager {
     @Unique
     private @NotNull SortedRenderLists shadowRenderLists = SortedRenderLists.empty();
 
-    @Redirect(method = "createTerrainRenderList", at = @At(value = "FIELD", target = "Lme/jellysquid/mods/sodium/client/render/chunk/RenderSectionManager;renderLists:Lme/jellysquid/mods/sodium/client/render/chunk/lists/SortedRenderLists;"))
+    @Redirect(method = "createTerrainRenderList", at = @At(value = "FIELD", target = "Lme/jellysquid/mods/sodium/client/render/chunk/RenderSectionManager;renderLists:Lme/jellysquid/mods/sodium/client/render/chunk/lists/SortedRenderLists;"), remap = false)
     private void useShadowRenderList(RenderSectionManager instance, SortedRenderLists value) {
         if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
             shadowRenderLists = value;
@@ -29,7 +29,7 @@ public class MixinRenderSectionManager {
         }
     }
 
-    @Inject(method = "update", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/RenderSectionManager;createTerrainRenderList(Lnet/minecraft/client/Camera;Lme/jellysquid/mods/sodium/client/render/viewport/Viewport;IZ)V", shift = At.Shift.AFTER), cancellable = true)
+    @Inject(method = "update", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/RenderSectionManager;createTerrainRenderList(Lnet/minecraft/client/Camera;Lme/jellysquid/mods/sodium/client/render/viewport/Viewport;IZ)V", shift = At.Shift.AFTER), cancellable = true, remap = false)
     private void cancelIfShadow(Camera camera, Viewport viewport, int frame, boolean spectator, CallbackInfo ci) {
         if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) ci.cancel();
     }

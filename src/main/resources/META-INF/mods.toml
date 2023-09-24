@@ -1,0 +1,17 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="LGPL-3.0-only"
+[[mods]]
+modId="oculus"
+version="${version}"
+displayName="Oculus"
+logoFile="oculus-logo.png"
+authors="coderbot, IMS212, Justsnoopy30, FoundationGames"
+description='''
+Unofficial Fork of "Iris", made to work with FML
+'''
+
+[mods."sodium:options"]
+"mixin.features.render.world.sky"=false
+"mixin.features.render.entity"=false
+"mixin.features.render.gui.font"=false
