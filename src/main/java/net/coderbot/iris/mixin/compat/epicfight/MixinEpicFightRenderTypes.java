@@ -14,6 +14,6 @@ import yesman.epicfight.client.renderer.EpicFightRenderTypes;
 public class MixinEpicFightRenderTypes {
     @Inject(method = "getArmorVertexBuilder", at = @At("HEAD"), cancellable = true)
     private static void getArmorVertexBuilder(MultiBufferSource buffer, RenderType renderType, boolean withGlint, CallbackInfoReturnable<VertexConsumer> cir) {
-        if(buffer.getBuffer(EpicFightRenderTypes.enchantedAnimatedArmor()) == buffer.getBuffer(renderType)) cir.setReturnValue(buffer.getBuffer(renderType));
+        if(EpicFightRenderTypes.enchantedAnimatedArmor() == renderType) cir.setReturnValue(buffer.getBuffer(renderType));
     }
 }
