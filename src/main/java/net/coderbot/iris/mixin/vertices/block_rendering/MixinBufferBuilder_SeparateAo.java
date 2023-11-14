@@ -11,6 +11,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 /**
  * Allows directional shading and ambient occlusion data to be stored separately in the vertex format.
@@ -23,7 +25,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
  * field to store the directional shading / ambient occlusion coefficient for each vertex. This mixin implements that
  * behavior, though conditionally controlled by the current shader pack of course.
  */
-@Mixin(BufferBuilder.class)
+@Mixin(value = BufferBuilder.class, priority = 999)
 public abstract class MixinBufferBuilder_SeparateAo extends DefaultedVertexConsumer {
 	@Unique
 	private float[] brightnesses;
@@ -45,9 +47,8 @@ public abstract class MixinBufferBuilder_SeparateAo extends DefaultedVertexConsu
 		super.putBulkData(matrixEntry, quad, brightnesses, red, green, blue, lights, overlay, useQuadColorData);
 	}
 
-	@Override
-	public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v,
-					   int overlay, int light, float normalX, float normalY, float normalZ) {
+	@ModifyVariable(method = "vertex", at = @At("HEAD"), index = 7, argsOnly = true)
+	public float vertex(float alpha) {
 		if (brightnesses != null && BlockRenderingSettings.INSTANCE.shouldUseSeparateAo()) {
 			if (brightnessIndex < brightnesses.length) {
 				alpha = brightnesses[brightnessIndex++];
@@ -56,6 +57,6 @@ public abstract class MixinBufferBuilder_SeparateAo extends DefaultedVertexConsu
 			}
 		}
 
-		super.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
+		return alpha;
 	}
 }
