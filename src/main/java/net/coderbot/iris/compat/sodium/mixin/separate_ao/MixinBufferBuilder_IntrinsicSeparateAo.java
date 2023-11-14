@@ -24,18 +24,17 @@ import java.util.Arrays;
 public abstract class MixinBufferBuilder_IntrinsicSeparateAo extends DefaultedVertexConsumer {
     @Shadow
     private boolean fastFormat;
-    private float[] brightnessTable;
 
     @Override
     public void putBulkData(PoseStack.Pose matrixEntry, BakedQuad quad, float[] brightnesses, float red, float green,
                             float blue, int[] lights, int overlay, boolean useQuadColorData) {
         if (!this.fastFormat) {
             if (BlockRenderingSettings.INSTANCE.shouldUseSeparateAo()) {
-                brightnessTable = new float[brightnessTable.length];
-                Arrays.fill(brightnessTable, 1.0f);
+                brightnesses = new float[brightnesses.length];
+                Arrays.fill(brightnesses, 1.0f);
             }
 
-            super.putBulkData(matrixEntry, quad, brightnessTable, red, green, blue, lights, overlay, useQuadColorData);
+            super.putBulkData(matrixEntry, quad, brightnesses, red, green, blue, lights, overlay, useQuadColorData);
 
             return;
         }
@@ -64,7 +63,7 @@ public abstract class MixinBufferBuilder_IntrinsicSeparateAo extends DefaultedVe
             float fG;
             float fB;
 
-            float brightness = brightnessTable[i];
+            float brightness = brightnesses[i];
             float alpha = 1.0F;
 
             if (BlockRenderingSettings.INSTANCE.shouldUseSeparateAo()) {
