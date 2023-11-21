@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.ARBDirectStateAccess;
 import org.lwjgl.opengl.EXTShaderImageLoadStore;
@@ -378,6 +379,9 @@ public class IrisRenderSystem {
 				super.bindTextureToUnit(unit, texture);
 			} else {
 				ARBDirectStateAccess.glBindTextureUnit(unit, texture);
+
+				// Manually fix GLStateManager bindings...
+				GlStateManagerAccessor.getTEXTURES()[unit].binding = texture;
 			}
 		}
 
