@@ -3,21 +3,18 @@ package net.coderbot.iris.shaderpack;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import net.coderbot.iris.shaderpack.materialmap.NamespacedId;
+import net.coderbot.iris.shaderpack.preprocessor.PropertiesPreprocessor;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableList;
@@ -53,10 +50,7 @@ public class ShaderPack {
 	private static final Gson GSON = new Gson();
 
 	private final ProgramSet base;
-	@Nullable
-	private final ProgramSet overworld;
-	private final ProgramSet nether;
-	private final ProgramSet end;
+	private final Map<NamespacedId, ProgramSetInterface> overrides;
 
 	private final IdMap idMap;
 	private final LanguageMap languageMap;
@@ -67,6 +61,11 @@ public class ShaderPack {
 
 	private final ProfileSet.ProfileResult profile;
 	private final String profileInfo;
+
+	private final Function<AbsolutePackPath, String> sourceProvider;
+	private final ShaderProperties shaderProperties;
+	private List<String> dimensionIds;
+	private Map<NamespacedId, String> dimensionMap;
 
 	public ShaderPack(Path root, Iterable<StringPair> environmentDefines) throws IOException, IllegalStateException {
 		this(root, Collections.emptyMap(), environmentDefines);
@@ -91,14 +90,40 @@ public class ShaderPack {
 		ShaderPackSourceNames.findPresentSources(starts, root, AbsolutePackPath.fromAbsolutePath("/"),
 				potentialFileNames);
 
-		boolean hasWorld0 = ShaderPackSourceNames.findPresentSources(starts, root,
-				AbsolutePackPath.fromAbsolutePath("/world0"), potentialFileNames);
+		dimensionIds = new ArrayList<>();
 
-		boolean hasNether = ShaderPackSourceNames.findPresentSources(starts, root,
-				AbsolutePackPath.fromAbsolutePath("/world-1"), potentialFileNames);
+		final boolean[] hasDimensionIds = {false}; // Thanks Java
 
-		boolean hasEnd = ShaderPackSourceNames.findPresentSources(starts, root,
-				AbsolutePackPath.fromAbsolutePath("/world1"), potentialFileNames);
+		// This cannot be done in IDMap, as we do not have the include graph, and subsequently the shader settings.
+		List<String> dimensionIdCreator = loadProperties(root, "dimension.properties", environmentDefines).map(dimensionProperties -> {
+			hasDimensionIds[0] = dimensionProperties.size() > 0;
+			dimensionMap = parseDimensionMap(dimensionProperties, "dimension.", "dimension.properties");
+			return parseDimensionIds(dimensionProperties, "dimension.");
+		}).orElse(new ArrayList<>());
+
+		if (!hasDimensionIds[0]) {
+			dimensionMap = new Object2ObjectArrayMap<>();
+
+			if (Files.exists(root.resolve("world0"))) {
+				dimensionIdCreator.add("world0");
+				dimensionMap.putIfAbsent(DimensionId.OVERWORLD, "world0");
+			}
+			if (Files.exists(root.resolve("world-1"))) {
+				dimensionIdCreator.add("world-1");
+				dimensionMap.putIfAbsent(DimensionId.NETHER, "world-1");
+			}
+			if (Files.exists(root.resolve("world1"))) {
+				dimensionIdCreator.add("world1");
+				dimensionMap.putIfAbsent(DimensionId.END, "world1");
+			}
+		}
+
+		for (String id : dimensionIdCreator) {
+			if (ShaderPackSourceNames.findPresentSources(starts, root, AbsolutePackPath.fromAbsolutePath("/" + id),
+					potentialFileNames)) {
+				dimensionIds.add(id);
+			}
+		}
 
 		// Read all files and included files recursively
 		IncludeGraph graph = new IncludeGraph(root, starts.build());
@@ -118,7 +143,7 @@ public class ShaderPack {
 		graph = this.shaderPackOptions.getIncludes();
 
 		Iterable<StringPair> finalEnvironmentDefines = environmentDefines;
-		ShaderProperties shaderProperties = loadProperties(root, "shaders.properties")
+		this.shaderProperties = loadProperties(root, "shaders.properties")
 				.map(source -> new ShaderProperties(source, shaderPackOptions, finalEnvironmentDefines))
 				.orElseGet(ShaderProperties::empty);
 
@@ -176,7 +201,7 @@ public class ShaderPack {
 
 		// Set up our source provider for creating ProgramSets
 		Iterable<StringPair> finalEnvironmentDefines1 = environmentDefines;
-		Function<AbsolutePackPath, String> sourceProvider = (path) -> {
+		this.sourceProvider = (path) -> {
 			String pathString = path.getPathString();
 			// Removes the first "/" in the path if present, and the file
 			// extension in order to represent the path as its program name
@@ -212,14 +237,9 @@ public class ShaderPack {
 			return source;
 		};
 
-		this.base = new ProgramSet(AbsolutePackPath.fromAbsolutePath("/"), sourceProvider, shaderProperties, this);
+		this.base = new ProgramSet(AbsolutePackPath.fromAbsolutePath("/" + dimensionMap.getOrDefault(new NamespacedId("*", "*"), "")), sourceProvider, shaderProperties, this);
 
-		this.overworld = loadOverrides(hasWorld0, AbsolutePackPath.fromAbsolutePath("/world0"), sourceProvider,
-				shaderProperties, this);
-		this.nether = loadOverrides(hasNether, AbsolutePackPath.fromAbsolutePath("/world-1"), sourceProvider,
-				shaderProperties, this);
-		this.end = loadOverrides(hasEnd, AbsolutePackPath.fromAbsolutePath("/world1"), sourceProvider,
-				shaderProperties, this);
+		this.overrides = new HashMap<>();
 
 		this.idMap = new IdMap(root, shaderPackOptions, environmentDefines);
 
@@ -245,6 +265,79 @@ public class ShaderPack {
 
 			customTextureDataMap.put(textureStage, innerCustomTextureDataMap);
 		});
+	}
+
+	// TODO: Copy-paste from IdMap, find a way to deduplicate this
+	/**
+	 * Loads properties from a properties file in a shaderpack path
+	 */
+	private static Optional<Properties> loadProperties(Path shaderPath, String name,
+													   Iterable<StringPair> environmentDefines) {
+		String fileContents = readProperties(shaderPath, name);
+		if (fileContents == null) {
+			return Optional.empty();
+		}
+
+		String processed = PropertiesPreprocessor.preprocessSource(fileContents, environmentDefines);
+
+		StringReader propertiesReader = new StringReader(processed);
+
+		// Note: ordering of properties is significant
+		// See https://github.com/IrisShaders/Iris/issues/1327 and the relevant putIfAbsent calls in
+		// BlockMaterialMapping
+		Properties properties = new OrderBackedProperties();
+		try {
+			properties.load(propertiesReader);
+		} catch (IOException e) {
+			Iris.logger.error("Error loading " + name + " at " + shaderPath, e);
+
+			return Optional.empty();
+		}
+
+		return Optional.of(properties);
+	}
+
+	private List<String> parseDimensionIds(Properties dimensionProperties, String keyPrefix) {
+		List<String> names = new ArrayList<>();
+
+		dimensionProperties.forEach((keyObject, value) -> {
+			String key = (String) keyObject;
+			if (!key.startsWith(keyPrefix)) {
+				// Not a valid line, ignore it
+				return;
+			}
+
+			key = key.substring(keyPrefix.length());
+
+			names.add(key);
+		});
+
+		return names;
+	}
+
+	private static Map<NamespacedId, String> parseDimensionMap(Properties properties, String keyPrefix, String fileName) {
+		Map<NamespacedId, String> overrides = new Object2ObjectArrayMap<>();
+
+		properties.forEach((keyObject, valueObject) -> {
+			String key = (String) keyObject;
+			String value = (String) valueObject;
+
+			if (!key.startsWith(keyPrefix)) {
+				// Not a valid line, ignore it
+				return;
+			}
+
+			key = key.substring(keyPrefix.length());
+
+			for (String part : value.split("\\s+")) {
+				if (part.equals("*")) {
+					overrides.put(new NamespacedId("*", "*"), key);
+				}
+				overrides.put(new NamespacedId(part), key);
+			}
+		});
+
+		return overrides;
 	}
 
 	private String getCurrentProfileName() {
@@ -349,22 +442,22 @@ public class ShaderPack {
 		}
 	}
 
-	public ProgramSet getProgramSet(DimensionId dimension) {
-		ProgramSet overrides;
+	public ProgramSet getProgramSet(NamespacedId dimension) {
+		ProgramSetInterface overrides;
 
-		switch (dimension) {
-			case OVERWORLD:
-				overrides = overworld;
-				break;
-			case NETHER:
-				overrides = nether;
-				break;
-			case END:
-				overrides = end;
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown dimension " + dimension);
-		}
+		overrides = this.overrides.computeIfAbsent(dimension, dim -> {
+			if (dimensionMap.containsKey(dimension)) {
+				String name = dimensionMap.get(dimension);
+				if (dimensionIds.contains(name)) {
+					return new ProgramSet(AbsolutePackPath.fromAbsolutePath("/" + name), sourceProvider, shaderProperties, this);
+				} else {
+					Iris.logger.error("Attempted to load dimension folder " + name + " for dimension " + dimension + ", but it does not exist!");
+					return ProgramSetInterface.Empty.INSTANCE;
+				}
+			} else {
+				return ProgramSetInterface.Empty.INSTANCE;
+			}
+		});
 
 		// NB: If a dimension overrides directory is present, none of the files from the parent directory are "merged"
 		//     into the override. Rather, we act as if the overrides directory contains a completely different set of
@@ -374,8 +467,8 @@ public class ShaderPack {
 		//     impossible to "un-define" the composite pass. It also removes a lot of complexity related to "merging"
 		//     program sets. At the same time, this might be desired behavior by shader pack authors. It could make
 		//     sense to bring it back as a configurable option, and have a more maintainable set of code backing it.
-		if (overrides != null) {
-			return overrides;
+		if (overrides instanceof ProgramSet) {
+			return (ProgramSet) overrides;
 		} else {
 			return base;
 		}

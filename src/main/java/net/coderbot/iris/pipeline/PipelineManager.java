@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import net.coderbot.iris.shaderpack.materialmap.NamespacedId;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL20C;
 
@@ -18,16 +19,16 @@ import net.minecraft.client.Minecraft;
 
 public class PipelineManager {
 	private static PipelineManager instance;
-	private final Function<DimensionId, WorldRenderingPipeline> pipelineFactory;
-	private final Map<DimensionId, WorldRenderingPipeline> pipelinesPerDimension = new HashMap<>();
+	private final Function<NamespacedId, WorldRenderingPipeline> pipelineFactory;
+	private final Map<NamespacedId, WorldRenderingPipeline> pipelinesPerDimension = new HashMap<>();
 	private WorldRenderingPipeline pipeline = new FixedFunctionWorldRenderingPipeline();
 	private int versionCounterForSodiumShaderReload = 0;
 
-	public PipelineManager(Function<DimensionId, WorldRenderingPipeline> pipelineFactory) {
+	public PipelineManager(Function<NamespacedId, WorldRenderingPipeline> pipelineFactory) {
 		this.pipelineFactory = pipelineFactory;
 	}
 
-	public WorldRenderingPipeline preparePipeline(DimensionId currentDimension) {
+	public WorldRenderingPipeline preparePipeline(NamespacedId currentDimension) {
 		if (!pipelinesPerDimension.containsKey(currentDimension)) {
 			SystemTimeUniforms.COUNTER.reset();
 			SystemTimeUniforms.TIMER.reset();

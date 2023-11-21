@@ -12,7 +12,7 @@ import net.coderbot.iris.gl.blending.BlendModeOverride;
 import net.coderbot.iris.shaderpack.include.AbsolutePackPath;
 import net.coderbot.iris.shaderpack.loading.ProgramId;
 
-public class ProgramSet {
+public class ProgramSet implements ProgramSetInterface {
 	private final PackDirectives packDirectives;
 
 	private final ProgramSource shadow;

@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipError;
 import java.util.zip.ZipException;
 
+import net.coderbot.iris.shaderpack.materialmap.NamespacedId;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ExtensionPoint;
@@ -588,19 +589,13 @@ public class Iris {
 		}
 	}
 
-	public static DimensionId lastDimension = null;
+	public static NamespacedId lastDimension = null;
 
-	public static DimensionId getCurrentDimension() {
+	public static NamespacedId getCurrentDimension() {
 		ClientLevel level = Minecraft.getInstance().level;
 
 		if (level != null) {
-			if (level.dimensionType().effectsLocation().equals(DimensionType.END_EFFECTS) || level.dimension().equals(net.minecraft.world.level.Level.END)) {
-				return DimensionId.END;
-			} else if (level.dimensionType().effectsLocation().equals(DimensionType.NETHER_EFFECTS) || level.dimension().equals(net.minecraft.world.level.Level.NETHER)) {
-				return DimensionId.NETHER;
-			} else {
-				return DimensionId.OVERWORLD;
-			}
+			return new NamespacedId(level.dimension().location().getNamespace(), level.dimension().location().getPath());
 		} else {
 			// This prevents us from reloading the shaderpack unless we need to. Otherwise, if the player is in the
 			// nether and quits the game, we might end up reloading the shaders on exit and on entry to the level
@@ -609,7 +604,7 @@ public class Iris {
 		}
 	}
 
-	private static WorldRenderingPipeline createPipeline(DimensionId dimensionId) {
+	private static WorldRenderingPipeline createPipeline(NamespacedId dimensionId) {
 		if (currentPack == null) {
 			// Completely disables shader-based rendering
 			return new FixedFunctionWorldRenderingPipeline();
