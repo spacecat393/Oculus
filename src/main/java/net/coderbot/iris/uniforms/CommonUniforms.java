@@ -118,6 +118,7 @@ public final class CommonUniforms {
 			.uniform1b(PER_FRAME, "is_hurt", CommonUniforms::isHurt)
 			.uniform1b(PER_FRAME, "is_invisible", CommonUniforms::isInvisible)
 			.uniform1b(PER_FRAME, "is_burning", CommonUniforms::isBurning)
+			.uniform1b(PER_FRAME, "is_on_ground", CommonUniforms::isOnGround)
 			// TODO: Do we need to clamp this to avoid fullbright breaking shaders? Or should shaders be able to detect
 			//       that the player is trying to turn on fullbright?
 			.uniform1f(PER_FRAME, "screenBrightness", () -> client.options.gamma)
@@ -135,6 +136,10 @@ public final class CommonUniforms {
 			.uniform1f(PER_TICK, "wetness", new SmoothedFloat(directives.getWetnessHalfLife(), directives.getDrynessHalfLife(), CommonUniforms::getRainStrength, updateNotifier))
 			.uniform3d(PER_FRAME, "skyColor", CommonUniforms::getSkyColor)
 			.uniform3d(PER_FRAME, "fogColor", CapturedRenderingState.INSTANCE::getFogColor);
+	}
+
+	private static boolean isOnGround() {
+		return client.player != null && client.player.isOnGround();
 	}
 
 	private static boolean isHurt() {
