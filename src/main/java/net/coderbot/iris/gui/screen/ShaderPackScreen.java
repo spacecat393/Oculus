@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
@@ -533,7 +534,7 @@ public class ShaderPackScreen extends Screen implements HudHideable {
 	}
 
 	private void openShaderPackFolder() {
-		Util.getPlatform().openUri(Iris.getShaderpacksDirectoryManager().getDirectoryUri());
+		CompletableFuture.runAsync(() -> Util.getPlatform().openUri(Iris.getShaderpacksDirectoryManager().getDirectoryUri()));
 	}
 
 	// Let the screen know if an element is hovered or not, allowing for accurately updating which element is hovered
