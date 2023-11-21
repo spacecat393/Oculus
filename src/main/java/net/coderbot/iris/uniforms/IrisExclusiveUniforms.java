@@ -3,6 +3,7 @@ package net.coderbot.iris.uniforms;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
+import net.coderbot.iris.JomlConversions;
 import net.coderbot.iris.gl.uniform.UniformHolder;
 import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
 import net.coderbot.iris.mixin.DimensionTypeAccessor;
@@ -31,6 +32,8 @@ public class IrisExclusiveUniforms {
 		uniforms.uniform1b(UniformUpdateFrequency.PER_TICK, "isSpectator", IrisExclusiveUniforms::isSpectator);
 		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "eyePosition", IrisExclusiveUniforms::getEyePosition);
 		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "relativeEyePosition", () -> CameraUniforms.getUnshiftedCameraPosition().sub(getEyePosition()));
+		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "playerLookVector", () -> JomlConversions.fromVec3(Minecraft.getInstance().getCameraEntity().getLookAngle()));
+		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "playerBodyVector", () -> JomlConversions.fromVec3(Minecraft.getInstance().getCameraEntity().getForward()));
 		Vector4f zero = new Vector4f(0, 0, 0, 0);
 		uniforms.uniform4f(UniformUpdateFrequency.PER_TICK, "lightningBoltPosition", () -> {
 			if (Minecraft.getInstance().level != null) {
