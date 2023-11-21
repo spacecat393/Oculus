@@ -126,6 +126,13 @@ public class IrisExclusiveUniforms {
 					return 256;
 				}
 			});
+			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "logicalHeightLimit", () -> {
+				if (level != null) {
+					return level.dimensionType().logicalHeight();
+				} else {
+					return 256;
+				}
+			});
 			uniforms.uniform1b(UniformUpdateFrequency.PER_FRAME, "hasCeiling", () -> {
 				if (level != null) {
 					return level.dimensionType().hasCeiling();
