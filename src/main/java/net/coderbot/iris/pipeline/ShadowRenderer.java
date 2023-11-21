@@ -449,6 +449,10 @@ public class ShadowRenderer {
 	}
 
 	public void renderShadows(LevelRendererAccessor levelRenderer, Camera playerCamera) {
+		if (IrisVideoSettings.getOverriddenShadowDistance(IrisVideoSettings.shadowDistance) == 0) {
+			return;
+		}
+
 		// We have to re-query this each frame since this changes based on whether the profiler is active
 		// If the profiler is inactive, it will return InactiveProfiler.INSTANCE
 		this.profiler = Minecraft.getInstance().getProfiler();
@@ -627,6 +631,11 @@ public class ShadowRenderer {
 	}
 
 	public void addDebugText(List<String> messages) {
+		if (IrisVideoSettings.getOverriddenShadowDistance(IrisVideoSettings.shadowDistance) == 0) {
+			messages.add("[" + Iris.MODNAME + "] Shadow Maps: off, shadow distance 0");
+			return;
+		}
+
 		messages.add("[" + Iris.MODNAME + "] Shadow Maps: " + debugStringOverall);
 		messages.add("[" + Iris.MODNAME + "] Shadow Distance Terrain: " + terrainFrustumHolder.getDistanceInfo() + " Entity: " + entityFrustumHolder.getDistanceInfo());
 		messages.add("[" + Iris.MODNAME + "] Shadow Culling Terrain: " + terrainFrustumHolder.getCullingInfo() + " Entity: " + entityFrustumHolder.getCullingInfo());
