@@ -7,6 +7,7 @@ import java.text.StringCharacterIterator;
 import java.util.List;
 import java.util.Objects;
 
+import net.coderbot.iris.gui.option.IrisVideoSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -51,6 +52,7 @@ public abstract class MixinDebugScreenOverlay {
 			Iris.getCurrentPack().ifPresent(pack -> {
 				messages.add("[" + Iris.MODNAME + "] " + pack.getProfileInfo());
 			});
+			messages.add("[" + Iris.MODNAME + "] Color space: " + IrisVideoSettings.colorSpace.name());
 		} else {
 			messages.add("[" + Iris.MODNAME + "] Shaders are disabled");
 		}

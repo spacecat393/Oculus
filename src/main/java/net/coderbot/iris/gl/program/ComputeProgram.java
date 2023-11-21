@@ -56,6 +56,14 @@ public final class ComputeProgram extends GlResource {
 		return cachedWorkGroups;
 	}
 
+	public void use() {
+		ProgramManager.glUseProgram(getGlId());
+
+		uniforms.update();
+		samplers.update();
+		images.update();
+	}
+
 	public void dispatch(float width, float height) {
 		ProgramManager.glUseProgram(getGlId());
 		uniforms.update();

@@ -3,6 +3,7 @@ package net.coderbot.iris.gui.option;
 import java.io.IOException;
 
 import net.coderbot.iris.Iris;
+import net.coderbot.iris.colorspace.ColorSpace;
 import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ProgressOption;
@@ -15,6 +16,7 @@ public class IrisVideoSettings {
 	// TODO: Tell the user to check in the shader options once that's supported.
 	private static final Component DISABLED_TOOLTIP = new TranslatableComponent("options.iris.shadowDistance.disabled");
 	private static final Component ENABLED_TOOLTIP = new TranslatableComponent("options.iris.shadowDistance.enabled");
+	public static ColorSpace colorSpace = ColorSpace.SRGB;
 
 	public static int getOverriddenShadowDistance(int base) {
 		return Iris.getPipelineManager().getPipeline()

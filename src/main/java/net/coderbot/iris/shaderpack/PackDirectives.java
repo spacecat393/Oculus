@@ -13,6 +13,7 @@ import net.coderbot.iris.gl.texture.TextureScaleOverride;
 import net.coderbot.iris.vendored.joml.Vector2i;
 
 public class PackDirectives {
+	private boolean supportsColorCorrection;
 	private int noiseTextureResolution;
 	private float sunPathRotation;
 	private float ambientOcclusionLevel;
@@ -41,6 +42,7 @@ public class PackDirectives {
 	private PackDirectives(Set<Integer> supportedRenderTargets, PackShadowDirectives packShadowDirectives) {
 		noiseTextureResolution = 256;
 		sunPathRotation = 0.0F;
+		supportsColorCorrection = false;
 		ambientOcclusionLevel = 1.0F;
 		wetnessHalfLife = 600.0f;
 		drynessHalfLife = 200.0f;
@@ -60,6 +62,7 @@ public class PackDirectives {
 		rainDepth = properties.getRainDepth().orElse(false);
 		separateAo = properties.getSeparateAo().orElse(false);
 		oldLighting = properties.getOldLighting().orElse(false);
+		supportsColorCorrection = properties.supportsColorCorrection().orElse(false);
 		concurrentCompute = properties.getConcurrentCompute().orElse(false);
 		oldHandLight = properties.getOldHandLight().orElse(true);
 		explicitFlips = properties.getExplicitFlips();
@@ -162,6 +165,10 @@ public class PackDirectives {
 
 	public PackShadowDirectives getShadowDirectives() {
 		return shadowDirectives;
+	}
+
+	public boolean supportsColorCorrection() {
+		return supportsColorCorrection;
 	}
 
 	private static float clamp(float val, float lo, float hi) {

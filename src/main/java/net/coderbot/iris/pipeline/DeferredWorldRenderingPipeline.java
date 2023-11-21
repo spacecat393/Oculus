@@ -12,6 +12,12 @@ import java.util.Set;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
+import net.coderbot.iris.colorspace.ColorSpace;
+import net.coderbot.iris.colorspace.ColorSpaceComputeConverter;
+import net.coderbot.iris.colorspace.ColorSpaceConverter;
+import net.coderbot.iris.colorspace.ColorSpaceFragmentConverter;
+import net.coderbot.iris.gl.IrisRenderSystem;
+import net.coderbot.iris.gui.option.IrisVideoSettings;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL20C;
@@ -126,6 +132,8 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 	private final SodiumTerrainPipeline sodiumTerrainPipeline;
 
+	private final ColorSpaceConverter colorSpaceConverter;
+
 	private final HorizonRenderer horizonRenderer = new HorizonRenderer();
 
 	private final float sunPathRotation;
@@ -154,6 +162,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 	private int currentNormalTexture;
 	private int currentSpecularTexture;
 	private PackDirectives packDirectives;
+	private ColorSpace currentColorSpace;
 
 	public DeferredWorldRenderingPipeline(ProgramSet programs) {
 		Objects.requireNonNull(programs);
@@ -430,6 +439,28 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 		this.sodiumTerrainPipeline = new SodiumTerrainPipeline(this, programs, createTerrainSamplers,
 			shadowRenderer == null ? null : createShadowTerrainSamplers, createTerrainImages,
 			shadowRenderer == null ? null : createShadowTerrainImages);
+
+		if (programs.getPackDirectives().supportsColorCorrection()) {
+			colorSpaceConverter = new ColorSpaceConverter() {
+				@Override
+				public void rebuildProgram(int width, int height, ColorSpace colorSpace) {
+
+				}
+
+				@Override
+				public void process(int target) {
+
+				}
+			};
+		} else {
+			if (IrisRenderSystem.supportsCompute()) {
+				colorSpaceConverter = new ColorSpaceComputeConverter(mainTarget.width, mainTarget.height, IrisVideoSettings.colorSpace);
+			} else {
+				colorSpaceConverter = new ColorSpaceFragmentConverter(mainTarget.width, mainTarget.height, IrisVideoSettings.colorSpace);
+			}
+		}
+
+		currentColorSpace = IrisVideoSettings.colorSpace;
 	}
 
 	private RenderTargets getRenderTargets() {
@@ -939,6 +970,11 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 				packDirectives.getRenderTargetDirectives());
 		}
 
+		if (changed || IrisVideoSettings.colorSpace != currentColorSpace) {
+			currentColorSpace = IrisVideoSettings.colorSpace;
+			colorSpaceConverter.rebuildProgram(main.width, main.height, currentColorSpace);
+		}
+
 		final ImmutableList<ClearPass> passes;
 
 		if (renderTargets.isFullClearRequired()) {
@@ -1171,6 +1207,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 		compositeRenderer.renderAll();
 		finalPassRenderer.renderFinalPass();
+		colorSpaceConverter.process(Minecraft.getInstance().getMainRenderTarget().getColorTextureId());
 
 		isRenderingFullScreenPass = false;
 	}
