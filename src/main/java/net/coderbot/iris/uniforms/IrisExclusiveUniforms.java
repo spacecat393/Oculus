@@ -119,6 +119,13 @@ public class IrisExclusiveUniforms {
 			ClientLevel level = Minecraft.getInstance().level;
 			// TODO: Use level.dimensionType() coordinates for 1.18!
 			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "bedrockLevel", () -> 0);
+			uniforms.uniform1f(UniformUpdateFrequency.PER_FRAME, "cloudHeight", () -> {
+				if (level != null) {
+					return level.effects().getCloudHeight();
+				} else {
+					return 192.0;
+				}
+			});
 			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "heightLimit", () -> {
 				if (level != null) {
 					return level.getMaxBuildHeight();
