@@ -14,6 +14,7 @@ import net.coderbot.iris.pipeline.PipelineManager;
 import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.coderbot.iris.pipeline.newshader.NewWorldRenderingPipeline;
 import net.coderbot.iris.shaderpack.DimensionId;
+import net.coderbot.iris.shaderpack.IrisDefines;
 import net.coderbot.iris.shaderpack.OptionalBoolean;
 import net.coderbot.iris.shaderpack.ProgramSet;
 import net.coderbot.iris.shaderpack.ShaderPack;
@@ -41,7 +42,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.loading.LoadingModList;
 import net.minecraftforge.network.NetworkConstants;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -83,9 +83,6 @@ public class Iris {
 	private static ShaderPack currentPack;
 	private static String currentPackName;
 	private static Optional<Exception> storedError = Optional.empty();
-	private static boolean sodiumInvalid = false;
-	private static boolean hasNEC = false;
-	private static boolean sodiumInstalled = LoadingModList.get().getModFileById("rubidium") != null;
 	private static boolean initialized;
 
 	private static PipelineManager pipelineManager;
@@ -721,18 +718,6 @@ public class Iris {
 
 	public static String getBackupVersionNumber() {
 		return backupVersionNumber;
-	}
-
-	public static boolean isSodiumInvalid() {
-		return sodiumInvalid;
-	}
-
-	public static boolean isSodiumInstalled() {
-		return sodiumInstalled;
-	}
-
-	public static boolean hasNotEnoughCrashes() {
-		return hasNEC;
 	}
 
 	public static Path getShaderpacksDirectory() {
