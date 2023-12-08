@@ -21,6 +21,10 @@ public class MixinDirectoryLister {
 	@Final
 	private String idPrefix;
 
+	/**
+	 * @author Asek3
+	 * @reason ModifyArgs on forge
+	 */
 	@Overwrite
 	public void run(ResourceManager resourceManager, SpriteSource.Output output) {
 		FileToIdConverter fileToIdConverter = new FileToIdConverter("textures/" + sourcePath, ".png");
