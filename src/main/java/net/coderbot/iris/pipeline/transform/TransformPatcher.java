@@ -7,6 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.coderbot.iris.gl.shader.ShaderCompileException;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,7 +51,6 @@ import net.coderbot.iris.pipeline.transform.transformer.TextureTransformer;
 import net.coderbot.iris.pipeline.transform.transformer.VanillaCoreTransformer;
 import net.coderbot.iris.pipeline.transform.transformer.VanillaTransformer;
 import net.coderbot.iris.shaderpack.texture.TextureStage;
-import org.antlr.v4.runtime.Token;
 
 /**
  * The transform patcher (triforce 2) uses glsl-transformer's ASTTransformer to
