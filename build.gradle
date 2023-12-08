@@ -57,6 +57,13 @@ sourceSets {
 
 repositories {
 	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
+	maven {
 		url "https://maven.blamejared.com/"
 	}
 	mavenCentral()
@@ -68,6 +75,7 @@ dependencies {
 	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
 	modCompileOnly "org.embeddedt:embeddium-${minecraft_version}:${embeddium_version}"
+	compileOnly "maven.modrinth:distanthorizons:2.0.1-a-1.20.1"
 
 	implementation include("io.github.douira:glsl-transformer:2.0.0")
 	implementation include("org.antlr:antlr4-runtime:4.11.1")
@@ -80,6 +88,14 @@ processResources {
 	filesMatching("META-INF/mods.toml") {
         expand "version": project.version
     }
+}
+
+jar {
+	from sourceSets.sodiumCompatibility.output
+	from sourceSets.sodiumCompatibility.output
+
+	from sourceSets.vendored.output
+	from sourceSets.vendored.output
 }
 
 java {

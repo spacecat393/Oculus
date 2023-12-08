@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BakedModelEncoder.class)
 public class MixinModelVertex {
-	@Inject(method = "writeQuadVertices(Lnet/caffeinemc/mods/sodium/api/vertex/buffer/VertexBufferWriter;Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lme/jellysquid/mods/sodium/client/model/quad/ModelQuadView;III)V", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "writeQuadVertices(Lnet/caffeinemc/mods/sodium/api/vertex/buffer/VertexBufferWriter;Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lme/jellysquid/mods/sodium/client/model/quad/ModelQuadView;III)V", at = @At("HEAD"), cancellable = true, remap = false)
 	private static void redirect2(VertexBufferWriter writer, PoseStack.Pose matrices, ModelQuadView quad, int color, int light, int overlay, CallbackInfo ci) {
 		if (shouldBeExtended()) {
 			ci.cancel();
@@ -36,7 +36,7 @@ public class MixinModelVertex {
 	 * @author IMS
 	 * @reason Rewrite
 	 */
-	@Overwrite
+	@Overwrite(remap = false)
 	public static void writeQuadVertices(VertexBufferWriter writer, PoseStack.Pose matrices, ModelQuadView quad, float r, float g, float b, float[] brightnessTable, boolean colorize, int[] light, int overlay) {
 		Matrix3f matNormal = matrices.normal();
 		Matrix4f matPosition = matrices.pose();
