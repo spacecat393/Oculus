@@ -32,6 +32,10 @@ version = project.mod_version
 group = project.maven_group
 
 sourceSets {
+	vendored {
+		java {}
+	}
+
 	sodiumCompatibility {
 		java {
 			compileClasspath += main.compileClasspath
@@ -40,6 +44,9 @@ sourceSets {
 
 	main {
 		java {
+			compileClasspath += vendored.output
+			runtimeClasspath += vendored.output
+
 			compileClasspath += sodiumCompatibility.output
 			runtimeClasspath += sodiumCompatibility.output
 		}
