@@ -31,28 +31,34 @@ archivesBaseName = "${project.archives_base_name}-mc${project.minecraft_version}
 version = project.mod_version
 group = project.maven_group
 
+sourceSets {
+	sodiumCompatibility {
+		java {
+			compileClasspath += main.compileClasspath
+		}
+	}
+
+	main {
+		java {
+			compileClasspath += sodiumCompatibility.output
+			runtimeClasspath += sodiumCompatibility.output
+		}
+	}
+}
+
+
 repositories {
-	mavenLocal()
 	maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
-        }
-    }
-        maven { url "https://maven.blamejared.com/" }
-	maven {
-		url "https://maven.su5ed.dev/releases"
+		url "https://maven.blamejared.com/"
 	}
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	minecraft "com.mojang:minecraft:${minecraft_version}"
 	mappings loom.officialMojangMappings()
 	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-	
-	//modCompileOnly "maven.modrinth:rubidium:0.7.1"
-	modCompileOnly "org.embeddedt:embeddium-1.20.1:0.2.12-git.149aa28+mc1.20.1"
+
+	modCompileOnly "org.embeddedt:embeddium-${minecraft_version}:${embeddium_version}"
 }
 
 processResources {
