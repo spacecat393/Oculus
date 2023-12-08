@@ -40,8 +40,8 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.LoadingModList;
 import net.minecraftforge.network.NetworkConstants;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -83,7 +83,9 @@ public class Iris {
 	private static ShaderPack currentPack;
 	private static String currentPackName;
 	private static Optional<Exception> storedError = Optional.empty();
-	private static boolean sodiumInstalled = FMLLoader.getLoadingModList().getModFileById("rubidium") != null;
+	private static boolean sodiumInvalid = false;
+	private static boolean hasNEC = false;
+	private static boolean sodiumInstalled = LoadingModList.get().getModFileById("rubidium") != null;
 	private static boolean initialized;
 
 	private static PipelineManager pipelineManager;
@@ -721,8 +723,16 @@ public class Iris {
 		return backupVersionNumber;
 	}
 
+	public static boolean isSodiumInvalid() {
+		return sodiumInvalid;
+	}
+
 	public static boolean isSodiumInstalled() {
 		return sodiumInstalled;
+	}
+
+	public static boolean hasNotEnoughCrashes() {
+		return hasNEC;
 	}
 
 	public static Path getShaderpacksDirectory() {
