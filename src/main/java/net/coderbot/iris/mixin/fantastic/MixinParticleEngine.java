@@ -2,6 +2,7 @@ package net.coderbot.iris.mixin.fantastic;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.coderbot.iris.fantastic.ParticleRenderingPhase;
@@ -77,21 +78,20 @@ public class MixinParticleEngine implements PhasedParticleEngine {
 		RenderSystem.setShader(phase == ParticleRenderingPhase.TRANSLUCENT ? ShaderAccess::getParticleTranslucentShader : pSupplier0);
 	}
 
-	@Redirect(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/culling/Frustum;)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/particle/ParticleEngine;particles:Ljava/util/Map;"))
-	private Map<ParticleRenderType, Queue<Particle>> iris$selectParticlesToRender(ParticleEngine instance) {
+	@Redirect(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/culling/Frustum;)V", at = @At(value = "INVOKE", target = "Ljava/util/Map;keySet()Ljava/util/Set;"), remap = false)
+	private Set<ParticleRenderType> iris$selectParticlesToRender(Map<ParticleRenderType, Queue<Particle>> instance) {
+		Set<ParticleRenderType> keySet = instance.keySet();
+
 		if (phase == ParticleRenderingPhase.TRANSLUCENT) {
-			return Maps.filterKeys(particles, type -> !OPAQUE_PARTICLE_RENDER_TYPES.contains(type));
+			// Remove all known opaque particle texture sheets.
+			return Sets.filter(keySet, type -> !OPAQUE_PARTICLE_RENDER_TYPES.contains(type));
 		} else if (phase == ParticleRenderingPhase.OPAQUE) {
-			return Maps.filterKeys(particles, type -> !type.equals(ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT));
+			// Render only opaque particle sheets
+			return Sets.filter(keySet, type -> !type.equals(ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT));
 		} else {
 			// Don't override particle rendering
-			return particles;
+			return keySet;
 		}
-	}
-
-	@Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/culling/Frustum;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleRenderType;begin(Lcom/mojang/blaze3d/vertex/BufferBuilder;Lnet/minecraft/client/renderer/texture/TextureManager;)V", shift = At.Shift.BEFORE))
-	public void enableLostDepth(PoseStack poseStack, MultiBufferSource.BufferSource source, LightTexture texture, Camera camera, float f, Frustum clippingHelper, CallbackInfo ci) {
-		RenderSystem.enableDepthTest();
 	}
 
 	@Override
