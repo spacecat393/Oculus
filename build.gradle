@@ -58,6 +58,7 @@ repositories {
 	maven {
 		url "https://maven.blamejared.com/"
 	}
+	mavenCentral()
 }
 
 dependencies {
@@ -66,6 +67,10 @@ dependencies {
 	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
 	modCompileOnly "org.embeddedt:embeddium-${minecraft_version}:${embeddium_version}"
+
+	implementation include("io.github.douira:glsl-transformer:2.0.0")
+	implementation include("org.antlr:antlr4-runtime:4.11.1")
+	implementation include("org.anarres:jcpp:1.4.14")
 }
 
 processResources {
