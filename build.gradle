@@ -33,12 +33,15 @@ group = project.maven_group
 
 sourceSets {
 	vendored {
-		java {}
+		java {
+			compileClasspath += main.compileClasspath
+		}
 	}
 
 	sodiumCompatibility {
 		java {
 			compileClasspath += main.compileClasspath
+			compileClasspath += main.output
 		}
 	}
 
@@ -46,9 +49,6 @@ sourceSets {
 		java {
 			compileClasspath += vendored.output
 			runtimeClasspath += vendored.output
-
-			compileClasspath += sodiumCompatibility.output
-			runtimeClasspath += sodiumCompatibility.output
 		}
 	}
 }
