@@ -18,6 +18,7 @@ loom {
 				"oculus-batched-entity-rendering.mixins.json",
 				"mixins.oculus.compat.sodium.json",
 				"mixins.oculus.compat.indigo.json",
+				"mixins.oculus.compat.dh.json",
 				"mixins.oculus.compat.indium.json"
 		]
 	}
