@@ -1,12 +1,13 @@
 plugins {
+	id 'com.github.johnrengelman.shadow' version '8.1.1'
 	id 'dev.architectury.loom' version '1.4-SNAPSHOT'
 	id 'maven-publish'
 }
 
 loom {
-    silentMojangMappingsLicense()
+	silentMojangMappingsLicense()
 	accessWidenerPath = file("src/main/resources/iris.accesswidener")
-	
+
 	forge {
 		convertAccessWideners = true
 		mixinConfigs = [
@@ -23,6 +24,12 @@ loom {
 		]
 	}
 	mixin.defaultRefmapName = "oculus-mixins-refmap.json"
+}
+
+configurations {
+	shadow {
+		transitive = false
+	}
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -54,7 +61,6 @@ sourceSets {
 	}
 }
 
-
 repositories {
 	maven {
 		name = "Modrinth"
@@ -77,8 +83,8 @@ dependencies {
 	modCompileOnly "org.embeddedt:embeddium-${minecraft_version}:${embeddium_version}"
 	compileOnly "maven.modrinth:distanthorizons:2.0.1-a-1.20.1"
 
-	implementation include("io.github.douira:glsl-transformer:2.0.0")
-	implementation include("org.antlr:antlr4-runtime:4.11.1")
+	implementation shadow("io.github.douira:glsl-transformer:2.0.0")
+	implementation shadow("org.antlr:antlr4-runtime:4.11.1")
 	implementation include("org.anarres:jcpp:1.4.14")
 }
 
@@ -86,8 +92,22 @@ processResources {
 	inputs.property "version", project.version
 
 	filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
-    }
+		expand "version": project.version
+	}
+}
+
+shadowJar {
+	configurations = [project.configurations.shadow]
+
+	relocate 'org.apache.commons.collections4', 'oculus.org.apache.commons.collections4'
+	relocate 'org.antlr', 'oculus.org.antlr'
+
+	archiveClassifier.set "shadow"
+}
+
+remapJar {
+	inputFile.set shadowJar.archiveFile
+	dependsOn shadowJar
 }
 
 jar {
