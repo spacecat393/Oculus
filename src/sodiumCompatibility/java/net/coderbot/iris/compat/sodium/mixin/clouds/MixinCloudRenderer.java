@@ -69,9 +69,14 @@ public abstract class MixinCloudRenderer {
 			return;
 		}
 
-		Vec3 color = world.getCloudColor(tickDelta);
-
 		float cloudHeight = world.effects().getCloudHeight();
+
+		// Vanilla uses NaN height as a way to disable cloud rendering
+		if (Float.isNaN(cloudHeight)) {
+			return;
+		}
+
+		Vec3 color = world.getCloudColor(tickDelta);
 
 		double cloudTime = (ticks + tickDelta) * 0.03F;
 		double cloudCenterX = (cameraX + cloudTime);
