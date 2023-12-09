@@ -99,6 +99,8 @@ processResources {
 shadowJar {
 	configurations = [project.configurations.shadow]
 
+	from jar.archiveFile
+
 	relocate 'org.apache.commons.collections4', 'oculus.org.apache.commons.collections4'
 	relocate 'org.antlr', 'oculus.org.antlr'
 
@@ -112,14 +114,16 @@ remapJar {
 
 jar {
 	from sourceSets.sodiumCompatibility.output
-	from sourceSets.sodiumCompatibility.output
-
-	from sourceSets.vendored.output
 	from sourceSets.vendored.output
 }
 
 java {
 	withSourcesJar()
+}
+
+sourcesJar {
+	from sourceSets.sodiumCompatibility.allSource
+	from sourceSets.vendored.allSource
 }
 
 publishing {
