@@ -20,7 +20,8 @@ loom {
 				"mixins.oculus.compat.sodium.json",
 				"mixins.oculus.compat.indigo.json",
 				"mixins.oculus.compat.dh.json",
-				"mixins.oculus.compat.indium.json"
+				"mixins.oculus.compat.indium.json",
+				"mixins.oculus.compat.json"
 		]
 	}
 	mixin.defaultRefmapName = "oculus-mixins-refmap.json"
@@ -77,6 +78,13 @@ loom {
 
 repositories {
 	maven {
+		name = "CurseForge"
+		url = "https://cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
+	}
+	maven {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
 		content {
@@ -96,6 +104,8 @@ dependencies {
 
 	modCompileOnly "org.embeddedt:embeddium-${minecraft_version}:${embeddium_version}"
 	compileOnly "maven.modrinth:distanthorizons:2.0.1-a-1.20.1"
+
+    modCompileOnly "curse.maven:pixelmon-389487:4782028"
 
 	forgeRuntimeLibrary(implementation(shadow(project(path: ":glsl-relocated", configuration: "bundledJar")))) {
 		transitive = false
