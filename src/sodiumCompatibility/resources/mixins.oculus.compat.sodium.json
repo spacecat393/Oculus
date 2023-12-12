@@ -1,4 +1,5 @@
 {
+  "minVersion": "0.8",
   "package": "net.coderbot.iris.compat.sodium.mixin",
   "plugin": "net.coderbot.iris.compat.sodium.mixin.IrisSodiumCompatMixinPlugin",
   "required": true,
