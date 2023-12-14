@@ -2,9 +2,7 @@ package net.coderbot.iris.compat.sodium.impl.vertex_format.entity_xhfp;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.jellysquid.mods.sodium.client.model.quad.ModelQuadView;
-import me.jellysquid.mods.sodium.client.util.ModelQuadUtil;
 import net.caffeinemc.mods.sodium.api.math.MatrixHelper;
-import net.caffeinemc.mods.sodium.api.util.ColorARGB;
 import net.caffeinemc.mods.sodium.api.util.NormI8;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
 import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatDescription;
@@ -88,22 +86,6 @@ public final class EntityVertex {
 
 	}
 
-	// TODO: Publicize this method in Embeddium so it doesn't need to be copied
-	private static int multARGBInts(int colorA, int colorB) {
-		// Most common case: Either quad coloring or tint-based coloring, but not both
-		if (colorA == -1) {
-			return colorB;
-		} else if (colorB == -1) {
-			return colorA;
-		}
-		// General case (rare): Both colorings, actually perform the multiplication
-		int a = (int)((ColorARGB.unpackAlpha(colorA)/255.0f) * (ColorARGB.unpackAlpha(colorB)/255.0f) * 255.0f);
-		int b = (int)((ColorARGB.unpackBlue(colorA)/255.0f) * (ColorARGB.unpackBlue(colorB)/255.0f) * 255.0f);
-		int g = (int)((ColorARGB.unpackGreen(colorA)/255.0f) * (ColorARGB.unpackGreen(colorB)/255.0f) * 255.0f);
-		int r = (int)((ColorARGB.unpackRed(colorA)/255.0f) * (ColorARGB.unpackRed(colorB)/255.0f) * 255.0f);
-		return ColorARGB.pack(r, g, b, a);
-	}
-
 	public static void writeQuadVertices(VertexBufferWriter writer, PoseStack.Pose matrices, ModelQuadView quad, int light, int overlay, int color) {
 		Matrix3f matNormal = matrices.normal();
 		Matrix4f matPosition = matrices.pose();
@@ -112,10 +94,24 @@ public final class EntityVertex {
 			long buffer = stack.nmalloc(4 * STRIDE);
 			long ptr = buffer;
 
-			float nxt = 0, nyt = 0, nzt = 0;
+			// The packed normal vector
+			var n = quad.getNormal();
+
+			// The normal vector
+			float nx = NormI8.unpackX(n);
+			float ny = NormI8.unpackY(n);
+			float nz = NormI8.unpackZ(n);
 
 			float midU = ((quad.getTexU(0) + quad.getTexU(1) + quad.getTexU(2) + quad.getTexU(3)) * 0.25f);
 			float midV = ((quad.getTexV(0) + quad.getTexV(1) + quad.getTexV(2) + quad.getTexV(3)) * 0.25f);
+
+			// The transformed normal vector
+			float nxt = MatrixHelper.transformNormalX(matNormal, nx, ny, nz);
+			float nyt = MatrixHelper.transformNormalY(matNormal, nx, ny, nz);
+			float nzt = MatrixHelper.transformNormalZ(matNormal, nx, ny, nz);
+
+			// The packed transformed normal vector
+			var nt = NormI8.pack(nxt, nyt, nzt);
 
 			for (int i = 0; i < 4; i++) {
 				// The position vector
@@ -128,27 +124,7 @@ public final class EntityVertex {
 				float yt = MatrixHelper.transformPositionY(matPosition, x, y, z);
 				float zt = MatrixHelper.transformPositionZ(matPosition, x, y, z);
 
-				// The packed normal vector
-				var n = quad.getForgeNormal(i);
-
-				if((n & 0xFFFFFF) == 0) {
-					n = quad.getNormal();
-				}
-
-				// The normal vector
-				float nx = NormI8.unpackX(n);
-				float ny = NormI8.unpackY(n);
-				float nz = NormI8.unpackZ(n);
-
-				// The transformed normal vector
-				nxt = MatrixHelper.transformNormalX(matNormal, nx, ny, nz);
-				nyt = MatrixHelper.transformNormalY(matNormal, nx, ny, nz);
-				nzt = MatrixHelper.transformNormalZ(matNormal, nx, ny, nz);
-
-				// The packed transformed normal vector
-				var nt = NormI8.pack(nxt, nyt, nzt);
-
-				write2(ptr, xt, yt, zt, multARGBInts(quad.getColor(i), color), quad.getTexU(i), quad.getTexV(i), midU, midV, ModelQuadUtil.mergeBakedLight(quad.getLight(i), light), overlay, nt);
+				write2(ptr, xt, yt, zt, color, quad.getTexU(i), quad.getTexV(i), midU, midV, light, overlay, nt);
 				ptr += STRIDE;
 			}
 
