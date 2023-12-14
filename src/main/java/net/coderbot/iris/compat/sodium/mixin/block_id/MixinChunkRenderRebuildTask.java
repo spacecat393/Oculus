@@ -1,10 +1,9 @@
 package net.coderbot.iris.compat.sodium.mixin.block_id;
 
-import java.util.Map;
-
+import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuffers;
+import me.jellysquid.mods.sodium.client.render.pipeline.FluidRenderer;
 import net.coderbot.iris.vertices.ExtendedDataHelper;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +24,6 @@ import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.coderbot.iris.compat.sodium.impl.block_context.ChunkBuildBuffersExt;
 import net.minecraft.client.renderer.chunk.VisGraph;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.client.model.data.IModelData;
 
 /**
  * Passes additional information indirectly to the vertex writer to support the mc_Entity and at_midBlock parts of the vertex format.
@@ -48,29 +46,23 @@ public class MixinChunkRenderRebuildTask {
 	}
 
 	@Redirect(method = "performBuild", at = @At(value = "INVOKE",
-			target = "Lnet/minecraft/client/renderer/ItemBlockRenderTypes;canRenderInLayer(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/client/renderer/RenderType;)Z"))
-	private boolean iris$wrapGetBlockLayer(BlockState blockState, RenderType type, ChunkRenderCacheLocal cache,
-											  ChunkBuildBuffers buffers, CancellationSource cancellationSource) {
-		boolean flag = ItemBlockRenderTypes.canRenderInLayer(blockState, type);
-
-		if (flag && buffers instanceof ChunkBuildBuffersExt) {
+			target = "Lnet/minecraft/world/level/block/state/BlockState;getSeed(Lnet/minecraft/core/BlockPos;)J"))
+	private long iris$wrapGetBlockLayer(BlockState blockState, BlockPos pos, ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers) {
+		if (buffers instanceof ChunkBuildBuffersExt) {
 			((ChunkBuildBuffersExt) buffers).iris$setMaterialId(blockState, ExtendedDataHelper.BLOCK_RENDER_TYPE);
 		}
 
-		return flag;
+		return blockState.getSeed(pos);
 	}
 
 	@Redirect(method = "performBuild", at = @At(value = "INVOKE",
-			target = "Lnet/minecraft/client/renderer/ItemBlockRenderTypes;canRenderInLayer(Lnet/minecraft/world/level/material/FluidState;Lnet/minecraft/client/renderer/RenderType;)Z"))
-	private boolean iris$wrapGetFluidLayer(FluidState fluidState, RenderType type, ChunkRenderCacheLocal cache,
-											  ChunkBuildBuffers buffers, CancellationSource cancellationSource) {
-		boolean flag = ItemBlockRenderTypes.canRenderInLayer(fluidState, type);
-
-		if (flag && buffers instanceof ChunkBuildBuffersExt) {
+			target = "Lme/jellysquid/mods/sodium/client/render/pipeline/FluidRenderer;render(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/world/level/material/FluidState;Lnet/minecraft/core/BlockPos;Lme/jellysquid/mods/sodium/client/render/chunk/compile/buffers/ChunkModelBuffers;)Z"))
+	private boolean iris$wrapGetFluidLayer(FluidRenderer renderer, BlockAndTintGetter world, FluidState fluidState, BlockPos pos, ChunkModelBuffers modelBuffers, ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers) {
+		if (buffers instanceof ChunkBuildBuffersExt) {
 			((ChunkBuildBuffersExt) buffers).iris$setMaterialId(fluidState.createLegacyBlock(), ExtendedDataHelper.FLUID_RENDER_TYPE);
 		}
 
-		return flag;
+		return renderer.render(world, fluidState, pos, modelBuffers);
 	}
 
 	@Inject(method = "performBuild",
