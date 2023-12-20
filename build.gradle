@@ -60,7 +60,6 @@ dependencies {
 	modCompileOnly "maven.modrinth:rubidium:0.2.13"
 	//modCompileOnly "me.jellysquid.mods:Rubidium:0.2.13"
 	modCompileOnly "curse.maven:epic-fight-mod-405076:4029362"
-	modCompileOnly "curse.maven:pixelmon-389487:4718641"
 
 	implementation fileTree(include: ['*.jar'], dir: 'libs')
 	toJar fileTree(include: ['antlr4-runtime-4.10.1.jar', 'glsl-transformer-1.0.0-pre21.2.jar'], dir: 'libs')
