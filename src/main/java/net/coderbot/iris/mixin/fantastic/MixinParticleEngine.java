@@ -1,25 +1,21 @@
 package net.coderbot.iris.mixin.fantastic;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
-import com.google.common.collect.ImmutableList;
-
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import net.coderbot.iris.fantastic.IrisParticleRenderTypes;
 import net.coderbot.iris.fantastic.ParticleRenderingPhase;
 import net.coderbot.iris.fantastic.PhasedParticleEngine;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleRenderType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * Extends the ParticleEngine class to allow multiple phases of particle rendering.
@@ -51,42 +47,31 @@ public class MixinParticleEngine implements PhasedParticleEngine {
 	@Unique
 	private ParticleRenderingPhase phase = ParticleRenderingPhase.EVERYTHING;
 
-	@Shadow
-	@Final
-	private static List<ParticleRenderType> RENDER_ORDER;
-	
-	@Shadow
-	@Final
-	private Map<ParticleRenderType, Queue<Particle>> particles;
-
-	private static final List<ParticleRenderType> OPAQUE_PARTICLE_RENDER_TYPES;
+	private static final Set<ParticleRenderType> OPAQUE_PARTICLE_RENDER_TYPES;
 
 	static {
-		OPAQUE_PARTICLE_RENDER_TYPES = ImmutableList.of(
-			IrisParticleRenderTypes.OPAQUE_TERRAIN,
-			ParticleRenderType.PARTICLE_SHEET_OPAQUE,
-			ParticleRenderType.PARTICLE_SHEET_LIT,
-			ParticleRenderType.CUSTOM,
-			ParticleRenderType.NO_RENDER
+		OPAQUE_PARTICLE_RENDER_TYPES = ImmutableSet.of(
+				IrisParticleRenderTypes.OPAQUE_TERRAIN,
+				ParticleRenderType.PARTICLE_SHEET_OPAQUE,
+				ParticleRenderType.PARTICLE_SHEET_LIT,
+				ParticleRenderType.CUSTOM,
+				ParticleRenderType.NO_RENDER
 		);
 	}
 
-	@Redirect(method = "renderParticles", at = @At(value = "FIELD", target = "Lnet/minecraft/client/particle/ParticleEngine;particles:Ljava/util/Map;"))
-	private Map<ParticleRenderType, Queue<Particle>> iris$selectParticlesToRender(ParticleEngine instance) {
-		Map<ParticleRenderType, Queue<Particle>> toRender = new HashMap<>(particles);
+	@Redirect(method = "renderParticles", at = @At(value = "INVOKE", target = "Ljava/util/Map;keySet()Ljava/util/Set;"), remap = false)
+	private Set<ParticleRenderType> iris$selectParticlesToRender(Map<ParticleRenderType, Queue<Particle>> instance) {
+		Set<ParticleRenderType> keySet = instance.keySet();
+
 		if (phase == ParticleRenderingPhase.TRANSLUCENT) {
 			// Remove all known opaque particle texture sheets.
-			for(ParticleRenderType type : OPAQUE_PARTICLE_RENDER_TYPES)
-				toRender.remove(type);
-
-			return toRender;
+			return Sets.filter(keySet, type -> !OPAQUE_PARTICLE_RENDER_TYPES.contains(type));
 		} else if (phase == ParticleRenderingPhase.OPAQUE) {
 			// Render only opaque particle sheets
-			toRender.remove(ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT);
-			return toRender;
+			return Sets.filter(keySet, type -> !type.equals(ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT));
 		} else {
 			// Don't override particle rendering
-			return toRender;
+			return keySet;
 		}
 	}
 
