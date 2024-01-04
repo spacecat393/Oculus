@@ -2,6 +2,7 @@ package net.coderbot.iris.block_rendering;
 
 import java.util.Map;
 
+import net.minecraftforge.registries.IRegistryDelegate;
 import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
@@ -16,7 +17,7 @@ public class BlockRenderingSettings {
 
 	private boolean reloadRequired;
 	private Object2IntMap<BlockState> blockStateIds;
-	private Map<Block, RenderType> blockTypeIds;
+	private Map<IRegistryDelegate<Block>, RenderType> blockTypeIds;
 	private Object2IntFunction<NamespacedId> entityIds;
 	private float ambientOcclusionLevel;
 	private boolean disableDirectionalShading;
@@ -47,7 +48,7 @@ public class BlockRenderingSettings {
 	}
 
 	@Nullable
-	public Map<Block, RenderType> getBlockTypeIds() {
+	public Map<IRegistryDelegate<Block>, RenderType> getBlockTypeIds() {
 		return blockTypeIds;
 	}
 
@@ -66,7 +67,7 @@ public class BlockRenderingSettings {
 		this.blockStateIds = blockStateIds;
 	}
 
-	public void setBlockTypeIds(Map<Block, RenderType> blockTypeIds) {
+	public void setBlockTypeIds(Map<IRegistryDelegate<Block>, RenderType> blockTypeIds) {
 		if (this.blockTypeIds != null && this.blockTypeIds.equals(blockTypeIds)) {
 			return;
 		}

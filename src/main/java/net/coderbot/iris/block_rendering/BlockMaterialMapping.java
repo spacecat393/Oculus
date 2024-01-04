@@ -3,10 +3,12 @@ package net.coderbot.iris.block_rendering;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.shaderpack.materialmap.BlockEntry;
@@ -20,6 +22,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IRegistryDelegate;
 
 public class BlockMaterialMapping {
 	public static Object2IntMap<BlockState> createBlockStateIdMap(Int2ObjectMap<List<BlockEntry>> blockPropertiesMap) {
@@ -34,15 +38,19 @@ public class BlockMaterialMapping {
 		return blockStateIds;
 	}
 
-	public static Map<Block, RenderType> createBlockTypeMap(Map<NamespacedId, BlockRenderType> blockPropertiesMap) {
-		Map<Block, RenderType> blockTypeIds = new Reference2ReferenceOpenHashMap<>();
+	public static Map<IRegistryDelegate<Block>, RenderType> createBlockTypeMap(Map<NamespacedId, BlockRenderType> blockPropertiesMap) {
+		Map<IRegistryDelegate<Block>, RenderType> blockTypeIds = new Object2ObjectOpenHashMap<>();
 
 		blockPropertiesMap.forEach((id, blockType) -> {
 			ResourceLocation resourceLocation = new ResourceLocation(id.getNamespace(), id.getName());
 
-			Block block = Registry.BLOCK.get(resourceLocation);
+			Block block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
 
-			blockTypeIds.put(block, convertBlockToRenderType(blockType));
+			if (block == null || block == Blocks.AIR) {
+				return;
+			}
+
+			blockTypeIds.put(block.delegate, convertBlockToRenderType(blockType));
 		});
 
 		return blockTypeIds;
