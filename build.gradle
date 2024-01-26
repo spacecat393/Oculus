@@ -1,5 +1,6 @@
 plugins {
 	id 'dev.architectury.loom' version '0.10.0-SNAPSHOT'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
 	id 'maven-publish'
 }
 
@@ -47,22 +48,24 @@ repositories {
 	}
 }
 
-configurations {
-	toJar
-}
-
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.officialMojangMappings()
 	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-	compileOnly "org.apache.ant:ant:1.8.2"
 	modCompileOnly "maven.modrinth:rubidium:0.2.13"
 	//modCompileOnly "me.jellysquid.mods:Rubidium:0.2.13"
 	modCompileOnly "curse.maven:epic-fight-mod-405076:4029362"
 
-	implementation fileTree(include: ['*.jar'], dir: 'libs')
-	toJar fileTree(include: ['antlr4-runtime-4.10.1.jar', 'glsl-transformer-1.0.0-pre21.2.jar'], dir: 'libs')
+	modRuntimeOnly "curse.maven:lazydfu-460819:3249059"
+
+	implementation(shadow(project(path: ":glsl-relocated", configuration: "bundledJar"))) {
+		transitive = false
+	}
+	implementation(shadow("org.anarres:jcpp:1.4.14")) {
+		transitive = false
+	}
+	shadow("org.slf4j:slf4j-api:1.7.12") // for jcpp
 }
 
 processResources {
@@ -86,8 +89,27 @@ java {
 	withSourcesJar()
 }
 
-jar {
-	from { configurations.toJar.collect { it.isDirectory() ? it : zipTree(it) } }
+shadowJar {
+	configurations = [project.configurations.shadow]
+
+	from jar.archiveFile
+
+	relocate 'org.apache.commons.collections4', 'oculus.org.apache.commons.collections4'
+	relocate 'org.anarres.cpp', 'oculus.org.anarres.cpp'
+	relocate 'org.slf4j', 'oculus.org.slf4j'
+
+	archiveClassifier.set "shadow"
+
+	manifest {
+		attributes(
+				'Main-Class': 'net.coderbot.iris.LaunchWarn'
+		)
+	}
+}
+
+remapJar {
+	input.set shadowJar.archiveFile
+	dependsOn shadowJar
 }
 
 publishing {

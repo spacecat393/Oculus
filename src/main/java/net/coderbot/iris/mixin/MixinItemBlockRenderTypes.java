@@ -2,6 +2,7 @@ package net.coderbot.iris.mixin;
 
 import java.util.Map;
 
+import net.minecraftforge.registries.IRegistryDelegate;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,9 +18,9 @@ import net.minecraft.world.level.block.state.BlockState;
 public class MixinItemBlockRenderTypes {
 	@Inject(method = "getChunkRenderType", at = @At("HEAD"), cancellable = true)
 	private static void iris$setCustomRenderType(BlockState arg, CallbackInfoReturnable<RenderType> cir) {
-		Map<Block, RenderType> idMap = BlockRenderingSettings.INSTANCE.getBlockTypeIds();
+		Map<IRegistryDelegate<Block>, RenderType> idMap = BlockRenderingSettings.INSTANCE.getBlockTypeIds();
 		if (idMap != null) {
-			RenderType type = idMap.get(arg.getBlock());
+			RenderType type = idMap.get(arg.getBlock().delegate);
 			if (type != null) {
 				cir.setReturnValue(type);
 			}
@@ -28,11 +29,12 @@ public class MixinItemBlockRenderTypes {
 
 	@Inject(method = "canRenderInLayer(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/client/renderer/RenderType;)Z", at = @At("HEAD"), cancellable = true)
 	private static void iris$checkCustomRenderType(BlockState arg, RenderType type, CallbackInfoReturnable<Boolean> cir) {
-		Map<Block, RenderType> idMap = BlockRenderingSettings.INSTANCE.getBlockTypeIds();
+		Map<IRegistryDelegate<Block>, RenderType> idMap = BlockRenderingSettings.INSTANCE.getBlockTypeIds();
 		if (idMap != null) {
-			RenderType irisType = idMap.get(arg.getBlock());
-			if (type.equals(irisType)) {
-				cir.setReturnValue(true);
+			RenderType irisType = idMap.get(arg.getBlock().delegate);
+			if (irisType != null) {
+				// If we have an override registered for this block, only allow rendering precisely that type
+				cir.setReturnValue(type.equals(irisType));
 			}
 		}
 	}
