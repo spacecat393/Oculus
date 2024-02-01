@@ -267,7 +267,7 @@ public class ExtendedShader extends ShaderInstance implements ShaderInstanceInte
 		 });
 		 factory.getResource(new ResourceLocation(name.getNamespace(), name.getPath() + "_tessControl.tcs")).ifPresent(tessControl -> {
 			 try {
-				 this.tessControl = Program.compileShader(IrisProgramTypes.TESS_CONTROL, name, tessControl.open(), tessControl.sourcePackId(), new GlslPreprocessor() {
+				 this.tessControl = Program.compileShader(IrisProgramTypes.TESS_CONTROL, name.getPath(), tessControl.open(), tessControl.sourcePackId(), new GlslPreprocessor() {
 					 @Nullable
 					 @Override
 					 public String applyImport(boolean bl, String string) {
@@ -280,7 +280,7 @@ public class ExtendedShader extends ShaderInstance implements ShaderInstanceInte
 		 });
 		 factory.getResource(new ResourceLocation(name.getNamespace(), name.getPath() + "_tessEval.tes")).ifPresent(tessEval -> {
 			 try {
-				 this.tessEval = Program.compileShader(IrisProgramTypes.TESS_EVAL, name, tessEval.open(), tessEval.sourcePackId(), new GlslPreprocessor() {
+				 this.tessEval = Program.compileShader(IrisProgramTypes.TESS_EVAL, name.getPath(), tessEval.open(), tessEval.sourcePackId(), new GlslPreprocessor() {
 					 @Nullable
 					 @Override
 					 public String applyImport(boolean bl, String string) {

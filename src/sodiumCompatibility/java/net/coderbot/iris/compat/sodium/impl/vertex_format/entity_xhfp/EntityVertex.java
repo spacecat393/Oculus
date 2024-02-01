@@ -131,14 +131,20 @@ public final class EntityVertex {
 				// The packed normal vector
 				var n = quad.getForgeNormal(i);
 
-				if((n & 0xFFFFFF) == 0) {
-					n = quad.getNormal();
-				}
+				float nx, ny, nz;
 
-				// The normal vector
-				float nx = NormI8.unpackX(n);
-				float ny = NormI8.unpackY(n);
-				float nz = NormI8.unpackZ(n);
+				if((n & 0xFFFFFF) == 0) { // TODO review
+					var n0 = quad.getLightFace().step();
+
+					nx = n0.x;
+					ny = n0.y;
+					nz = n0.z;
+				} else {
+					// The normal vector
+					nx = NormI8.unpackX(n);
+					ny = NormI8.unpackY(n);
+					nz = NormI8.unpackZ(n);
+				}
 
 				// The transformed normal vector
 				nxt = MatrixHelper.transformNormalX(matNormal, nx, ny, nz);
