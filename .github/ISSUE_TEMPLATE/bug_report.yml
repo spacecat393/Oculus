@@ -50,11 +50,11 @@ body:
   - type: input
     id: rubidium-version
     attributes:
-      label: Rubidium Version
-      description: What version of Rubidium are you running along with Oculus? Every part is important! If you do not know what version you are using, look at the file name in your "mods" folder. If you aren't running Rubidium please put N/A.
+      label: Rubidium / Embeddium Version
+      description: What version of Rubidium/Embeddium are you running along with Oculus? Every part is important! If you do not know what version you are using, look at the file name in your "mods" folder.
       placeholder: ex. rubidium-0.5.3a.jar
     validations:
-      required: true
+      required: false
   - type: input
     id: os
     attributes:
