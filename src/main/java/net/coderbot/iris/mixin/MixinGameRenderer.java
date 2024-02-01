@@ -65,6 +65,8 @@ public class MixinGameRenderer {
 	private ArrayList<Program> iris$reloadGeometryShaders() {
 		ArrayList<Program> programs = Lists.newArrayList();
 		programs.addAll(IrisProgramTypes.GEOMETRY.getPrograms().values());
+		programs.addAll(IrisProgramTypes.TESS_CONTROL.getPrograms().values());
+		programs.addAll(IrisProgramTypes.TESS_EVAL.getPrograms().values());
 		return programs;
 	}
 
@@ -205,6 +207,7 @@ public class MixinGameRenderer {
 		"getRendertypeEntityTranslucentShader",
 		"getRendertypeEntityTranslucentCullShader",
 		"getRendertypeItemEntityTranslucentCullShader",
+		"getRendertypeBreezeWindShader",
 		"getRendertypeEntityNoOutlineShader"
 	}, at = @At("HEAD"), cancellable = true)
 	private static void iris$overrideEntityTranslucentShader(CallbackInfoReturnable<ShaderInstance> cir) {

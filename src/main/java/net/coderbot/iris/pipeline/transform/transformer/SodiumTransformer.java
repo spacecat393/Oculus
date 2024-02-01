@@ -150,7 +150,7 @@ public class SodiumTransformer {
 			"void _vert_init() {" +
 				"_vert_position = (vec3(a_PosId.xyz) * 0.00048828125 + -8.0"
 				+ ");" +
-				"_vert_tex_diffuse_coord = (a_TexCoord * 1.0f / 32768.0f);" +
+				"_vert_tex_diffuse_coord = (a_TexCoord * " + (1.0f / 32768.0f) + ");" +
 				"_vert_tex_light_coord = a_LightCoord;" +
 				"_vert_color = " + separateAo + ";" +
 				"_draw_id = (a_PosId.w >> 8u) & 0xFFu; }",

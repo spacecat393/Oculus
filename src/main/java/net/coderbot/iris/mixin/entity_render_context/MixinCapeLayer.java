@@ -21,8 +21,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public class MixinCapeLayer {
     private static final NamespacedId CAPE_LOCATION = new NamespacedId("minecraft", "player_cape");
 
-    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void changeId(PoseStack pCapeLayer0, MultiBufferSource pMultiBufferSource1, int pInt2, AbstractClientPlayer pAbstractClientPlayer3, float pFloat4, float pFloat5, float pFloat6, float pFloat7, float pFloat8, float pFloat9, CallbackInfo ci, ItemStack lvItemStack11) {
+    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V"))
+    private void changeId(PoseStack pCapeLayer0, MultiBufferSource pMultiBufferSource1, int pInt2, AbstractClientPlayer pAbstractClientPlayer3, float pFloat4, float pFloat5, float pFloat6, float pFloat7, float pFloat8, float pFloat9, CallbackInfo ci) {
         if (BlockRenderingSettings.INSTANCE.getItemIds() == null) return;
 
         CapturedRenderingState.INSTANCE.setCurrentRenderedItem(BlockRenderingSettings.INSTANCE.getItemIds().applyAsInt(CAPE_LOCATION));

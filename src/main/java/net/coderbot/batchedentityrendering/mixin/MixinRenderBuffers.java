@@ -47,10 +47,6 @@ public class MixinRenderBuffers implements RenderBuffersExt, MemoryTrackingRende
 	@Final
 	private ChunkBufferBuilderPack fixedBufferPack;
 
-	@Shadow
-	@Final
-	private SortedMap<RenderType, BufferBuilder> fixedBuffers;
-
 	@Inject(method = "bufferSource", at = @At("HEAD"), cancellable = true)
 	private void batchedentityrendering$replaceBufferSource(CallbackInfoReturnable<MultiBufferSource.BufferSource> cir) {
 		if (begins == 0) {
@@ -125,8 +121,9 @@ public class MixinRenderBuffers implements RenderBuffersExt, MemoryTrackingRende
 	@Override
 	public void freeAndDeleteBuffers() {
 		buffered.freeAndDeleteBuffer();
-		((ChunkBufferBuilderPackAccessor) this.fixedBufferPack).getBuilders().values().forEach(bufferBuilder -> ((MemoryTrackingBuffer) bufferBuilder).freeAndDeleteBuffer());
-		fixedBuffers.values().forEach(bufferBuilder -> ((MemoryTrackingBuffer) bufferBuilder).freeAndDeleteBuffer());
+		((SectionBufferBuilderPackAccessor) this.fixedBufferPack).getBuilders().values().forEach(bufferBuilder -> ((MemoryTrackingBuffer) bufferBuilder).freeAndDeleteBuffer());
+		((BufferSourceAccessor) bufferSource).getFixedBuffers().forEach((renderType, bufferBuilder) -> ((MemoryTrackingBuffer) bufferBuilder).freeAndDeleteBuffer());
+		((BufferSourceAccessor) bufferSource).getFixedBuffers().clear();
 		((MemoryTrackingBuffer) ((OutlineBufferSourceAccessor) outlineBufferSource).getOutlineBufferSource()).freeAndDeleteBuffer();
 	}
 

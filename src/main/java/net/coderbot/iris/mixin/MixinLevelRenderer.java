@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.coderbot.iris.Iris;
+import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.layer.IsOutlineRenderStateShard;
 import net.coderbot.iris.layer.OuterWrappedRenderType;
 import net.coderbot.iris.pipeline.HandRenderer;
@@ -15,9 +16,12 @@ import net.coderbot.iris.uniforms.IrisTimeUniforms;
 import net.coderbot.iris.uniforms.SystemTimeUniforms;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.Frustum;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL43C;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,6 +53,9 @@ public class MixinLevelRenderer {
 	@Shadow
 	private Frustum cullingFrustum;
 
+	@Shadow
+	private @Nullable ClientLevel level;
+
 	// Begin shader rendering after buffers have been cleared.
 	// At this point we've ensured that Minecraft's main framebuffer is cleared.
 	// This is important or else very odd issues will happen with shaders that have a final pass that doesn't write to
@@ -61,6 +68,7 @@ public class MixinLevelRenderer {
 		CapturedRenderingState.INSTANCE.setGbufferModelView(poseStack.last().pose());
 		CapturedRenderingState.INSTANCE.setGbufferProjection(projection);
 		CapturedRenderingState.INSTANCE.setTickDelta(tickDelta);
+		CapturedRenderingState.INSTANCE.setRealTickDelta(tickDelta);
 		CapturedRenderingState.INSTANCE.setCloudTime((ticks + tickDelta) * 0.03F);
 		SystemTimeUniforms.COUNTER.beginFrame();
 		SystemTimeUniforms.TIMER.beginFrame(startTime);
@@ -69,6 +77,10 @@ public class MixinLevelRenderer {
 
 		if (pipeline.shouldDisableFrustumCulling()) {
 			this.cullingFrustum = new NonCullingFrustum();
+		}
+
+		if (Iris.shouldActivateWireframe() && this.minecraft.isLocalServer()) {
+			IrisRenderSystem.setPolygonMode(GL43C.GL_LINE);
 		}
 	}
 
@@ -93,6 +105,10 @@ public class MixinLevelRenderer {
 		Minecraft.getInstance().getProfiler().popPush("iris_final");
 		pipeline.finalizeLevelRendering();
 		pipeline = null;
+
+		if (Iris.shouldActivateWireframe() && this.minecraft.isLocalServer()) {
+			IrisRenderSystem.setPolygonMode(GL43C.GL_FILL);
+		}
 	}
 
 	// Setup shadow terrain & render shadows before the main terrain setup. We need to do things in this order to

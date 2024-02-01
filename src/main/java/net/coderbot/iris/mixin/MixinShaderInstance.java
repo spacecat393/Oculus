@@ -89,12 +89,12 @@ public abstract class MixinShaderInstance implements ShaderInstanceInterface {
 
 	@Redirect(method = "<init>(Lnet/minecraft/server/packs/resources/ResourceProvider;Lnet/minecraft/resources/ResourceLocation;Lcom/mojang/blaze3d/vertex/VertexFormat;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/GsonHelper;parse(Ljava/io/Reader;)Lcom/google/gson/JsonObject;"))
 	public JsonObject iris$setupGeometryShader(Reader reader, ResourceProvider resourceProvider, ResourceLocation name, VertexFormat vertexFormat) {
-		this.iris$createGeometryShader(resourceProvider, name);
+		this.iris$createExtraShaders(resourceProvider, name);
 		return GsonHelper.parse(reader);
 	}
 
 	@Override
-	public void iris$createGeometryShader(ResourceProvider provider, ResourceLocation name) {
+	public void iris$createExtraShaders(ResourceProvider provider, ResourceLocation name) {
 		//no-op, used for ExtendedShader to call before the super constructor
 	}
 }

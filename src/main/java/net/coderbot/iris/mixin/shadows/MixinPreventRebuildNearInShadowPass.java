@@ -38,10 +38,10 @@ public abstract class MixinPreventRebuildNearInShadowPass {
 
 	@Group(name = "iris_MixinPreventRebuildNearInShadowPass", min = 1, max = 1)
 	@Inject(method = "setupRender",
-			at = @At(value = "INVOKE",
-					target = "Ljava/util/concurrent/atomic/AtomicReference;get()Ljava/lang/Object;"),
-			cancellable = true,
-			require = 0)
+		at = @At(value = "INVOKE",
+			target = "Ljava/util/concurrent/atomic/AtomicReference;get()Ljava/lang/Object;"),
+		cancellable = true,
+		require = 0)
 	private void iris$preventRebuildNearInShadowPass(Camera camera, Frustum frustum, boolean bl, boolean bl2, CallbackInfo ci) {
 		if (ShadowRenderer.ACTIVE) {
 			for (LevelRenderer.RenderChunkInfo chunk : this.renderChunksInFrustum) {
@@ -55,10 +55,10 @@ public abstract class MixinPreventRebuildNearInShadowPass {
 
 	@Group(name = "iris_MixinPreventRebuildNearInShadowPass", min = 1, max = 1)
 	@Inject(method = "setupRender",
-			at = @At(value = "INVOKE",
-					target = "me/jellysquid/mods/sodium/client/gl/device/RenderDevice.enterManagedCode ()V",
-					remap = false),
-			require = 0)
+		at = @At(value = "INVOKE",
+			target = "me/jellysquid/mods/sodium/client/gl/device/RenderDevice.enterManagedCode ()V",
+			remap = false),
+		require = 0)
 	private void iris$cannotInject(Camera camera, Frustum frustum, boolean bl, boolean bl2, CallbackInfo ci) {
 		// Dummy injection just to assert that either Sodium is present, or the vanilla injection passed.
 	}
