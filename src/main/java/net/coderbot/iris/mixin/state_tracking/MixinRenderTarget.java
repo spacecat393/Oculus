@@ -1,11 +1,10 @@
 package net.coderbot.iris.mixin.state_tracking;
 
+import net.minecraft.client.shader.Framebuffer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.mojang.blaze3d.pipeline.RenderTarget;
 
 import net.coderbot.iris.Iris;
 import net.minecraft.client.Minecraft;
@@ -38,12 +37,12 @@ import net.minecraft.client.Minecraft;
  * 		   once the world has finished rendering.</li>
  * </ul>
  */
-@Mixin(RenderTarget.class)
+@Mixin(Framebuffer.class)
 public class MixinRenderTarget {
-	@Inject(method = "bindWrite(Z)V", at = @At("RETURN"))
+	@Inject(method = "bindFramebuffer", at = @At("RETURN"))
 	private void iris$onBindFramebuffer(boolean bl, CallbackInfo ci) {
 		// IntelliJ is wrong here. It doesn't understand how Mixin works.
-		boolean mainBound = this == (Object) Minecraft.getInstance().getMainRenderTarget();
+		boolean mainBound = this == (Object) Minecraft.getMinecraft().getFramebuffer();
 
 		Iris.getPipelineManager().getPipeline()
 			.ifPresent(pipeline -> pipeline.getRenderTargetStateListener().setIsMainBound(mainBound));

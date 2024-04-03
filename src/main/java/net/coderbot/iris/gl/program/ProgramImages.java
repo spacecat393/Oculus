@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.function.IntSupplier;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.image.ImageBinding;
 import net.coderbot.iris.gl.image.ImageHolder;
 import net.coderbot.iris.gl.image.ImageLimits;
 import net.coderbot.iris.gl.texture.InternalTextureFormat;
+import net.minecraft.client.renderer.OpenGlHelper;
 
 public class ProgramImages {
 	private final ImmutableList<ImageBinding> imageBindings;
@@ -61,12 +61,12 @@ public class ProgramImages {
 
 		@Override
 		public boolean hasImage(String name) {
-			return GlStateManager._glGetUniformLocation(program, name) != -1;
+			return OpenGlHelper.glGetUniformLocation(program, name) != -1;
 		}
 
 		@Override
 		public void addTextureImage(IntSupplier textureID, InternalTextureFormat internalFormat, String name) {
-			int location = GlStateManager._glGetUniformLocation(program, name);
+			int location = OpenGlHelper.glGetUniformLocation(program, name);
 
 			if (location == -1) {
 				return;

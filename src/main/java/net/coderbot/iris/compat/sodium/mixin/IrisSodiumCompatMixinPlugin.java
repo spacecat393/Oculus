@@ -3,11 +3,10 @@ package net.coderbot.iris.compat.sodium.mixin;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraftforge.fml.common.Loader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-
-import net.minecraftforge.fml.loading.FMLLoader;
 
 /**
  * Semi-critical mixin config plugin, disables mixins if Sodium isn't present,
@@ -16,11 +15,11 @@ import net.minecraftforge.fml.loading.FMLLoader;
  */
 public class IrisSodiumCompatMixinPlugin implements IMixinConfigPlugin {
 	
-	public static boolean isRubidiumLoaded;
+	public static boolean isVintagiumLoaded;
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		isRubidiumLoaded = FMLLoader.getLoadingModList().getModFileById("rubidium") != null;
+		isVintagiumLoaded = Loader.isModLoaded("vintagium");
 	}
 
 	@Override
@@ -30,7 +29,7 @@ public class IrisSodiumCompatMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return isRubidiumLoaded;
+		return isVintagiumLoaded;
 	}
 
 	@Override

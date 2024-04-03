@@ -4,16 +4,24 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 /**
  * Class serving as abstraction and
@@ -26,12 +34,12 @@ import net.minecraft.sounds.SoundEvents;
  */
 public final class GuiUtil {
 	public static final ResourceLocation IRIS_WIDGETS_TEX = new ResourceLocation("iris", "textures/gui/widgets.png");
-	private static final Component ELLIPSIS = new TextComponent("...");
+	private static final ITextComponent ELLIPSIS = new TextComponentString("...");
 
 	private GuiUtil() {}
 
 	private static Minecraft client() {
-		return Minecraft.getInstance();
+		return Minecraft.getMinecraft();
 	}
 
 	/**
@@ -39,7 +47,7 @@ public final class GuiUtil {
 	 * used for succeeding draw calls.
 	 */
 	public static void bindIrisWidgetsTexture() {
-		client().getTextureManager().bind(IRIS_WIDGETS_TEX);
+		client().getTextureManager().bindTexture(IRIS_WIDGETS_TEX);
 	}
 
 	/**
@@ -53,7 +61,7 @@ public final class GuiUtil {
 	 * @param hovered Whether the button is being hovered over with the mouse
 	 * @param disabled Whether the button should use the "disabled" texture
 	 */
-	public static void drawButton(PoseStack poseStack, int x, int y, int width, int height, boolean hovered, boolean disabled) {
+	public static void drawButton(int x, int y, int width, int height, boolean hovered, boolean disabled) {
 		// Create variables for half of the width and height.
 		// Will not be exact when width and height are odd, but
 		// that case is handled within the draw calls.
@@ -65,19 +73,19 @@ public final class GuiUtil {
 
 		// Sets RenderSystem to use solid white as the tint color for blend mode, and enables blend mode
 		RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 1.0f);
-		RenderSystem.enableBlend();
+		GlStateManager.enableBlend();
 
 		// Sets RenderSystem to be able to use textures when drawing
-		RenderSystem.enableTexture();
+		GlStateManager.enableTexture2D();
 
 		// Top left section
-		GuiComponent.blit(poseStack, x, y, 0, vOffset, halfWidth, halfHeight, 256, 256);
+		GuiComponent.blit(x, y, 0, vOffset, halfWidth, halfHeight, 256, 256);
 		// Top right section
-		GuiComponent.blit(poseStack, x + halfWidth, y, 200 - (width - halfWidth), vOffset, width - halfWidth, halfHeight, 256, 256);
+		GuiComponent.blit(x + halfWidth, y, 200 - (width - halfWidth), vOffset, width - halfWidth, halfHeight, 256, 256);
 		// Bottom left section
-		GuiComponent.blit(poseStack, x, y + halfHeight, 0, vOffset + (20 - (height - halfHeight)), halfWidth, height - halfHeight, 256, 256);
+		GuiComponent.blit(x, y + halfHeight, 0, vOffset + (20 - (height - halfHeight)), halfWidth, height - halfHeight, 256, 256);
 		// Bottom right section
-		GuiComponent.blit(poseStack, x + halfWidth, y + halfHeight, 200 - (width - halfWidth), vOffset + (20 - (height - halfHeight)), width - halfWidth, height - halfHeight, 256, 256);
+		GuiComponent.blit(x + halfWidth, y + halfHeight, 200 - (width - halfWidth), vOffset + (20 - (height - halfHeight)), width - halfWidth, height - halfHeight, 256, 256);
 	}
 
 	/**
@@ -89,20 +97,20 @@ public final class GuiUtil {
 	 * @param width The width of the panel
 	 * @param height The height of the panel
 	 */
-	public static void drawPanel(PoseStack poseStack, int x, int y, int width, int height) {
+	public static void drawPanel(int x, int y, int width, int height) {
 		int borderColor = 0xDEDEDEDE;
 		int innerColor = 0xDE000000;
 
 		// Top border section
-		GuiComponent.fill(poseStack, x, y, x + width, y + 1, borderColor);
+		Gui.drawRect(x, y, x + width, y + 1, borderColor);
 		// Bottom border section
-		GuiComponent.fill(poseStack, x, (y + height) - 1, x + width, y + height, borderColor);
+		Gui.drawRect(x, (y + height) - 1, x + width, y + height, borderColor);
 		// Left border section
-		GuiComponent.fill(poseStack, x, y + 1, x + 1, (y + height) - 1, borderColor);
+		Gui.drawRect(x, y + 1, x + 1, (y + height) - 1, borderColor);
 		// Right border section
-		GuiComponent.fill(poseStack, (x + width) - 1, y + 1, x + width, (y + height) - 1, borderColor);
+		Gui.drawRect((x + width) - 1, y + 1, x + width, (y + height) - 1, borderColor);
 		// Inner section
-		GuiComponent.fill(poseStack, x + 1, y + 1, (x + width) - 1, (y + height) - 1, innerColor);
+		Gui.drawRect(x + 1, y + 1, (x + width) - 1, (y + height) - 1, innerColor);
 	}
 
 	/**
@@ -112,9 +120,9 @@ public final class GuiUtil {
 	 * @param x The x position of the panel
 	 * @param y The y position of the panel
 	 */
-	public static void drawTextPanel(Font font, PoseStack poseStack, Component text, int x, int y) {
-		drawPanel(poseStack, x, y, font.width(text) + 8, 16);
-		font.drawShadow(poseStack, text, x + 4, y + 4, 0xFFFFFF);
+	public static void drawTextPanel(FontRenderer font, String text, int x, int y) {
+		drawPanel(x, y, font.getStringWidth(text) + 8, 16);
+		font.drawStringWithShadow(text, x + 4, y + 4, 0xFFFFFF);
 	}
 
 	/**
@@ -128,7 +136,7 @@ public final class GuiUtil {
 	 * @param width Width to shorten text to
 	 * @return a shortened text
 	 */
-	public static MutableComponent shortenText(Font font, MutableComponent text, int width) {
+	public static MutableComponent shortenText(FontRenderer font, MutableComponent text, int width) {
 		if (font.width(text) > width) {
 			return new TextComponent(font.plainSubstrByWidth(text.getString(), width - font.width(ELLIPSIS))).append(ELLIPSIS).setStyle(text.getStyle());
 		}
@@ -160,7 +168,7 @@ public final class GuiUtil {
 	 * or other action.
 	 */
 	public static void playButtonClickSound() {
-		client().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1));
+		Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
 
 	/**
@@ -194,16 +202,16 @@ public final class GuiUtil {
 		 * @param x The x position to draw the icon at (left)
 		 * @param y The y position to draw the icon at (top)
 		 */
-		public void draw(PoseStack poseStack, int x, int y) {
+		public void draw(int x, int y) {
 			// Sets RenderSystem to use solid white as the tint color for blend mode, and enables blend mode
 			RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 1.0f);
-			RenderSystem.enableBlend();
+			GlStateManager.enableBlend();
 
 			// Sets RenderSystem to be able to use textures when drawing
-			RenderSystem.enableTexture();
+			GlStateManager.enableTexture2D();
 
 			// Draw the texture to the screen
-			GuiComponent.blit(poseStack, x, y, u, v, width, height, 256, 256);
+			GuiComponent.blit(x, y, u, v, width, height, 256, 256);
 		}
 
 		public int getWidth() {

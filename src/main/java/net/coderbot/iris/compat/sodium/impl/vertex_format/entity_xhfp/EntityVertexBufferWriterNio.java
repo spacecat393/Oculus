@@ -13,7 +13,7 @@ import net.coderbot.iris.vertices.NormalHelper;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
 public class EntityVertexBufferWriterNio extends VertexBufferWriterNio implements QuadVertexSink, GlyphVertexSink {
-	private static final int STRIDE = IrisVertexFormats.ENTITY.getVertexSize();
+	private static final int STRIDE = IrisVertexFormats.ENTITY.getSize();
 
 	private final QuadViewEntity.QuadViewEntityNio quad = new QuadViewEntity.QuadViewEntityNio();
 	private final Vector3f saveNormal = new Vector3f();
@@ -53,7 +53,7 @@ public class EntityVertexBufferWriterNio extends VertexBufferWriterNio implement
 
 	@Override
 	public void writeGlyph(float x, float y, float z, int color, float u, float v, int light) {
-		writeQuad(x, y, z, color, u, v, light, OverlayTexture.NO_OVERLAY, 0);
+		writeQuad(x, y, z, color, u, v, light, 0, 0);
 	}
 
 	private void endQuad(int normal) {

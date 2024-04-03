@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.coderbot.iris.mixin.statelisteners.BooleanStateAccessor;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class BlendModeStorage {
 	private static boolean originalBlendEnable;
@@ -21,16 +22,16 @@ public class BlendModeStorage {
 			GlStateManager.BlendState blendState = GlStateManagerAccessor.getBLEND();
 
 			originalBlendEnable = ((BooleanStateAccessor) blendState.mode).isEnabled();
-			originalBlend = new BlendMode(blendState.srcRgb, blendState.dstRgb, blendState.srcAlpha, blendState.dstAlpha);
+			originalBlend = new BlendMode(blendState.srcFactor, blendState.dstFactor, blendState.srcFactorAlpha, blendState.dstFactorAlpha);
 		}
 
 		blendLocked = false;
 
 		if (override == null) {
-			GlStateManager._disableBlend();
+			GlStateManager.disableBlend();
 		} else {
-			GlStateManager._enableBlend();
-			GlStateManager._blendFuncSeparate(override.getSrcRgb(), override.getDstRgb(), override.getSrcAlpha(), override.getDstAlpha());
+			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(override.getSrcRgb(), override.getDstRgb(), override.getSrcAlpha(), override.getDstAlpha());
 		}
 
 		blendLocked = true;
@@ -42,7 +43,7 @@ public class BlendModeStorage {
 			GlStateManager.BlendState blendState = GlStateManagerAccessor.getBLEND();
 
 			originalBlendEnable = ((BooleanStateAccessor) blendState.mode).isEnabled();
-			originalBlend = new BlendMode(blendState.srcRgb, blendState.dstRgb, blendState.srcAlpha, blendState.dstAlpha);
+			originalBlend = new BlendMode(blendState.srcFactor, blendState.dstFactor, blendState.srcFactorAlpha, blendState.dstFactorAlpha);
 		}
 
 		if (override == null) {
@@ -71,12 +72,12 @@ public class BlendModeStorage {
 		blendLocked = false;
 
 		if (originalBlendEnable) {
-			GlStateManager._enableBlend();
+			GlStateManager.enableBlend();
 		} else {
-			GlStateManager._disableBlend();
+			GlStateManager.disableBlend();
 		}
 
-		GlStateManager._blendFuncSeparate(originalBlend.getSrcRgb(), originalBlend.getDstRgb(),
+		GlStateManager.tryBlendFuncSeparate(originalBlend.getSrcRgb(), originalBlend.getDstRgb(),
 				originalBlend.getSrcAlpha(), originalBlend.getDstAlpha());
 	}
 }

@@ -1,6 +1,7 @@
 package net.coderbot.iris.mixin;
 
 import net.irisshaders.iris.api.v0.IrisApi;
+import net.minecraft.client.renderer.EntityRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +24,7 @@ import net.minecraft.client.renderer.GameRenderer;
  *
  * This mixin makes use of the matrix stack in order to make these changes without more invasive changes.
  */
-@Mixin(GameRenderer.class)
+@Mixin(EntityRenderer.class)
 public class MixinModelViewBobbing {
 	@Unique
 	private Matrix4f bobbingEffectsModel;
@@ -31,8 +32,8 @@ public class MixinModelViewBobbing {
 	@Unique
 	private boolean areShadersOn;
 
-	@Inject(method = "renderLevel", at = @At("HEAD"))
-	private void iris$saveShadersOn(float pGameRenderer0, long pLong1, PoseStack pPoseStack2, CallbackInfo ci) {
+	@Inject(method = "renderWorld", at = @At("HEAD"))
+	private void iris$saveShadersOn(float partialTicks, long finishTimeNano, CallbackInfo ci) {
 		areShadersOn = IrisApi.getInstance().isShaderPackInUse();
 	}
 

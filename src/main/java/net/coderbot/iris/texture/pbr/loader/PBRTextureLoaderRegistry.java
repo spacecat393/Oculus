@@ -3,18 +3,19 @@ package net.coderbot.iris.texture.pbr.loader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureMap;
+
+import javax.annotation.Nullable;
 
 public class PBRTextureLoaderRegistry {
 	public static final PBRTextureLoaderRegistry INSTANCE = new PBRTextureLoaderRegistry();
 
 	static {
 		INSTANCE.register(SimpleTexture.class, new SimplePBRLoader());
-		INSTANCE.register(TextureAtlas.class, new AtlasPBRLoader());
+		INSTANCE.register(TextureMap.class, new AtlasPBRLoader());
 	}
 
 	private final Map<Class<?>, PBRTextureLoader<?>> loaderMap = new HashMap<>();

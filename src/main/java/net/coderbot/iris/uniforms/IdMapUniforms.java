@@ -1,22 +1,24 @@
 package net.coderbot.iris.uniforms;
 
-import static net.coderbot.iris.gl.uniform.UniformUpdateFrequency.PER_FRAME;
-
-import org.jetbrains.annotations.NotNull;
-
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import net.coderbot.iris.gl.uniform.DynamicUniformHolder;
 import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
 import net.coderbot.iris.shaderpack.IdMap;
 import net.coderbot.iris.shaderpack.materialmap.NamespacedId;
+import net.coderbot.iris.vendored.joml.Vector3f;
 import net.irisshaders.iris.api.v0.item.IrisItemLightProvider;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import javax.annotation.Nonnull;
+
+import static net.coderbot.iris.gl.uniform.UniformUpdateFrequency.PER_FRAME;
 
 public final class IdMapUniforms {
 
@@ -24,8 +26,8 @@ public final class IdMapUniforms {
 	}
 
 	public static void addIdMapUniforms(FrameUpdateNotifier notifier, DynamicUniformHolder uniforms, IdMap idMap, boolean isOldHandLight) {
-		HeldItemSupplier mainHandSupplier = new HeldItemSupplier(InteractionHand.MAIN_HAND, idMap.getItemIdMap(), isOldHandLight);
-		HeldItemSupplier offHandSupplier = new HeldItemSupplier(InteractionHand.OFF_HAND, idMap.getItemIdMap(), false);
+		HeldItemSupplier mainHandSupplier = new HeldItemSupplier(EnumHand.MAIN_HAND, idMap.getItemIdMap(), isOldHandLight);
+		HeldItemSupplier offHandSupplier = new HeldItemSupplier(EnumHand.OFF_HAND, idMap.getItemIdMap(), false);
 		notifier.addListener(mainHandSupplier::update);
 		notifier.addListener(offHandSupplier::update);
 
@@ -50,17 +52,17 @@ public final class IdMapUniforms {
 	 * to an integer, and the old hand light value to map offhand to main hand.
 	 */
 	private static class HeldItemSupplier {
-		private final InteractionHand hand;
+		private final EnumHand hand;
 		private final Object2IntFunction<NamespacedId> itemIdMap;
 		private final boolean applyOldHandLight;
 		private int intID;
 		private int lightValue;
-		private com.mojang.math.Vector3f lightColor;
+		private Vector3f lightColor;
 
-		HeldItemSupplier(InteractionHand hand, Object2IntFunction<NamespacedId> itemIdMap, boolean shouldApplyOldHandLight) {
+		HeldItemSupplier(EnumHand hand, Object2IntFunction<NamespacedId> itemIdMap, boolean shouldApplyOldHandLight) {
 			this.hand = hand;
 			this.itemIdMap = itemIdMap;
-			this.applyOldHandLight = shouldApplyOldHandLight && hand == InteractionHand.MAIN_HAND;
+			this.applyOldHandLight = shouldApplyOldHandLight && hand == EnumHand.MAIN_HAND;
 		}
 
 		private void invalidate() {
@@ -70,7 +72,7 @@ public final class IdMapUniforms {
 		}
 
 		public void update() {
-			LocalPlayer player = Minecraft.getInstance().player;
+			EntityPlayerSP player = Minecraft.getMinecraft().player;
 
 			if (player == null) {
 				// Not valid when the player doesn't exist
@@ -78,48 +80,49 @@ public final class IdMapUniforms {
 				return;
 			}
 
-			ItemStack heldStack = player.getItemInHand(hand);
+			ItemStack heldStack = player.getHeldItem(hand);
 
-			if (heldStack == null) {
+			if (heldStack.isEmpty()) {
 				invalidate();
 				return;
 			}
 
 			Item heldItem = heldStack.getItem();
 
-			if (heldItem == null) {
+			if (heldItem == Items.AIR) {
 				invalidate();
 				return;
 			}
 
-			ResourceLocation heldItemId = Registry.ITEM.getKey(heldItem);
-			intID = itemIdMap.applyAsInt(new NamespacedId(heldItemId.getNamespace(), heldItemId.getPath()));
+			// TODO, maybe it will be better to rewrite on Integer ID's system like it was done in Optifine on 1.12?
+			ResourceLocation heldItemId = ForgeRegistries.ITEMS.getKey(heldItem);
+			intID = itemIdMap.getInt(new NamespacedId(heldItemId.getNamespace(), heldItemId.getPath()));
 
 			IrisItemLightProvider lightProvider = (IrisItemLightProvider) heldItem;
-			lightValue = lightProvider.getLightEmission(Minecraft.getInstance().player, heldStack);
+			lightValue = lightProvider.getLightEmission(Minecraft.getMinecraft().player, heldStack);
 
 			if (applyOldHandLight) {
 				lightProvider = applyOldHandLighting(player, lightProvider);
 			}
 
-			lightColor = lightProvider.getLightColor(Minecraft.getInstance().player, heldStack);
+			lightColor = lightProvider.getLightColor(Minecraft.getMinecraft().player, heldStack);
 		}
 
-		private IrisItemLightProvider applyOldHandLighting(@NotNull LocalPlayer player, IrisItemLightProvider existing) {
-			ItemStack offHandStack = player.getItemInHand(InteractionHand.OFF_HAND);
+		private IrisItemLightProvider applyOldHandLighting(@Nonnull EntityPlayerSP player, IrisItemLightProvider existing) {
+			ItemStack offHandStack = player.getHeldItem(EnumHand.OFF_HAND);
 
-			if (offHandStack == null) {
+			if (offHandStack.isEmpty()) {
 				return existing;
 			}
 
 			Item offHandItem = offHandStack.getItem();
 
-			if (offHandItem == null) {
+			if (offHandItem == Items.AIR) {
 				return existing;
 			}
 
 			IrisItemLightProvider lightProvider = (IrisItemLightProvider) offHandItem;
-			int newEmission = lightProvider.getLightEmission(Minecraft.getInstance().player,  offHandStack);
+			int newEmission = lightProvider.getLightEmission(Minecraft.getMinecraft().player, offHandStack);
 
 			if (lightValue < newEmission) {
 				lightValue = newEmission;
@@ -137,7 +140,7 @@ public final class IdMapUniforms {
 			return lightValue;
 		}
 
-		public com.mojang.math.Vector3f getLightColor() {
+		public Vector3f getLightColor() {
 			return lightColor;
 		}
 	}

@@ -1,46 +1,46 @@
 package net.coderbot.iris.mixin.shadows;
 
-import org.spongepowered.asm.mixin.Final;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.coderbot.iris.shadows.CullingDataCache;
+import net.minecraft.client.renderer.RenderGlobal;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.coderbot.iris.shadows.CullingDataCache;
-import net.minecraft.client.renderer.LevelRenderer;
+import java.util.List;
 
-@Mixin(LevelRenderer.class)
+@Mixin(RenderGlobal.class)
 public class MixinLevelRenderer implements CullingDataCache {
+
+	// TODO Let's replace with FastUtils' collection
 	@Shadow
-	@Final
 	@Mutable
-	private ObjectList<LevelRenderer.RenderChunkInfo> renderChunks;
+	private List<RenderGlobal.ContainerLocalRenderInformation> renderInfos = new ObjectArrayList<>(69696);
 
 	@Unique
-	private ObjectList<LevelRenderer.RenderChunkInfo> savedRenderChunks = new ObjectArrayList<>(69696);
+	private List<RenderGlobal.ContainerLocalRenderInformation> savedRenderChunks = new ObjectArrayList<>(69696);
 
 	@Shadow
-	private boolean needsUpdate;
+	private boolean displayListEntitiesDirty;
 
 	@Unique
 	private boolean savedNeedsTerrainUpdate;
 
 	@Shadow
-	private double lastCameraX;
+	private double frustumUpdatePosX;
 
 	@Shadow
-	private double lastCameraY;
+	private double frustumUpdatePosY;
 
 	@Shadow
-	private double lastCameraZ;
+	private double frustumUpdatePosZ;
 
 	@Shadow
-	private double prevCamRotX;
+	private double lastViewEntityPitch;
 
 	@Shadow
-	private double prevCamRotY;
+	private double lastViewEntityYaw;
 
 	@Unique
 	private double savedLastCameraX;
@@ -69,36 +69,36 @@ public class MixinLevelRenderer implements CullingDataCache {
 
 	@Unique
 	private void swap() {
-		ObjectList<LevelRenderer.RenderChunkInfo> tmpList = renderChunks;
-		renderChunks = savedRenderChunks;
+		List<RenderGlobal.ContainerLocalRenderInformation> tmpList = renderInfos;
+		renderInfos = savedRenderChunks;
 		savedRenderChunks = tmpList;
 
 		// TODO: If the normal chunks need a terrain update, these chunks probably do too...
 		// We probably should copy it over
-		boolean tmpBool = needsUpdate;
-		needsUpdate = savedNeedsTerrainUpdate;
+		boolean tmpBool = displayListEntitiesDirty;
+		displayListEntitiesDirty = savedNeedsTerrainUpdate;
 		savedNeedsTerrainUpdate = tmpBool;
 
 		double tmp;
 
-		tmp = lastCameraX;
-		lastCameraX = savedLastCameraX;
+		tmp = frustumUpdatePosX;
+		frustumUpdatePosX = savedLastCameraX;
 		savedLastCameraX = tmp;
 
-		tmp = lastCameraY;
-		lastCameraY = savedLastCameraY;
+		tmp = frustumUpdatePosY;
+		frustumUpdatePosY = savedLastCameraY;
 		savedLastCameraY = tmp;
 
-		tmp = lastCameraZ;
-		lastCameraZ = savedLastCameraZ;
+		tmp = frustumUpdatePosZ;
+		frustumUpdatePosZ = savedLastCameraZ;
 		savedLastCameraZ = tmp;
 
-		tmp = prevCamRotX;
-		prevCamRotX = savedLastCameraPitch;
+		tmp = lastViewEntityPitch;
+		lastViewEntityPitch = savedLastCameraPitch;
 		savedLastCameraPitch = tmp;
 
-		tmp = prevCamRotY;
-		prevCamRotY = savedLastCameraYaw;
+		tmp = lastViewEntityYaw;
+		lastViewEntityYaw = savedLastCameraYaw;
 		savedLastCameraYaw = tmp;
 	}
 }

@@ -1,7 +1,5 @@
 package net.coderbot.iris.texture;
 
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.coderbot.iris.Iris;
@@ -10,6 +8,8 @@ import net.coderbot.iris.gl.state.StateUpdateNotifiers;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.minecraft.client.renderer.texture.AbstractTexture;
+
+import javax.annotation.Nullable;
 
 public class TextureTracker {
 	public static final TextureTracker INSTANCE = new TextureTracker();

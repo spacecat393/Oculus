@@ -1,7 +1,5 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import me.jellysquid.mods.sodium.client.gl.attribute.GlVertexAttributeFormat;
 import me.jellysquid.mods.sodium.client.gl.attribute.GlVertexFormat;
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferView;
@@ -11,6 +9,7 @@ import me.jellysquid.mods.sodium.client.render.chunk.format.ChunkMeshAttribute;
 import me.jellysquid.mods.sodium.client.render.chunk.format.ModelVertexSink;
 import net.coderbot.iris.compat.sodium.impl.vertex_format.IrisChunkMeshAttributes;
 import net.coderbot.iris.compat.sodium.impl.vertex_format.IrisGlVertexAttributeFormat;
+import net.minecraft.client.renderer.BufferBuilder;
 
 /**
  * Like HFPModelVertexType, but extended to support Iris. The extensions aren't particularly efficient right now.
@@ -33,7 +32,7 @@ public class XHFPModelVertexType implements ChunkVertexType {
 	public static final float TEXTURE_SCALE = (1.0f / 32768.0f);
 
 	@Override
-	public ModelVertexSink createFallbackWriter(VertexConsumer consumer) {
+	public ModelVertexSink createFallbackWriter(BufferBuilder consumer) {
 		throw new UnsupportedOperationException();
 	}
 

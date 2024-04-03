@@ -1,16 +1,15 @@
 package net.coderbot.iris.texture.format;
 
+import net.coderbot.iris.Iris;
+import net.minecraft.client.resources.IResource;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
-
-import org.jetbrains.annotations.Nullable;
-
-import net.coderbot.iris.Iris;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 
 public class TextureFormatLoader {
 	public static final ResourceLocation LOCATION = new ResourceLocation("optifine/texture.properties");
@@ -22,7 +21,7 @@ public class TextureFormatLoader {
 		return format;
 	}
 
-	public static void reload(ResourceManager resourceManager) {
+	public static void reload(IResourceManager resourceManager) {
 		TextureFormat newFormat = loadFormat(resourceManager);
 		boolean didFormatChange = !Objects.equals(format, newFormat);
 		format = newFormat;
@@ -32,8 +31,8 @@ public class TextureFormatLoader {
 	}
 
 	@Nullable
-	private static TextureFormat loadFormat(ResourceManager resourceManager) {
-		try (Resource resource = resourceManager.getResource(LOCATION)) {
+	private static TextureFormat loadFormat(IResourceManager resourceManager) {
+		try (IResource resource = resourceManager.getResource(LOCATION)) {
 			Properties properties = new Properties();
 			properties.load(resource.getInputStream());
 			String format = properties.getProperty("format");

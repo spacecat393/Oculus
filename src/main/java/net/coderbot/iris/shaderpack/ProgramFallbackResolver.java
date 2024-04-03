@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.coderbot.iris.shaderpack.loading.ProgramId;
+
+import javax.annotation.Nullable;
 
 public class ProgramFallbackResolver {
 	private final ProgramSet programs;

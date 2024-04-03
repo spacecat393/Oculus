@@ -21,8 +21,7 @@ class CompositeTransformer {
 				&& Stream.concat(
 						root.identifierIndex.getStream("texture2DLod"),
 						root.identifierIndex.getStream("texture3DLod"))
-						.filter(id -> id.getParent() instanceof FunctionCallExpression)
-						.findAny().isPresent()) {
+						.anyMatch(id -> id.getParent() instanceof FunctionCallExpression)) {
 			tree.parseAndInjectNode(t, ASTInjectionPoint.BEFORE_DECLARATIONS,
 					"#extension GL_ARB_shader_texture_lod : require\n");
 		}

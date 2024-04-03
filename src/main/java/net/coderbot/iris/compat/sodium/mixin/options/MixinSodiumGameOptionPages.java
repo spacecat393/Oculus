@@ -1,21 +1,16 @@
 package net.coderbot.iris.compat.sodium.mixin.options;
 
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
-
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
 import me.jellysquid.mods.sodium.client.gui.options.Option;
 import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
 import me.jellysquid.mods.sodium.client.gui.options.storage.MinecraftOptionsStorage;
-import net.coderbot.iris.Iris;
 import net.coderbot.iris.compat.sodium.impl.options.IrisSodiumOptions;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 
 /**
  * Adds the Iris-specific options / option changes to the Sodium game options pages.
@@ -43,23 +38,5 @@ public class MixinSodiumGameOptionPages {
 		builder.add(IrisSodiumOptions.createColorSpaceButton(vanillaOpts));
 
 		return builder;
-	}
-
-	@ModifyArg(method = "quality", remap = false,
-			slice = @Slice(
-					from = @At(value = "CONSTANT", args = "stringValue=options.graphics"),
-					to = @At(value = "CONSTANT", args = "stringValue=options.renderClouds")
-			),
-			at = @At(value = "INVOKE", remap = false,
-					target = "me/jellysquid/mods/sodium/client/gui/options/OptionGroup$Builder.add (" +
-								"Lme/jellysquid/mods/sodium/client/gui/options/Option;" +
-							")Lme/jellysquid/mods/sodium/client/gui/options/OptionGroup$Builder;"),
-			allow = 1)
-	private static Option<?> iris$replaceGraphicsQualityButton(Option<?> candidate) {
-		if (!Iris.getIrisConfig().areShadersEnabled() && GlStateManager.supportsFramebufferBlit()) {
-			return candidate;
-		} else {
-			return IrisSodiumOptions.createLimitedVideoSettingsButton(vanillaOpts);
-		}
 	}
 }

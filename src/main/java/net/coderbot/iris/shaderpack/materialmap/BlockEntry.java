@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.coderbot.iris.Iris;
+
+import javax.annotation.Nonnull;
 
 public class BlockEntry {
 	private final NamespacedId id;
@@ -23,8 +23,8 @@ public class BlockEntry {
 	 *
 	 * @param entry The string representation of the entry. Must not be empty.
 	 */
-	@NotNull
-	public static BlockEntry parse(@NotNull String entry) {
+	@Nonnull
+	public static BlockEntry parse(@Nonnull String entry) {
 		if (entry.isEmpty()) {
 			throw new IllegalArgumentException("Called BlockEntry::parse with an empty string");
 		}

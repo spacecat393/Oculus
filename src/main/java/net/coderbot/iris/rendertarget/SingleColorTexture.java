@@ -2,11 +2,9 @@ package net.coderbot.iris.rendertarget;
 
 import java.nio.ByteBuffer;
 
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL13C;
-
-import com.mojang.blaze3d.platform.GlStateManager;
+import org.lwjgl.opengl.GL11;
 
 import net.coderbot.iris.gl.GlResource;
 import net.coderbot.iris.gl.IrisRenderSystem;
@@ -14,7 +12,7 @@ import net.coderbot.iris.gl.texture.TextureUploadHelper;
 
 public class SingleColorTexture extends GlResource {
 	public SingleColorTexture(int red, int green, int blue, int alpha) {
-		super(IrisRenderSystem.createTexture(GL11C.GL_TEXTURE_2D));
+		super(IrisRenderSystem.createTexture(GL11.GL_TEXTURE_2D));
 		ByteBuffer pixel = BufferUtils.createByteBuffer(4);
 		pixel.put((byte) red);
 		pixel.put((byte) green);
@@ -24,13 +22,13 @@ public class SingleColorTexture extends GlResource {
 
 		int texture = getGlId();
 
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MIN_FILTER, GL11C.GL_LINEAR);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, GL11C.GL_LINEAR);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_WRAP_S, GL13C.GL_REPEAT);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_WRAP_T, GL13C.GL_REPEAT);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 
 		TextureUploadHelper.resetTextureUploadState();
-		IrisRenderSystem.texImage2D(texture, GL11C.GL_TEXTURE_2D, 0, GL11C.GL_RGBA, 1, 1, 0, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixel);
+		IrisRenderSystem.texImage2D(texture, GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixel);
 	}
 
 	public int getTextureId() {
@@ -39,6 +37,6 @@ public class SingleColorTexture extends GlResource {
 
 	@Override
 	protected void destroyInternal() {
-		GlStateManager._deleteTexture(getGlId());
+		GlStateManager.deleteTexture(getGlId());
 	}
 }

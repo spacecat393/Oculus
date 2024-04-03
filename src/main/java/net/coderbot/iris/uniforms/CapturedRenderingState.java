@@ -41,7 +41,7 @@ public class CapturedRenderingState {
 	}
 
 	public Vector3d getFogColor() {
-		if (Minecraft.getInstance().level == null || fogColor == null) {
+		if (Minecraft.getMinecraft().world == null || fogColor == null) {
 			return ZERO_VECTOR_3d;
 		}
 

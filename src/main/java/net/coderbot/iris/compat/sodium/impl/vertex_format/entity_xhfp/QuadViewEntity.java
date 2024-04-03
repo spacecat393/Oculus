@@ -2,7 +2,7 @@ package net.coderbot.iris.compat.sodium.impl.vertex_format.entity_xhfp;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.system.MemoryUtil;
+import me.jellysquid.mods.sodium.client.util.CompatMemoryUtil;
 
 import net.coderbot.iris.vertices.QuadView;
 
@@ -45,7 +45,7 @@ public abstract class QuadViewEntity implements QuadView {
 
 		@Override
 		float getFloat(long writePointer) {
-			return MemoryUtil.memGetFloat(writePointer);
+			return CompatMemoryUtil.memGetFloat(writePointer);
 		}
 	}
 

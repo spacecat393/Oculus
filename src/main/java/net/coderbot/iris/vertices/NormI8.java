@@ -1,7 +1,7 @@
 package net.coderbot.iris.vertices;
 
 import com.mojang.math.Vector3f;
-import net.minecraft.util.Mth;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Provides some utilities for working with packed normal vectors. Each normal component provides 8 bits of
@@ -60,7 +60,7 @@ public class NormI8 {
      */
     private static int encode(float comp) {
         // TODO: is the clamp necessary here? our inputs should always be normalized vector components
-        return ((int) (Mth.clamp(comp, -1.0F, 1.0F) * COMPONENT_RANGE) & 255);
+        return ((int) (MathHelper.clamp(comp, -1.0F, 1.0F) * COMPONENT_RANGE) & 255);
     }
 
     /**

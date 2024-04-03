@@ -2,7 +2,7 @@ package net.coderbot.iris.compat.sodium.impl.vertex_format.terrain_xhfp;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.system.MemoryUtil;
+import me.jellysquid.mods.sodium.client.util.CompatMemoryUtil;
 
 import net.coderbot.iris.vertices.QuadView;
 
@@ -53,7 +53,7 @@ public abstract class QuadViewTerrain implements QuadView {
 
 		@Override
 		short getShort(long writePointer) {
-			return MemoryUtil.memGetShort(writePointer);
+			return CompatMemoryUtil.memGetShort(writePointer);
 		}
 	}
 

@@ -1,28 +1,27 @@
 package net.coderbot.iris.vertices;
 
-import java.nio.ByteBuffer;
-import java.util.function.IntFunction;
-
-import org.lwjgl.system.MemoryUtil;
-
-import com.mojang.blaze3d.vertex.VertexFormat;
-
+import nanolive.compat.CompatMemoryUtil;
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.irisshaders.iris.api.v0.IrisTextVertexSink;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.ByteBuffer;
+import java.util.function.IntFunction;
 
 public class IrisTextVertexSinkImpl implements IrisTextVertexSink {
 	static VertexFormat format = IrisVertexFormats.TERRAIN;
 	private final ByteBuffer buffer;
 	private final TextQuadView quad = new TextQuadView();
 	private final Vector3f saveNormal = new Vector3f();
-	private static final int STRIDE = IrisVertexFormats.TERRAIN.getVertexSize();
+	private static final int STRIDE = IrisVertexFormats.TERRAIN.getSize();
 	private int vertexCount;
 	private long elementOffset;
 	private float uSum;
 	private float vSum;
 
 	public IrisTextVertexSinkImpl(int maxQuadCount, IntFunction<ByteBuffer> buffer) {
-		this.buffer = buffer.apply(format.getVertexSize() * 4 * maxQuadCount);
+		this.buffer = buffer.apply(format.getSize() * 4 * maxQuadCount);
 		this.elementOffset = MemoryUtil.memAddress(this.buffer);
 	}
 
@@ -51,20 +50,20 @@ public class IrisTextVertexSinkImpl implements IrisTextVertexSink {
 
 		long i = elementOffset;
 
-		MemoryUtil.memPutFloat(i, x);
-		MemoryUtil.memPutFloat(i + 4, y);
-		MemoryUtil.memPutFloat(i + 8, z);
-		MemoryUtil.memPutInt(i + 12, color);
-		MemoryUtil.memPutFloat(i + 16, u);
-		MemoryUtil.memPutFloat(i + 20, v);
-		MemoryUtil.memPutInt(i + 24, light);
+		CompatMemoryUtil.memPutFloat(i, x);
+		CompatMemoryUtil.memPutFloat(i + 4, y);
+		CompatMemoryUtil.memPutFloat(i + 8, z);
+		CompatMemoryUtil.memPutInt(i + 12, color);
+		CompatMemoryUtil.memPutFloat(i + 16, u);
+		CompatMemoryUtil.memPutFloat(i + 20, v);
+		CompatMemoryUtil.memPutInt(i + 24, light);
 
 		if (vertexCount == 4) {
 			// TODO: compute this at the head of quad()
 			vertexCount = 0;
-			uSum *= 0.25;
-			vSum *= 0.25;
-			quad.setup(elementOffset, IrisVertexFormats.TERRAIN.getVertexSize());
+			uSum *= 0.25F;
+			vSum *= 0.25F;
+			quad.setup(elementOffset, IrisVertexFormats.TERRAIN.getSize());
 
 			NormalHelper.computeFaceNormal(saveNormal, quad);
 			float normalX = saveNormal.x;
@@ -75,10 +74,10 @@ public class IrisTextVertexSinkImpl implements IrisTextVertexSink {
 			int tangent = NormalHelper.computeTangent(normalX, normalY, normalZ, quad);
 
 			for (long vertex = 0; vertex < 4; vertex++) {
-				MemoryUtil.memPutFloat(i + 36 - STRIDE * vertex, uSum);
-				MemoryUtil.memPutFloat(i + 40 - STRIDE * vertex, vSum);
-				MemoryUtil.memPutInt(i + 28 - STRIDE * vertex, normal);
-				MemoryUtil.memPutInt(i + 44 - STRIDE * vertex, tangent);
+				CompatMemoryUtil.memPutFloat(i + 36 - STRIDE * vertex, uSum);
+				CompatMemoryUtil.memPutFloat(i + 40 - STRIDE * vertex, vSum);
+				CompatMemoryUtil.memPutInt(i + 28 - STRIDE * vertex, normal);
+				CompatMemoryUtil.memPutInt(i + 44 - STRIDE * vertex, tangent);
 			}
 
 			uSum = 0;
@@ -103,23 +102,23 @@ public class IrisTextVertexSinkImpl implements IrisTextVertexSink {
 		}
 
 		public float x(int index) {
-			return MemoryUtil.memGetFloat(writePointer - stride * (3L - index));
+			return CompatMemoryUtil.memGetFloat(writePointer - stride * (3L - index));
 		}
 
 		public float y(int index) {
-			return MemoryUtil.memGetFloat(writePointer + 4 - stride * (3L - index));
+			return CompatMemoryUtil.memGetFloat(writePointer + 4 - stride * (3L - index));
 		}
 
 		public float z(int index) {
-			return MemoryUtil.memGetFloat(writePointer + 8 - stride * (3L - index));
+			return CompatMemoryUtil.memGetFloat(writePointer + 8 - stride * (3L - index));
 		}
 
 		public float u(int index) {
-			return MemoryUtil.memGetFloat(writePointer + 16 - stride * (3L - index));
+			return CompatMemoryUtil.memGetFloat(writePointer + 16 - stride * (3L - index));
 		}
 
 		public float v(int index) {
-			return MemoryUtil.memGetFloat(writePointer + 20 - stride * (3L - index));
+			return CompatMemoryUtil.memGetFloat(writePointer + 20 - stride * (3L - index));
 		}
 	}
 }

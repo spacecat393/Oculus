@@ -5,12 +5,11 @@ import static net.coderbot.iris.gl.uniform.UniformUpdateFrequency.PER_FRAME;
 import java.nio.FloatBuffer;
 import java.util.function.Supplier;
 
-import com.mojang.math.Matrix4f;
-
 import net.coderbot.iris.gl.uniform.UniformHolder;
 import net.coderbot.iris.pipeline.ShadowRenderer;
 import net.coderbot.iris.shaderpack.PackDirectives;
 import net.coderbot.iris.shadow.ShadowMatrices;
+import net.coderbot.iris.vendored.joml.Matrix4f;
 
 public final class MatrixUniforms {
 	private MatrixUniforms() {
@@ -55,7 +54,7 @@ public final class MatrixUniforms {
 		@Override
 		public net.coderbot.iris.vendored.joml.Matrix4f get() {
 			// PERF: Don't copy + allocate this matrix every time?
-			Matrix4f copy = parent.get().copy();
+			final Matrix4f copy = new Matrix4f(parent.get());
 
 			FloatBuffer buffer = FloatBuffer.allocate(16);
 			copy.store(buffer);
@@ -100,12 +99,12 @@ public final class MatrixUniforms {
 		@Override
 		public Matrix4f get() {
 			// PERF: Don't copy + allocate these matrices every time?
-			Matrix4f copy = parent.get().copy();
-			Matrix4f previous = this.previous.copy();
+			final Matrix4f copy = new Matrix4f(parent.get());
+			final Matrix4f prev = new Matrix4f(this.previous);
 
 			this.previous = copy;
 
-			return previous;
+			return prev;
 		}
 	}
 }

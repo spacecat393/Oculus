@@ -9,13 +9,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.ProgressOption;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class IrisVideoSettings {
 	public static int shadowDistance = 32;
 
 	// TODO: Tell the user to check in the shader options once that's supported.
-	private static final Component DISABLED_TOOLTIP = new TranslatableComponent("options.iris.shadowDistance.disabled");
-	private static final Component ENABLED_TOOLTIP = new TranslatableComponent("options.iris.shadowDistance.enabled");
+	private static final ITextComponent DISABLED_TOOLTIP = new TextComponentTranslation("options.iris.shadowDistance.disabled");
+	private static final ITextComponent ENABLED_TOOLTIP = new TextComponentTranslation("options.iris.shadowDistance.enabled");
 	public static ColorSpace colorSpace = ColorSpace.SRGB;
 
 	public static int getOverriddenShadowDistance(int base) {
@@ -59,14 +61,14 @@ public class IrisVideoSettings {
 			tooltip = ENABLED_TOOLTIP;
 		}
 
-		option.setTooltip(Minecraft.getInstance().font.split(tooltip, 200));
+		option.setTooltip(Minecraft.getMinecraft().fontRenderer.split(tooltip, 200));
 
 		if (d <= 0.0) {
-			return new TranslatableComponent("options.generic_value", new TranslatableComponent("options.iris.shadowDistance"), "0 (disabled)");
+			return new TextComponentTranslation("options.generic_value", new TextComponentTranslation("options.iris.shadowDistance"), "0 (disabled)");
 		} else {
-			return new TranslatableComponent("options.generic_value",
-					new TranslatableComponent("options.iris.shadowDistance"),
-					new TranslatableComponent("options.chunks", d));
+			return new TextComponentTranslation("options.generic_value",
+					new TextComponentTranslation("options.iris.shadowDistance"),
+					new TextComponentTranslation("options.chunks", d));
 		}
 	});
 }

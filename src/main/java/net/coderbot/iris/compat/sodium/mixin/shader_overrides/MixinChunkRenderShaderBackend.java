@@ -1,13 +1,27 @@
 package net.coderbot.iris.compat.sodium.mixin.shader_overrides;
 
+import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gl.shader.GlShader;
 import me.jellysquid.mods.sodium.client.gl.shader.ShaderConstants;
 import me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader;
 import me.jellysquid.mods.sodium.client.gl.shader.ShaderType;
+import me.jellysquid.mods.sodium.client.model.vertex.type.ChunkVertexType;
+import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgram;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkRenderShaderBackend;
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.compat.sodium.impl.shader_overrides.ChunkRenderBackendExt;
+import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
 import net.coderbot.iris.compat.sodium.impl.vertex_format.IrisModelVertexFormats;
+import net.coderbot.iris.gl.program.ProgramSamplers;
+import net.coderbot.iris.gl.program.ProgramUniforms;
+import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
+import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.coderbot.iris.shaderpack.transform.StringTransformations;
 import net.coderbot.iris.shaderpack.transform.Transformations;
-import net.minecraft.resources.ResourceLocation;
+import net.coderbot.iris.shadows.ShadowRenderingState;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,23 +31,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
-import me.jellysquid.mods.sodium.client.model.vertex.type.ChunkVertexType;
-import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
-import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgram;
-import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkRenderShaderBackend;
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.compat.sodium.impl.shader_overrides.ChunkRenderBackendExt;
-import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
-import net.coderbot.iris.gl.program.ProgramSamplers;
-import net.coderbot.iris.gl.program.ProgramUniforms;
-import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
-import net.coderbot.iris.pipeline.WorldRenderingPipeline;
-import net.coderbot.iris.shadows.ShadowRenderingState;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +55,7 @@ public class MixinChunkRenderShaderBackend implements ChunkRenderBackendExt {
 	protected ChunkProgram activeProgram;
 
 	@Shadow
-	public void begin(PoseStack poseStack) {
+	public void begin() {
 		throw new AssertionError();
 	}
 
@@ -71,7 +68,7 @@ public class MixinChunkRenderShaderBackend implements ChunkRenderBackendExt {
 		irisChunkProgramOverrides = new IrisChunkProgramOverrides();
 	}
 
-	@Redirect(method = "createShader", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/gl/shader/ShaderLoader;loadShader(Lme/jellysquid/mods/sodium/client/gl/device/RenderDevice;Lme/jellysquid/mods/sodium/client/gl/shader/ShaderType;Lnet/minecraft/resources/ResourceLocation;Ljava/util/List;)Lme/jellysquid/mods/sodium/client/gl/shader/GlShader;", ordinal = 0))
+	@Redirect(method = "createShader", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/gl/shader/ShaderLoader;loadShader(Lme/jellysquid/mods/sodium/client/gl/device/RenderDevice;Lme/jellysquid/mods/sodium/client/gl/shader/ShaderType;Lnet/minecraft/util/ResourceLocation;Ljava/util/List;)Lme/jellysquid/mods/sodium/client/gl/shader/GlShader;", ordinal = 0))
 	private GlShader iris$redirectOriginalShader(RenderDevice device, ShaderType type, ResourceLocation name, List<String> constants) {
 		if (this.vertexType == IrisModelVertexFormats.MODEL_VERTEX_XHFP) {
 			String shader = getShaderSource(getShaderPath(name));
@@ -142,17 +139,17 @@ public class MixinChunkRenderShaderBackend implements ChunkRenderBackendExt {
 	}
 
 	@Override
-	public void iris$begin(PoseStack poseStack, BlockRenderPass pass) {
+	public void iris$begin(BlockRenderPass pass) {
 		if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
 			// No back face culling during the shadow pass
 			// TODO: Hopefully this won't be necessary in the future...
-			RenderSystem.disableCull();
+			GlStateManager.disableCull();
 		}
 
 		this.override = irisChunkProgramOverrides.getProgramOverride(device, pass);
 
 		Iris.getPipelineManager().getPipeline().ifPresent(WorldRenderingPipeline::beginSodiumTerrainRendering);
-		begin(poseStack);
+		begin();
 	}
 
 	@Inject(method = "begin",
@@ -162,14 +159,14 @@ public class MixinChunkRenderShaderBackend implements ChunkRenderBackendExt {
 					args = "opcode=PUTFIELD",
 					remap = false,
 					shift = At.Shift.AFTER))
-	private void iris$applyOverride(PoseStack poseStack, CallbackInfo ci) {
+	private void iris$applyOverride(CallbackInfo ci) {
 		if (override != null) {
 			this.activeProgram = override;
 		}
 	}
 
 	@Inject(method = "end", at = @At("RETURN"))
-	private void iris$onEnd(PoseStack poseStack, CallbackInfo ci) {
+	private void iris$onEnd(CallbackInfo ci) {
 		ProgramUniforms.clearActiveUniforms();
 		ProgramSamplers.clearActiveSamplers();
 		Iris.getPipelineManager().getPipeline().ifPresent(WorldRenderingPipeline::endSodiumTerrainRendering);

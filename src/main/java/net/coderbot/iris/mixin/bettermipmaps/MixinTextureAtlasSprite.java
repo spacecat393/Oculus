@@ -1,30 +1,27 @@
 package net.coderbot.iris.mixin.bettermipmaps;
 
-import java.util.Locale;
-import java.util.Objects;
-
+import nanolive.compat.CompatMemoryUtil;
+import nanolive.compat.NativeImage;
 import net.coderbot.iris.helpers.ColorSRGB;
-import org.lwjgl.system.MemoryUtil;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.resources.IResource;
+import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-import com.mojang.blaze3d.platform.NativeImage;
-
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
+import java.util.Objects;
 
 @Mixin(TextureAtlasSprite.class)
 public class MixinTextureAtlasSprite {
 	// Generate some color tables for gamma correction.
 	private static final float[] SRGB_TO_LINEAR = new float[256];
-
-	@Shadow
-	@Final
-	private TextureAtlasSprite.Info info;
 
 	static {
 		for (int i = 0; i < 256; i++) {
@@ -32,29 +29,20 @@ public class MixinTextureAtlasSprite {
 		}
 	}
 
-	// While Fabric allows us to @Inject into the constructor here, that's just a specific detail of FabricMC's mixin
-	// fork. Upstream Mixin doesn't allow arbitrary @Inject usage in constructor. However, we can use @ModifyVariable
-	// just fine, in a way that hopefully doesn't conflict with other mods.
-	//
-	// By doing this, we can work with upstream Mixin as well, as is used on Forge. While we don't officially
-	// support Forge, since this works well on Fabric too, it's fine to ensure that the diff between Fabric and Forge
-	// can remain minimal. Being less dependent on specific details of Fabric is good, since it means we can be more
-	// cross-platform.
-	@ModifyVariable(method = "<init>", at = @At(value = "FIELD",
-		target = "Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;metadata:Lnet/minecraft/client/resources/metadata/animation/AnimationMetadataSection;"), argsOnly = true)
-	private NativeImage iris$beforeGenerateMipLevels(NativeImage nativeImage) {
+	@Redirect(method = "loadSpriteFrames", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureUtil;readBufferedImage(Ljava/io/InputStream;)Ljava/awt/image/BufferedImage;"))
+	private BufferedImage iris$beforeGenerateMipLevels(InputStream stream, IResource resource, int mipmaplevels) throws IOException {
 		// We're injecting after the "info" field has been set, so this is safe even though we're in a constructor.
-		ResourceLocation name = Objects.requireNonNull(info).name();
+		ResourceLocation name = Objects.requireNonNull(resource).getResourceLocation();
+		BufferedImage image = TextureUtil.readBufferedImage(stream);
 
 		if (name.getPath().contains("leaves")) {
 			// Don't ruin the textures of leaves on fast graphics, since they're supposed to have black pixels
 			// apparently.
-			return nativeImage;
+			return image;
 		}
 
-		iris$fillInTransparentPixelColors(nativeImage);
-
-		return nativeImage;
+		iris$fillInTransparentPixelColors(image);
+		return null;
 	}
 
 	/**
@@ -66,7 +54,7 @@ public class MixinTextureAtlasSprite {
 	 * black color does not leak over into sampling.
 	 */
 	@Unique
-	private static void iris$fillInTransparentPixelColors(NativeImage nativeImage) {
+	private static void iris$fillInTransparentPixelColors(BufferedImage nativeImage) {
 		final long ppPixel = getPointerRGBA(nativeImage);
 		final int pixelCount = nativeImage.getHeight() * nativeImage.getWidth();
 		// Calculate an average color from all pixels that are not completely transparent.
@@ -80,7 +68,7 @@ public class MixinTextureAtlasSprite {
 		for (int pixelIndex = 0; pixelIndex < pixelCount; pixelIndex++) {
 			long pPixel = ppPixel + (pixelIndex * 4);
 
-			int color = MemoryUtil.memGetInt(pPixel);
+			int color = CompatMemoryUtil.memGetInt(pPixel);
 			int alpha = NativeImage.getA(color);
 
 			// Ignore all fully-transparent pixels for the purposes of computing an average color.
@@ -112,17 +100,17 @@ public class MixinTextureAtlasSprite {
 		for (int pixelIndex = 0; pixelIndex < pixelCount; pixelIndex++) {
 			long pPixel = ppPixel + (pixelIndex * 4);
 
-			int color = MemoryUtil.memGetInt(pPixel);
+			int color = CompatMemoryUtil.memGetInt(pPixel);
 			int alpha = NativeImage.getA(color);
 
 			// Replace the color values of pixels which are fully transparent, since they have no color data.
 			if (alpha == 0) {
-				MemoryUtil.memPutInt(pPixel, averageColor);
+				CompatMemoryUtil.memPutInt(pPixel, averageColor);
 			}
 		}
 	}
 
-	private static long getPointerRGBA(NativeImage nativeImage) {
+	private static long getPointerRGBA(BufferedImage nativeImage) {
 		if (nativeImage.format() != NativeImage.Format.RGBA) {
 			throw new IllegalArgumentException(String.format(Locale.ROOT,
 					"Tried to get pointer to RGBA pixel data on NativeImage of wrong format; have %s", nativeImage.format()));

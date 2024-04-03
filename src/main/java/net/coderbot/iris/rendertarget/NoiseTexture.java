@@ -3,7 +3,10 @@ package net.coderbot.iris.rendertarget;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13C;
 import org.lwjgl.opengl.GL20C;
 
@@ -22,21 +25,21 @@ public class NoiseTexture extends GlResource {
 	int height;
 
 	public NoiseTexture(int width, int height) {
-		super(IrisRenderSystem.createTexture(GL11C.GL_TEXTURE_2D));
+		super(IrisRenderSystem.createTexture(GL11.GL_TEXTURE_2D));
 
 		int texture = getGlId();
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MIN_FILTER, GL11C.GL_LINEAR);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, GL11C.GL_LINEAR);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_WRAP_S, GL13C.GL_REPEAT);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_WRAP_T, GL13C.GL_REPEAT);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_MAX_LEVEL, 0);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_MIN_LOD, 0);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_MAX_LOD,0);
-		IrisRenderSystem.texParameterf(texture, GL11C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_LOD_BIAS, 0.0F);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MIN_LOD, 0);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LOD,0);
+		IrisRenderSystem.texParameterf(texture, GL11.GL_TEXTURE_2D, GL20C.GL_TEXTURE_LOD_BIAS, 0.0F);
 		resize(texture, width, height);
 
-		GlStateManager._bindTexture(0);
+		GlStateManager.bindTexture(0);
 	}
 
 	void resize(int texture, int width, int height) {
@@ -48,10 +51,10 @@ public class NoiseTexture extends GlResource {
 		TextureUploadHelper.resetTextureUploadState();
 
 		// Since we're using tightly-packed RGB data, we must use an alignment of 1 byte instead of the usual 4 bytes.
-		GlStateManager._pixelStore(GL20C.GL_UNPACK_ALIGNMENT, 1);
-		IrisRenderSystem.texImage2D(texture, GL11C.GL_TEXTURE_2D, 0, GL11C.GL_RGB, width, height, 0, GL11C.GL_RGB, GL11C.GL_UNSIGNED_BYTE, pixels);
+		GlStateManager.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+		IrisRenderSystem.texImage2D(texture, GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, pixels);
 
-		GlStateManager._bindTexture(0);
+		GlStateManager.bindTexture(0);
 	}
 
 	private ByteBuffer generateNoise() {
@@ -73,6 +76,6 @@ public class NoiseTexture extends GlResource {
 
 	@Override
 	protected void destroyInternal() {
-		GlStateManager._deleteTexture(getGlId());
+		GlStateManager.deleteTexture(getGlId());
 	}
 }

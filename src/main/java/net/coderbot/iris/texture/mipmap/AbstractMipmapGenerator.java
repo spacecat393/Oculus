@@ -1,6 +1,6 @@
 package net.coderbot.iris.texture.mipmap;
 
-import com.mojang.blaze3d.platform.NativeImage;
+import nanolive.compat.NativeImage;
 
 public abstract class AbstractMipmapGenerator implements CustomMipmapGenerator {
 	@Override
@@ -16,9 +16,9 @@ public abstract class AbstractMipmapGenerator implements CustomMipmapGenerator {
 				for (int x = 0; x < width; ++x) {
 					for (int y = 0; y < height; ++y) {
 						mipmap.setPixelRGBA(x, y, blend(
-								prevMipmap.getPixelRGBA(x * 2 + 0, y * 2 + 0),
-								prevMipmap.getPixelRGBA(x * 2 + 1, y * 2 + 0),
-								prevMipmap.getPixelRGBA(x * 2 + 0, y * 2 + 1),
+								prevMipmap.getPixelRGBA(x * 2, y * 2),
+								prevMipmap.getPixelRGBA(x * 2 + 1, y * 2),
+								prevMipmap.getPixelRGBA(x * 2, y * 2 + 1),
 								prevMipmap.getPixelRGBA(x * 2 + 1, y * 2 + 1)
 						));
 					}

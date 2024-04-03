@@ -2,6 +2,7 @@ package net.coderbot.iris.gui.element.widget;
 
 import java.util.Optional;
 
+import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -41,11 +42,11 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int x, int y, int width, int height, int mouseX, int mouseY, float tickDelta, boolean hovered) {
+	public void render(int x, int y, int width, int height, int mouseX, int mouseY, float tickDelta, boolean hovered) {
 		GuiUtil.bindIrisWidgetsTexture();
-		GuiUtil.drawButton(poseStack, x, y, width, height, hovered, false);
+		GuiUtil.drawButton(x, y, width, height, hovered, false);
 
-		Font font = Minecraft.getInstance().font;
+		FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 
 		int maxLabelWidth = width - 9;
 
@@ -59,12 +60,12 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 
 		int labelWidth = font.width(this.trimmedLabel);
 
-		font.drawShadow(poseStack, this.trimmedLabel, x + (int)(width * 0.5) - (int)(labelWidth * 0.5) - (int)(0.5 * Math.max(labelWidth - (width - 18), 0)), y + 7, 0xFFFFFF);
-		font.draw(poseStack, ARROW, (x + width) - 9, y + 7, 0xFFFFFF);
+		font.drawShadow(this.trimmedLabel, x + (int)(width * 0.5) - (int)(labelWidth * 0.5) - (int)(0.5 * Math.max(labelWidth - (width - 18), 0)), y + 7, 0xFFFFFF);
+		font.draw(ARROW, (x + width) - 9, y + 7, 0xFFFFFF);
 
 		if (hovered && this.isLabelTrimmed) {
 			// To prevent other elements from being drawn on top of the tooltip
-			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(font, poseStack, this.label, mouseX + 2, mouseY - 16));
+			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(font, this.label, mouseX + 2, mouseY - 16));
 		}
 	}
 

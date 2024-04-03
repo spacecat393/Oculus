@@ -1,5 +1,6 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format.entity_xhfp;
 
+import me.jellysquid.mods.sodium.client.util.CompatMemoryUtil;
 import org.lwjgl.system.MemoryUtil;
 
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferView;
@@ -13,7 +14,7 @@ import net.coderbot.iris.vertices.NormalHelper;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
 public class GlyphVertexBufferWriterUnsafe extends VertexBufferWriterUnsafe implements QuadVertexSink, GlyphVertexSink {
-	private static final int STRIDE = IrisVertexFormats.TERRAIN.getVertexSize();
+	private static final int STRIDE = IrisVertexFormats.TERRAIN.getSize();
 
 	private final QuadViewEntity.QuadViewEntityUnsafe quad = new QuadViewEntity.QuadViewEntityUnsafe();
 	private final Vector3f saveNormal = new Vector3f();
@@ -34,13 +35,13 @@ public class GlyphVertexBufferWriterUnsafe extends VertexBufferWriterUnsafe impl
 		uSum += u;
 		vSum += v;
 
-		MemoryUtil.memPutFloat(i, x);
-		MemoryUtil.memPutFloat(i + 4, y);
-		MemoryUtil.memPutFloat(i + 8, z);
-		MemoryUtil.memPutInt(i + 12, color);
-		MemoryUtil.memPutFloat(i + 16, u);
-		MemoryUtil.memPutFloat(i + 20, v);
-		MemoryUtil.memPutInt(i + 24, light);
+		CompatMemoryUtil.memPutFloat(i, x);
+		CompatMemoryUtil.memPutFloat(i + 4, y);
+		CompatMemoryUtil.memPutFloat(i + 8, z);
+		CompatMemoryUtil.memPutInt(i + 12, color);
+		CompatMemoryUtil.memPutFloat(i + 16, u);
+		CompatMemoryUtil.memPutFloat(i + 20, v);
+		CompatMemoryUtil.memPutInt(i + 24, light);
 
 		if (vertexCount == 4) {
 			this.endQuad(normal);
@@ -81,10 +82,10 @@ public class GlyphVertexBufferWriterUnsafe extends VertexBufferWriterUnsafe impl
 		int tangent = NormalHelper.computeTangent(normalX, normalY, normalZ, quad);
 
 		for (long vertex = 0; vertex < 4; vertex++) {
-			MemoryUtil.memPutFloat(i + 36 - STRIDE * vertex, uSum);
-			MemoryUtil.memPutFloat(i + 40 - STRIDE * vertex, vSum);
-			MemoryUtil.memPutInt(i + 28 - STRIDE * vertex, normal);
-			MemoryUtil.memPutInt(i + 44 - STRIDE * vertex, tangent);
+			CompatMemoryUtil.memPutFloat(i + 36 - STRIDE * vertex, uSum);
+			CompatMemoryUtil.memPutFloat(i + 40 - STRIDE * vertex, vSum);
+			CompatMemoryUtil.memPutInt(i + 28 - STRIDE * vertex, normal);
+			CompatMemoryUtil.memPutInt(i + 44 - STRIDE * vertex, tangent);
 		}
 
 		uSum = 0;

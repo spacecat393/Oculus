@@ -35,12 +35,11 @@ public class ShaderWorkarounds {
 	 *
 	 * <p>Hat tip to fewizz for the find and the fix.
 	 */
-	public static void safeShaderSource(int glId, CharSequence source) {
+	public static void safeShaderSource(int glId, ByteBuffer sourceBuffer) {
 		final MemoryStack stack = MemoryStack.stackGet();
 		final int stackPointer = stack.getPointer();
 
 		try {
-			final ByteBuffer sourceBuffer = MemoryUtil.memUTF8(source, true);
 			final PointerBuffer pointers = stack.mallocPointer(1);
 			pointers.put(sourceBuffer);
 

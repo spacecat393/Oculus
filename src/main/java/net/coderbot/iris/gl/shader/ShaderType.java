@@ -3,17 +3,17 @@
 package net.coderbot.iris.gl.shader;
 
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL32C;
-import org.lwjgl.opengl.GL43C;
+import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL43;
 
 /**
  * An enumeration over the supported OpenGL shader types.
  */
 public enum ShaderType {
     VERTEX(GL20.GL_VERTEX_SHADER),
-	GEOMETRY(GL32C.GL_GEOMETRY_SHADER),
+	GEOMETRY(GL32.GL_GEOMETRY_SHADER),
     FRAGMENT(GL20.GL_FRAGMENT_SHADER),
-    COMPUTE(GL43C.GL_COMPUTE_SHADER);
+    COMPUTE(GL43.GL_COMPUTE_SHADER);
 
     public final int id;
 

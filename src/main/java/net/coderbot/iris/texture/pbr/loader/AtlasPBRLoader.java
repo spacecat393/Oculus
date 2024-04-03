@@ -3,9 +3,14 @@ package net.coderbot.iris.texture.pbr.loader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import nanolive.compat.NativeImage;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.resources.IResource;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.data.AnimationMetadataSection;
+import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Pair;
 
 import net.coderbot.iris.Iris;
@@ -32,7 +37,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
+import javax.annotation.Nullable;
+
+public class AtlasPBRLoader implements PBRTextureLoader<TextureMap> {
 	public static final ChannelMipmapGenerator LINEAR_MIPMAP_GENERATOR = new ChannelMipmapGenerator(
 			LinearBlendFunction.INSTANCE,
 			LinearBlendFunction.INSTANCE,
@@ -41,8 +48,8 @@ public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 	);
 
 	@Override
-	public void load(TextureAtlas atlas, ResourceManager resourceManager, PBRTextureConsumer pbrTextureConsumer) {
-		TextureInfo textureInfo = TextureInfoCache.INSTANCE.getInfo(atlas.getId());
+	public void load(TextureMap atlas, IResourceManager resourceManager, PBRTextureConsumer pbrTextureConsumer) {
+		TextureInfo textureInfo = TextureInfoCache.INSTANCE.getInfo(atlas.getGlTextureId());
 		int atlasWidth = textureInfo.getWidth();
 		int atlasHeight = textureInfo.getHeight();
 		int mipLevel = fetchAtlasMipLevel(atlas);
@@ -50,7 +57,7 @@ public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 		PBRAtlasTexture normalAtlas = null;
 		PBRAtlasTexture specularAtlas = null;
 		for (TextureAtlasSprite sprite : ((TextureAtlasAccessor) atlas).getTexturesByName().values()) {
-			if (!(sprite instanceof MissingTextureAtlasSprite)) {
+			if (!sprite.getIconName().equals("missingno")) {
 				TextureAtlasSprite normalSprite = createPBRSprite(sprite, resourceManager, atlas, atlasWidth, atlasHeight, mipLevel, PBRType.NORMAL);
 				TextureAtlasSprite specularSprite = createPBRSprite(sprite, resourceManager, atlas, atlasWidth, atlasHeight, mipLevel, PBRType.SPECULAR);
 				if (normalSprite != null) {
@@ -84,19 +91,18 @@ public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 		}
 	}
 
-	protected static int fetchAtlasMipLevel(TextureAtlas atlas) {
-		TextureAtlasSprite missingSprite = atlas.getSprite(MissingTextureAtlasSprite.getLocation());
-		return ((TextureAtlasSpriteAccessor) missingSprite).getMainImage().length - 1;
+	protected static int fetchAtlasMipLevel(TextureMap atlas) {
+		return atlas.getMipmapLevels();
 	}
 
 	@Nullable
-	protected TextureAtlasSprite createPBRSprite(TextureAtlasSprite sprite, ResourceManager resourceManager, TextureAtlas atlas, int atlasWidth, int atlasHeight, int mipLevel, PBRType pbrType) {
+	protected TextureAtlasSprite createPBRSprite(TextureAtlasSprite sprite, IResourceManager resourceManager, TextureMap atlas, int atlasWidth, int atlasHeight, int mipLevel, PBRType pbrType) {
 		ResourceLocation spriteName = sprite.getName();
 		ResourceLocation imageLocation = ((TextureAtlasAccessor) atlas).callGetResourceLocation(spriteName);
 		ResourceLocation pbrImageLocation = pbrType.appendToFileLocation(imageLocation);
 
 		TextureAtlasSprite pbrSprite = null;
-		try (Resource resource = resourceManager.getResource(pbrImageLocation)) {
+		try (IResource resource = resourceManager.getResource(pbrImageLocation)) {
 			NativeImage nativeImage = NativeImage.read(resource.getInputStream());
 			AnimationMetadataSection animationMetadata = resource.getMetadata(AnimationMetadataSection.SERIALIZER);
 			if (animationMetadata == null) {
@@ -161,7 +167,7 @@ public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 	}
 
 	protected void syncAnimation(TextureAtlasSprite source, TextureAtlasSprite target) {
-		if (!source.isAnimation() || !target.isAnimation()) {
+		if (!source.hasAnimationMetadata() || !target.hasAnimationMetadata()) {
 			return;
 		}
 

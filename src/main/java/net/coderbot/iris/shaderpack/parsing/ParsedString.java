@@ -1,6 +1,6 @@
 package net.coderbot.iris.shaderpack.parsing;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public class ParsedString {
 	private String text;

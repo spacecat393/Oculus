@@ -1,7 +1,7 @@
 package net.coderbot.iris.compat.sodium.mixin.shader_overrides;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.lwjgl.opengl.GL32C;
+import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -22,7 +22,7 @@ public class MixinShaderType {
 		int baseOrdinal = $VALUES.length;
 
 		IrisShaderTypes.GEOMETRY
-				= ShaderTypeAccessor.createShaderType("GEOMETRY", baseOrdinal, GL32C.GL_GEOMETRY_SHADER);
+				= ShaderTypeAccessor.createShaderType("GEOMETRY", baseOrdinal, GL32.GL_GEOMETRY_SHADER);
 
 		$VALUES = ArrayUtils.addAll($VALUES, IrisShaderTypes.GEOMETRY);
 	}

@@ -1,6 +1,6 @@
 package net.coderbot.iris.shadows.frustum;
 
-import net.minecraft.world.phys.AABB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class BoxCuller {
 	private final double maxDistance;
@@ -25,12 +25,12 @@ public class BoxCuller {
 		this.maxAllowedZ = cameraZ + maxDistance;
 	}
 
-	public boolean isCulled(AABB aabb) {
+	public boolean isCulled(AxisAlignedBB aabb) {
 		return isCulled((float) aabb.minX, (float) aabb.minY, (float) aabb.minZ,
 				(float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ);
 	}
 
-	public boolean isCulled(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+	public boolean isCulled(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 		if (maxX < this.minAllowedX || minX > this.maxAllowedX) {
 			return true;
 		}
@@ -39,10 +39,6 @@ public class BoxCuller {
 			return true;
 		}
 
-		if (maxZ < this.minAllowedZ || minZ > this.maxAllowedZ) {
-			return true;
-		}
-
-		return false;
-	}
+        return maxZ < this.minAllowedZ || minZ > this.maxAllowedZ;
+    }
 }

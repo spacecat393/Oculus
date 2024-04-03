@@ -3,10 +3,10 @@ package net.coderbot.iris.features;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
+import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.text.WordUtils;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
-import net.minecraft.client.resources.language.I18n;
 
 public enum FeatureFlags {
 	SEPARATE_HARDWARE_SAMPLERS(() -> true, () -> true),
@@ -33,12 +33,12 @@ public enum FeatureFlags {
 
 		if (unsupportedIris) {
 			if (unsupportedHardware) {
-				return I18n.get("iris.unsupported.irisorpc");
+				return I18n.format("iris.unsupported.irisorpc");
 			}
 
-			return I18n.get("iris.unsupported.iris");
+			return I18n.format("iris.unsupported.iris");
 		} else if (unsupportedHardware) {
-			return I18n.get("iris.unsupported.pc");
+			return I18n.format("iris.unsupported.pc");
 		} else {
 			return null;
 		}

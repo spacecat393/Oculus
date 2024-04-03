@@ -1,5 +1,9 @@
 package net.coderbot.iris.mixin;
 
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.tileentity.TileEntityEndPortalRenderer;
+import net.minecraft.tileentity.TileEntityEndPortal;
+import net.minecraft.util.EnumFacing;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,7 +24,7 @@ import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.TheEndPortalBlockEntity;
 
-@Mixin(TheEndPortalRenderer.class)
+@Mixin(TileEntityEndPortalRenderer.class)
 public class MixinTheEndPortalRenderer {
 	@Unique
 	private static final float RED = 0.075f;
@@ -46,8 +50,8 @@ public class MixinTheEndPortalRenderer {
 		return 0.0F;
 	}
 
-	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
-	public void iris$onRender(TheEndPortalBlockEntity entity, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay, CallbackInfo ci) {
+	@Inject(method = "render(Lnet/minecraft/tileentity/TileEntityEndPortal;DDDFIF)V", at = @At("HEAD"), cancellable = true)
+	public void iris$onRender(TileEntityEndPortal entity, double x, double y, double z, float tickDelta, int destroyStage, float alpha, CallbackInfo ci) {
 		if (!Iris.getCurrentPack().isPresent()) {
 			return;
 		}
@@ -67,37 +71,37 @@ public class MixinTheEndPortalRenderer {
 		float topHeight = getOffsetUp();
 		float bottomHeight = getOffsetDown();
 
-		quad(entity, vertexConsumer, pose, normal, Direction.UP, progress, overlay, light,
+		quad(entity, vertexConsumer, pose, normal, EnumFacing.UP, progress, overlay, light,
 				0.0f, topHeight, 1.0f,
 				1.0f, topHeight, 1.0f,
 				1.0f, topHeight, 0.0f,
 				0.0f, topHeight, 0.0f);
 
-		quad(entity, vertexConsumer, pose, normal, Direction.DOWN, progress, overlay, light,
+		quad(entity, vertexConsumer, pose, normal, EnumFacing.DOWN, progress, overlay, light,
 				0.0f, bottomHeight, 1.0f,
 				0.0f, bottomHeight, 0.0f,
 				1.0f, bottomHeight, 0.0f,
 				1.0f, bottomHeight, 1.0f);
 
-		quad(entity, vertexConsumer, pose, normal, Direction.NORTH, progress, overlay, light,
+		quad(entity, vertexConsumer, pose, normal, EnumFacing.NORTH, progress, overlay, light,
 				0.0f, topHeight, 0.0f,
 				1.0f, topHeight, 0.0f,
 				1.0f, bottomHeight, 0.0f,
 				0.0f, bottomHeight, 0.0f);
 
-		quad(entity, vertexConsumer, pose, normal, Direction.WEST, progress, overlay, light,
+		quad(entity, vertexConsumer, pose, normal, EnumFacing.WEST, progress, overlay, light,
 				0.0f, topHeight, 1.0f,
 				0.0f, topHeight, 0.0f,
 				0.0f, bottomHeight, 0.0f,
 				0.0f, bottomHeight, 1.0f);
 
-		quad(entity, vertexConsumer, pose, normal, Direction.SOUTH, progress, overlay, light,
+		quad(entity, vertexConsumer, pose, normal, EnumFacing.SOUTH, progress, overlay, light,
 				0.0f, topHeight, 1.0f,
 				0.0f, bottomHeight, 1.0f,
 				1.0f, bottomHeight, 1.0f,
 				1.0f, topHeight, 1.0f);
 
-		quad(entity, vertexConsumer, pose, normal, Direction.EAST, progress, overlay, light,
+		quad(entity, vertexConsumer, pose, normal, EnumFacing.EAST, progress, overlay, light,
 				1.0f, topHeight, 1.0f,
 				1.0f, bottomHeight, 1.0f,
 				1.0f, bottomHeight, 0.0f,
@@ -105,33 +109,33 @@ public class MixinTheEndPortalRenderer {
 	}
 
 	@Unique
-	private void quad(TheEndPortalBlockEntity entity, VertexConsumer vertexConsumer, Matrix4f pose, Matrix3f normal,
-					  Direction direction, float progress, int overlay, int light,
+	private void quad(TileEntityEndPortal entity, BufferBuilder vertexConsumer, Matrix4f pose, Matrix3f normal,
+					  EnumFacing direction, float progress, int overlay, int light,
 					  float x1, float y1, float z1,
 					  float x2, float y2, float z2,
 					  float x3, float y3, float z3,
-					  float x4,float y4, float z4) {
+					  float x4, float y4, float z4) {
 		if (!entity.shouldRenderFace(direction)) {
 			return;
 		}
 
-		float nx = direction.getStepX();
-		float ny = direction.getStepY();
-		float nz = direction.getStepZ();
+		float nx = direction.getXOffset();
+		float ny = direction.getYOffset();
+		float nz = direction.getZOffset();
 
-		vertexConsumer.vertex(pose, x1, y1, z1).color(RED, GREEN, BLUE, 1.0f)
+		vertexConsumer.pos(pose, x1, y1, z1).color(RED, GREEN, BLUE, 1.0f)
 				.uv(0.0F + progress, 0.0F + progress).overlayCoords(overlay).uv2(light)
 				.normal(normal, nx, ny, nz).endVertex();
 
-		vertexConsumer.vertex(pose, x2, y2, z2).color(RED, GREEN, BLUE, 1.0f)
+		vertexConsumer.pos(pose, x2, y2, z2).color(RED, GREEN, BLUE, 1.0f)
 				.uv(0.0F + progress, 0.2F + progress).overlayCoords(overlay).uv2(light)
 				.normal(normal, nx, ny, nz).endVertex();
 
-		vertexConsumer.vertex(pose, x3, y3, z3).color(RED, GREEN, BLUE, 1.0f)
+		vertexConsumer.pos(pose, x3, y3, z3).color(RED, GREEN, BLUE, 1.0f)
 				.uv(0.2F + progress, 0.2F + progress).overlayCoords(overlay).uv2(light)
 				.normal(normal, nx, ny, nz).endVertex();
 
-		vertexConsumer.vertex(pose, x4, y4, z4).color(RED, GREEN, BLUE, 1.0f)
+		vertexConsumer.pos(pose, x4, y4, z4).color(RED, GREEN, BLUE, 1.0f)
 				.uv(0.2F + progress, 0.0F + progress).overlayCoords(overlay).uv2(light)
 				.normal(normal, nx, ny, nz).endVertex();
 	}

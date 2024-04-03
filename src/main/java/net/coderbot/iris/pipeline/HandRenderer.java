@@ -7,11 +7,16 @@ import net.coderbot.batchedentityrendering.impl.FullyBufferedMultiBufferSource;
 import net.coderbot.iris.mixin.GameRendererAccessor;
 import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.irisshaders.iris.api.v0.IrisApi;
+import net.minecraft.block.Block;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -42,7 +47,7 @@ public class HandRenderer {
 
 		((GameRendererAccessor) gameRenderer).invokeBobHurt(poseStack, tickDelta);
 
-		if (Minecraft.getInstance().options.bobView) {
+		if (Minecraft.getMinecraft().gameSettings.viewBobbing) {
 			((GameRendererAccessor) gameRenderer).invokeBobView(poseStack, tickDelta);
 		}
 	}
@@ -57,18 +62,19 @@ public class HandRenderer {
 									|| Minecraft.getInstance().gameMode.getPlayerMode() == GameType.SPECTATOR);
 	}
 
-	public boolean isHandTranslucent(InteractionHand hand) {
-		Item item = Minecraft.getInstance().player.getItemBySlot(hand == InteractionHand.OFF_HAND ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND).getItem();
+	public boolean isHandTranslucent(EnumHand hand) {
+		Item item = Minecraft.getMinecraft().player.getHeldItem(hand).getItem();
 
-		if (item instanceof BlockItem) {
-			return ItemBlockRenderTypes.getChunkRenderType(((BlockItem) item).getBlock().defaultBlockState()) == RenderType.translucent();
+		if (item instanceof ItemBlock) {
+			Block block = ((ItemBlock) item).getBlock();
+			return block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
 		}
 
 		return false;
 	}
 
 	public boolean isAnyHandTranslucent() {
-		return isHandTranslucent(InteractionHand.MAIN_HAND) || isHandTranslucent(InteractionHand.OFF_HAND);
+		return isHandTranslucent(EnumHand.MAIN_HAND) || isHandTranslucent(EnumHand.OFF_HAND);
 	}
 
 	public void renderSolid(PoseStack poseStack, float tickDelta, Camera camera, GameRenderer gameRenderer, WorldRenderingPipeline pipeline) {
@@ -116,15 +122,15 @@ public class HandRenderer {
 
 		poseStack.pushPose();
 
-		Minecraft.getInstance().getProfiler().push("iris_hand_translucent");
+		Minecraft.getMinecraft().getProfiler().push("iris_hand_translucent");
 
 		setupGlState(gameRenderer, camera, poseStack, tickDelta);
 
-		Minecraft.getInstance().getItemInHandRenderer().renderHandsWithItems(tickDelta, poseStack, bufferSource, Minecraft.getInstance().player, Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(camera.getEntity(), tickDelta));
+		Minecraft.getMinecraft().getItemInHandRenderer().renderHandsWithItems(tickDelta, poseStack, bufferSource, Minecraft.getMinecraft().player, Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(camera.getEntity(), tickDelta));
 
 		poseStack.popPose();
 
-		Minecraft.getInstance().getProfiler().pop();
+		Minecraft.getMinecraft().getProfiler().pop();
 
 		gameRenderer.resetProjectionMatrix(CapturedRenderingState.INSTANCE.getGbufferProjection());
 

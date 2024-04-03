@@ -2,7 +2,7 @@ package net.irisshaders.iris.api.v0;
 
 import java.nio.ByteBuffer;
 
-import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 
 public interface IrisTextVertexSink {
 	/**

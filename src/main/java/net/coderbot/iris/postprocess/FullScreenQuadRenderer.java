@@ -1,13 +1,12 @@
 package net.coderbot.iris.postprocess;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20C;
-
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-
+import nanolive.compat.VertexUtils;
 import net.coderbot.iris.gl.IrisRenderSystem;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 
 /**
  * Renders a full-screen textured quad to the screen. Used in composite / deferred rendering.
@@ -31,40 +30,41 @@ public class FullScreenQuadRenderer {
 
 	@SuppressWarnings("deprecation")
 	public void begin() {
-		RenderSystem.disableDepthTest();
+		GlStateManager.disableDepth();
 
-		RenderSystem.matrixMode(GL11.GL_PROJECTION);
-		RenderSystem.pushMatrix();
-		RenderSystem.loadIdentity();
+		GlStateManager.matrixMode(GL11.GL_PROJECTION);
+		GlStateManager.pushMatrix();
+		GlStateManager.loadIdentity();
 		// scale the quad from [0, 1] to [-1, 1]
-		RenderSystem.translatef(-1.0F, -1.0F, 0.0F);
-		RenderSystem.scalef(2.0F, 2.0F, 0.0F);
+		GlStateManager.translate(-1.0F, -1.0F, 0.0F);
+		GlStateManager.scale(2.0F, 2.0F, 0.0F);
 
-		RenderSystem.matrixMode(GL11.GL_MODELVIEW);
-		RenderSystem.pushMatrix();
-		RenderSystem.loadIdentity();
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+		GlStateManager.pushMatrix();
+		GlStateManager.loadIdentity();
 
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-		GlStateManager._glBindBuffer(GL20C.GL_ARRAY_BUFFER, quadBuffer);
-		DefaultVertexFormat.POSITION_TEX.setupBufferState(0L);
+		OpenGlHelper.glBindBuffer(GL15.GL_ARRAY_BUFFER, quadBuffer);
+
+		VertexUtils.setupBufferState(DefaultVertexFormats.POSITION_TEX, 0L);
 	}
 
 	public void renderQuad() {
-		GlStateManager._drawArrays(GL20C.GL_TRIANGLE_STRIP, 0, 4);
+		GlStateManager.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);
 	}
 
 	@SuppressWarnings("deprecation")
 	public static void end() {
-		DefaultVertexFormat.POSITION_TEX.clearBufferState();
-		GlStateManager._glBindBuffer(GL20C.GL_ARRAY_BUFFER, 0);
+		VertexUtils.clearBufferState(DefaultVertexFormats.POSITION_TEX);
+		OpenGlHelper.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
-		RenderSystem.enableDepthTest();
+		GlStateManager.enableDepth();
 
-		RenderSystem.matrixMode(GL11.GL_PROJECTION);
-		RenderSystem.popMatrix();
-		RenderSystem.matrixMode(GL11.GL_MODELVIEW);
-		RenderSystem.popMatrix();
+		GlStateManager.matrixMode(GL11.GL_PROJECTION);
+		GlStateManager.popMatrix();
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+		GlStateManager.popMatrix();
 	}
 
 	/**
@@ -86,6 +86,6 @@ public class FullScreenQuadRenderer {
 			0.0F, 0.0F
 		};
 
-		return IrisRenderSystem.bufferStorage(GL20C.GL_ARRAY_BUFFER, vertices, GL20C.GL_STATIC_DRAW);
+		return IrisRenderSystem.bufferStorage(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
 	}
 }

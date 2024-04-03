@@ -14,6 +14,8 @@ import net.coderbot.iris.shaderpack.CloudSetting;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.culling.ICamera;
 
 public class FixedFunctionWorldRenderingPipeline implements WorldRenderingPipeline {
 	public FixedFunctionWorldRenderingPipeline() {
@@ -27,12 +29,12 @@ public class FixedFunctionWorldRenderingPipeline implements WorldRenderingPipeli
 	@Override
 	public void beginLevelRendering() {
 		// Use the default Minecraft framebuffer and ensure that no programs are in use
-		Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
-		GlStateManager._glUseProgram(0);
+		Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
+		OpenGlHelper.glUseProgram(0);
 	}
 
 	@Override
-	public void renderShadows(LevelRendererAccessor levelRenderer, Camera camera) {
+	public void renderShadows(LevelRendererAccessor levelRenderer, ICamera camera) {
 		// stub: nothing to do here
 	}
 

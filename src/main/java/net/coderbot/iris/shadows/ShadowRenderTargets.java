@@ -3,7 +3,7 @@ package net.coderbot.iris.shadows;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL30C;
+import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -127,8 +127,8 @@ public class ShadowRenderTargets {
 			translucentDepthDirty = false;
 			IrisRenderSystem.blitFramebuffer(depthSourceFb.getId(), noTranslucentsDestFb.getId(), 0, 0, resolution, resolution,
 				0, 0, resolution, resolution,
-				GL30C.GL_DEPTH_BUFFER_BIT,
-				GL30C.GL_NEAREST);
+					GL11.GL_DEPTH_BUFFER_BIT,
+					GL11.GL_NEAREST);
 		} else {
 			DepthCopyStrategy.fastest(false).copy(depthSourceFb, mainDepth.getTextureId(), noTranslucentsDestFb, noTranslucents.getTextureId(),
 				resolution, resolution);

@@ -1,13 +1,11 @@
 package net.coderbot.iris.gl.texture;
 
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL20C;
-import org.lwjgl.opengl.GL30C;
-import org.lwjgl.opengl.GL43C;
-import org.lwjgl.system.MemoryUtil;
-
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL43;
+import org.lwjgl.system.MemoryUtil;
 
 public interface DepthCopyStrategy {
 	// FB -> T
@@ -28,7 +26,7 @@ public interface DepthCopyStrategy {
 			IrisRenderSystem.copyTexSubImage2D(
 				destTexture,
 				// target
-				GL20C.GL_TEXTURE_2D,
+				GL11.GL_TEXTURE_2D,
 				// level
 				0,
 				// xoffset, yoffset
@@ -57,8 +55,8 @@ public interface DepthCopyStrategy {
 		public void copy(GlFramebuffer sourceFb, int sourceTexture, GlFramebuffer destFb, int destTexture, int width, int height) {
 			IrisRenderSystem.blitFramebuffer(sourceFb.getId(), destFb.getId(), 0, 0, width, height,
 				0, 0, width, height,
-				GL30C.GL_DEPTH_BUFFER_BIT | GL30C.GL_STENCIL_BUFFER_BIT,
-				GL30C.GL_NEAREST);
+				GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT,
+				GL11.GL_NEAREST);
 		}
 	}
 
@@ -76,15 +74,15 @@ public interface DepthCopyStrategy {
 
 		@Override
 		public void copy(GlFramebuffer sourceFb, int sourceTexture, GlFramebuffer destFb, int destTexture, int width, int height) {
-			GL43C.glCopyImageSubData(
+			GL43.glCopyImageSubData(
 				sourceTexture,
-				GL43C.GL_TEXTURE_2D,
+				GL11.GL_TEXTURE_2D,
 				0,
 				0,
 				0,
 				0,
 				destTexture,
-				GL43C.GL_TEXTURE_2D,
+				GL11.GL_TEXTURE_2D,
 				0,
 				0,
 				0,

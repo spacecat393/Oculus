@@ -1,20 +1,19 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format.entity_xhfp;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferView;
 import me.jellysquid.mods.sodium.client.model.vertex.formats.glyph.GlyphVertexSink;
 import me.jellysquid.mods.sodium.client.model.vertex.formats.glyph.writer.GlyphVertexWriterFallback;
 import me.jellysquid.mods.sodium.client.model.vertex.type.BlittableVertexType;
 import me.jellysquid.mods.sodium.client.model.vertex.type.VanillaVertexType;
 import net.coderbot.iris.vertices.IrisVertexFormats;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 
 public class ExtendedGlyphVertexType implements VanillaVertexType<GlyphVertexSink>, BlittableVertexType<GlyphVertexSink> {
 	public static final ExtendedGlyphVertexType INSTANCE = new ExtendedGlyphVertexType();
 
 	@Override
-	public GlyphVertexSink createFallbackWriter(VertexConsumer vertexConsumer) {
+	public GlyphVertexSink createFallbackWriter(BufferBuilder vertexConsumer) {
 		return new GlyphVertexWriterFallback(vertexConsumer);
 	}
 

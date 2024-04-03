@@ -1,6 +1,6 @@
 package net.coderbot.iris.texture.pbr;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public interface TextureAtlasExtension {
 	@Nullable

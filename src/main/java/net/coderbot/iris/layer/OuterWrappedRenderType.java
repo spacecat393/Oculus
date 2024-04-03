@@ -10,6 +10,8 @@ import net.coderbot.iris.mixin.rendertype.RenderTypeAccessor;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 
+import javax.annotation.Nullable;
+
 public class OuterWrappedRenderType extends RenderType implements WrappableRenderType {
 	private final RenderStateShard extra;
 	private final RenderType wrapped;

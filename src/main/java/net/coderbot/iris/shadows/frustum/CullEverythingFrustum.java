@@ -1,13 +1,10 @@
 package net.coderbot.iris.shadows.frustum;
 
-import com.mojang.math.Matrix4f;
-
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.world.phys.AABB;
 
 public class CullEverythingFrustum extends Frustum {
 	public CullEverythingFrustum() {
-		super(new Matrix4f(), new Matrix4f());
+		super(null);
 	}
 
 	// for Sodium
@@ -22,7 +19,7 @@ public class CullEverythingFrustum extends Frustum {
 	}
 
 	@Override
-	public boolean isVisible(AABB aabb) {
+	public boolean isBoxInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 		return false;
 	}
 }

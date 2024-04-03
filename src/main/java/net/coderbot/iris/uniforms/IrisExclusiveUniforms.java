@@ -1,21 +1,19 @@
 package net.coderbot.iris.uniforms;
 
-import java.util.Objects;
-import java.util.stream.StreamSupport;
-
 import net.coderbot.iris.JomlConversions;
 import net.coderbot.iris.gl.uniform.UniformHolder;
 import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
 import net.coderbot.iris.gui.option.IrisVideoSettings;
-import net.coderbot.iris.mixin.DimensionTypeAccessor;
 import net.coderbot.iris.vendored.joml.Math;
 import net.coderbot.iris.vendored.joml.Vector3d;
 import net.coderbot.iris.vendored.joml.Vector4f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.level.GameType;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameType;
+
+import java.util.Objects;
 
 public class IrisExclusiveUniforms {
 	public static void addIrisExclusiveUniforms(UniformHolder uniforms) {
@@ -35,14 +33,14 @@ public class IrisExclusiveUniforms {
 		uniforms.uniform1b(UniformUpdateFrequency.PER_TICK, "isSpectator", IrisExclusiveUniforms::isSpectator);
 		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "eyePosition", IrisExclusiveUniforms::getEyePosition);
 		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "relativeEyePosition", () -> CameraUniforms.getUnshiftedCameraPosition().sub(getEyePosition()));
-		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "playerLookVector", () -> JomlConversions.fromVec3(Minecraft.getInstance().getCameraEntity().getLookAngle()));
-		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "playerBodyVector", () -> JomlConversions.fromVec3(Minecraft.getInstance().getCameraEntity().getForward()));
+		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "playerLookVector", () -> JomlConversions.fromVec3(Minecraft.getMinecraft().getRenderViewEntity().getLookVec()));
+		uniforms.uniform3d(UniformUpdateFrequency.PER_FRAME, "playerBodyVector", () -> JomlConversions.fromVec3(Minecraft.getMinecraft().getRenderViewEntity().getForward()));
 		Vector4f zero = new Vector4f(0, 0, 0, 0);
 		uniforms.uniform4f(UniformUpdateFrequency.PER_TICK, "lightningBoltPosition", () -> {
-			if (Minecraft.getInstance().level != null) {
-				return StreamSupport.stream(Minecraft.getInstance().level.entitiesForRendering().spliterator(), false).filter(bolt -> bolt instanceof LightningBolt).findAny().map(bolt -> {
+			if (Minecraft.getMinecraft().world != null) {
+				return Minecraft.getMinecraft().world.loadedEntityList.stream().filter(bolt -> bolt instanceof EntityLightningBolt).findAny().map(bolt -> {
 					Vector3d unshiftedCameraPosition = CameraUniforms.getUnshiftedCameraPosition();
-					Vec3 vec3 = bolt.getPosition(Minecraft.getInstance().getDeltaFrameTime());
+					Vec3d vec3 = bolt.getPositionVector();
 					return new Vector4f((float) (vec3.x - unshiftedCameraPosition.x), (float) (vec3.y - unshiftedCameraPosition.y), (float) (vec3.z - unshiftedCameraPosition.z), 1);
 				}).orElse(zero);
 			} else {
@@ -54,112 +52,109 @@ public class IrisExclusiveUniforms {
 	private static float getThunderStrength() {
 		// Note: Ensure this is in the range of 0 to 1 - some custom servers send out of range values.
 		return Math.clamp(0.0F, 1.0F,
-			Minecraft.getInstance().level.getThunderLevel(CapturedRenderingState.INSTANCE.getTickDelta()));
+			Minecraft.getMinecraft().world.getThunderStrength(CapturedRenderingState.INSTANCE.getTickDelta()));
 	}
 
 	private static float getCurrentHealth() {
-		if (Minecraft.getInstance().player == null || !Minecraft.getInstance().gameMode.getPlayerMode().isSurvival()) {
+		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().playerController.getCurrentGameType().isSurvivalOrAdventure()) {
 			return -1;
 		}
 
-		return Minecraft.getInstance().player.getHealth() / Minecraft.getInstance().player.getMaxHealth();
+		return Minecraft.getMinecraft().player.getHealth() / Minecraft.getMinecraft().player.getMaxHealth();
 	}
 
 	private static float getCurrentHunger() {
-		if (Minecraft.getInstance().player == null || !Minecraft.getInstance().gameMode.getPlayerMode().isSurvival()) {
+		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().playerController.getCurrentGameType().isSurvivalOrAdventure()) {
 			return -1;
 		}
 
-		return Minecraft.getInstance().player.getFoodData().getFoodLevel() / 20f;
+		return Minecraft.getMinecraft().player.getFoodStats().getFoodLevel() / 20f;
 	}
 
 	private static float getCurrentAir() {
-		if (Minecraft.getInstance().player == null || !Minecraft.getInstance().gameMode.getPlayerMode().isSurvival()) {
+		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().playerController.getCurrentGameType().isSurvivalOrAdventure()) {
 			return -1;
 		}
 
-		return (float) Minecraft.getInstance().player.getAirSupply() / (float) Minecraft.getInstance().player.getMaxAirSupply();
+		return (float) Minecraft.getMinecraft().player.getAir() / 300F/*(float) Minecraft.getMinecraft().player.getMaxAirSupply()*/;
 	}
 
 	private static float getMaxAir() {
-		if (Minecraft.getInstance().player == null || !Minecraft.getInstance().gameMode.getPlayerMode().isSurvival()) {
+		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().playerController.getCurrentGameType().isSurvivalOrAdventure()) {
 			return -1;
 		}
 
-		return Minecraft.getInstance().player.getMaxAirSupply();
+		return 300F/*Minecraft.getMinecraft().player.getMaxAirSupply()*/;
 	}
 
 	private static float getMaxHealth() {
-		if (Minecraft.getInstance().player == null || !Minecraft.getInstance().gameMode.getPlayerMode().isSurvival()) {
+		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().playerController.getCurrentGameType().isSurvivalOrAdventure()) {
 			return -1;
 		}
 
-		return Minecraft.getInstance().player.getMaxHealth();
+		return Minecraft.getMinecraft().player.getMaxHealth();
 	}
 
 	private static boolean isFirstPersonCamera() {
-		// If camera type is not explicitly third-person, assume it's first-person.
-		switch (Minecraft.getInstance().options.getCameraType()) {
-			case THIRD_PERSON_BACK:
-			case THIRD_PERSON_FRONT:
-				return false;
-			default: return true;
-		}
+		return Minecraft.getMinecraft().gameSettings.thirdPersonView == 0;
 	}
 
 	private static boolean isSpectator() {
-		return Minecraft.getInstance().gameMode.getPlayerMode() == GameType.SPECTATOR;
+		return Minecraft.getMinecraft().playerController.getCurrentGameType() == GameType.SPECTATOR;
 	}
 
 	private static Vector3d getEyePosition() {
-		Objects.requireNonNull(Minecraft.getInstance().getCameraEntity());
-		Vec3 pos = Minecraft.getInstance().getCameraEntity().getEyePosition(CapturedRenderingState.INSTANCE.getTickDelta());
+		Objects.requireNonNull(Minecraft.getMinecraft().getRenderViewEntity());
+		Vec3d pos = Minecraft.getMinecraft().getRenderViewEntity().getPositionEyes(CapturedRenderingState.INSTANCE.getTickDelta());
 		return new Vector3d(pos.x, pos.y, pos.z);
 	}
 
 	public static class WorldInfoUniforms {
 		public static void addWorldInfoUniforms(UniformHolder uniforms) {
-			ClientLevel level = Minecraft.getInstance().level;
+			WorldClient level = Minecraft.getMinecraft().world;
 			// TODO: Use level.dimensionType() coordinates for 1.18!
 			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "bedrockLevel", () -> 0);
 			uniforms.uniform1f(UniformUpdateFrequency.PER_FRAME, "cloudHeight", () -> {
 				if (level != null) {
-					return level.effects().getCloudHeight();
+					return level.provider.getCloudHeight();
 				} else {
 					return 192.0;
 				}
 			});
 			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "heightLimit", () -> {
 				if (level != null) {
-					return level.getMaxBuildHeight();
+					return level.getHeight();
 				} else {
 					return 256;
 				}
 			});
 			uniforms.uniform1i(UniformUpdateFrequency.PER_FRAME, "logicalHeightLimit", () -> {
 				if (level != null) {
-					return level.dimensionType().logicalHeight();
+					// TODO Correct?
+					return level.getActualHeight();
 				} else {
 					return 256;
 				}
 			});
 			uniforms.uniform1b(UniformUpdateFrequency.PER_FRAME, "hasCeiling", () -> {
 				if (level != null) {
-					return level.dimensionType().hasCeiling();
+					// TODO Not sure, was taken from Angelica, but it seems like we have no other choice
+					return level.provider.isNether();
 				} else {
 					return false;
 				}
 			});
 			uniforms.uniform1b(UniformUpdateFrequency.PER_FRAME, "hasSkylight", () -> {
 				if (level != null) {
-					return level.dimensionType().hasSkyLight();
+					return level.provider.hasSkyLight();
 				} else {
 					return true;
 				}
 			});
 			uniforms.uniform1f(UniformUpdateFrequency.PER_FRAME, "ambientLight", () -> {
 				if (level != null) {
-					return ((DimensionTypeAccessor) level.dimensionType()).getAmbientLight();
+					// TODO Not sure, was taken from Angelica
+					return level.provider.getLightBrightnessTable()[0];
 				} else {
 					return 0f;
 				}

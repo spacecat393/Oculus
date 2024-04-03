@@ -1,9 +1,8 @@
 package net.coderbot.iris.gl.blending;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.coderbot.iris.mixin.statelisteners.BooleanStateAccessor;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class AlphaTestStorage {
 	private static boolean originalAlphaTestEnable;
@@ -19,17 +18,17 @@ public class AlphaTestStorage {
 			// Only save the previous state if the alpha test wasn't already locked
 			GlStateManager.AlphaState alphaState = GlStateManagerAccessor.getALPHA_TEST();
 
-			originalAlphaTestEnable = ((BooleanStateAccessor) alphaState.mode).isEnabled();
-			originalAlphaTest = new AlphaTest(AlphaTestFunction.fromGlId(alphaState.func).get(), alphaState.reference);
+			originalAlphaTestEnable = ((BooleanStateAccessor) alphaState.alphaTest).isEnabled();
+			originalAlphaTest = new AlphaTest(AlphaTestFunction.fromGlId(alphaState.func).get(), alphaState.ref);
 		}
 
 		alphaTestLocked = false;
 
 		if (override == null) {
-			GlStateManager._disableAlphaTest();
+			GlStateManager.disableAlpha();
 		} else {
-			GlStateManager._enableAlphaTest();
-			GlStateManager._alphaFunc(override.getFunction().getGlId(), override.getReference());
+			GlStateManager.enableAlpha();
+			GlStateManager.alphaFunc(override.getFunction().getGlId(), override.getReference());
 		}
 
 		alphaTestLocked = true;
@@ -51,11 +50,11 @@ public class AlphaTestStorage {
 		alphaTestLocked = false;
 
 		if (originalAlphaTestEnable) {
-			GlStateManager._enableAlphaTest();
+			GlStateManager.enableAlpha();
 		} else {
-			GlStateManager._disableAlphaTest();
+			GlStateManager.disableAlpha();
 		}
 
-		GlStateManager._alphaFunc(originalAlphaTest.getFunction().getGlId(), originalAlphaTest.getReference());
+		GlStateManager.alphaFunc(originalAlphaTest.getFunction().getGlId(), originalAlphaTest.getReference());
 	}
 }

@@ -2,6 +2,7 @@ package net.coderbot.batchedentityrendering.impl;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
+import net.minecraft.client.renderer.BufferBuilder;
 
 public class BufferSegmentRenderer {
     private final BufferBuilder fakeBufferBuilder;

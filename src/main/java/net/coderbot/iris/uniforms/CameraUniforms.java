@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
  * @see <a href="https://github.com/IrisShaders/ShaderDoc/blob/master/uniforms.md#camera">Uniforms: Camera</a>
  */
 public class CameraUniforms {
-	private static final Minecraft client = Minecraft.getInstance();
+	private static final Minecraft client = Minecraft.getMinecraft();
 
 	private CameraUniforms() {
 	}
@@ -30,7 +30,7 @@ public class CameraUniforms {
 
 	private static int getRenderDistanceInBlocks() {
 		// TODO: Should we ask the game renderer for this?
-		return client.options.renderDistance * 16;
+		return client.gameSettings.renderDistanceChunks * 16;
 	}
 
 	public static Vector3d getUnshiftedCameraPosition() {

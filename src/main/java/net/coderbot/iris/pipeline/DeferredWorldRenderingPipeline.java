@@ -1,55 +1,29 @@
 package net.coderbot.iris.pipeline;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.OptionalInt;
-import java.util.Set;
-import java.util.function.IntFunction;
-import java.util.function.Supplier;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.primitives.Ints;
+import com.mojang.realmsclient.util.Pair;
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.block_rendering.BlockMaterialMapping;
+import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.colorspace.ColorSpace;
 import net.coderbot.iris.colorspace.ColorSpaceComputeConverter;
 import net.coderbot.iris.colorspace.ColorSpaceConverter;
 import net.coderbot.iris.colorspace.ColorSpaceFragmentConverter;
-import net.coderbot.iris.gl.IrisRenderSystem;
-import net.coderbot.iris.gui.option.IrisVideoSettings;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.opengl.GL15C;
-import org.lwjgl.opengl.GL20C;
-import org.lwjgl.opengl.GL21C;
-import org.lwjgl.opengl.GL30C;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.primitives.Ints;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Pair;
-
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.block_rendering.BlockMaterialMapping;
-import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.gbuffer_overrides.matching.InputAvailability;
 import net.coderbot.iris.gbuffer_overrides.matching.ProgramTable;
 import net.coderbot.iris.gbuffer_overrides.matching.RenderCondition;
 import net.coderbot.iris.gbuffer_overrides.matching.SpecialCondition;
 import net.coderbot.iris.gbuffer_overrides.state.RenderTargetStateListener;
+import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.blending.AlphaTestOverride;
 import net.coderbot.iris.gl.blending.BlendModeOverride;
 import net.coderbot.iris.gl.blending.BufferBlendOverride;
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
-import net.coderbot.iris.gl.program.ComputeProgram;
-import net.coderbot.iris.gl.program.Program;
-import net.coderbot.iris.gl.program.ProgramBuilder;
-import net.coderbot.iris.gl.program.ProgramImages;
-import net.coderbot.iris.gl.program.ProgramSamplers;
+import net.coderbot.iris.gl.program.*;
 import net.coderbot.iris.gl.texture.DepthBufferFormat;
+import net.coderbot.iris.gui.option.IrisVideoSettings;
 import net.coderbot.iris.layer.GbufferPrograms;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.coderbot.iris.mixin.LevelRendererAccessor;
@@ -64,16 +38,7 @@ import net.coderbot.iris.rendertarget.NativeImageBackedSingleColorTexture;
 import net.coderbot.iris.rendertarget.RenderTargets;
 import net.coderbot.iris.samplers.IrisImages;
 import net.coderbot.iris.samplers.IrisSamplers;
-import net.coderbot.iris.shaderpack.CloudSetting;
-import net.coderbot.iris.shaderpack.ComputeSource;
-import net.coderbot.iris.shaderpack.IdMap;
-import net.coderbot.iris.shaderpack.OptionalBoolean;
-import net.coderbot.iris.shaderpack.PackDirectives;
-import net.coderbot.iris.shaderpack.PackShadowDirectives;
-import net.coderbot.iris.shaderpack.ProgramDirectives;
-import net.coderbot.iris.shaderpack.ProgramFallbackResolver;
-import net.coderbot.iris.shaderpack.ProgramSet;
-import net.coderbot.iris.shaderpack.ProgramSource;
+import net.coderbot.iris.shaderpack.*;
 import net.coderbot.iris.shaderpack.loading.ProgramId;
 import net.coderbot.iris.shaderpack.texture.TextureStage;
 import net.coderbot.iris.shadows.ShadowRenderTargets;
@@ -88,10 +53,20 @@ import net.coderbot.iris.uniforms.CommonUniforms;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.coderbot.iris.vendored.joml.Vector3d;
 import net.coderbot.iris.vendored.joml.Vector4f;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.DimensionSpecialEffects;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.shader.Framebuffer;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 /**
  * Encapsulates the compiled shader program objects for the currently loaded shaderpack.
@@ -181,13 +156,13 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 		this.packDirectives = programs.getPackDirectives();
 
-		RenderTarget mainTarget = Minecraft.getInstance().getMainRenderTarget();
+		Framebuffer mainTarget = Minecraft.getMinecraft().getFramebuffer();
 
-		int depthTextureId = mainTarget.getDepthTextureId();
+		int depthTextureId = mainTarget.depthBuffer;
 		int internalFormat = TextureInfoCache.INSTANCE.getInfo(depthTextureId).getInternalFormat();
 		DepthBufferFormat depthBufferFormat = DepthBufferFormat.fromGlEnumOrDefault(internalFormat);
 
-		this.renderTargets = new RenderTargets(mainTarget.width, mainTarget.height, depthTextureId,
+		this.renderTargets = new RenderTargets(mainTarget.framebufferWidth, mainTarget.framebufferHeight, depthTextureId,
 			((Blaze3dRenderTargetExt) mainTarget).iris$getDepthBufferVersion(),
 			depthBufferFormat, programs.getPackDirectives().getRenderTargetDirectives().getRenderTargetSettings(), programs.getPackDirectives());
 
@@ -218,13 +193,13 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 		BlockRenderingSettings.INSTANCE.setUseExtendedVertexFormat(true);
 
 		// Don't clobber anything in texture unit 0. It probably won't cause issues, but we're just being cautious here.
-		GlStateManager._activeTexture(GL20C.GL_TEXTURE2);
+		GlStateManager.setActiveTexture(GL13.GL_TEXTURE2);
 
 		customTextureManager = new CustomTextureManager(programs.getPackDirectives(), programs.getPack().getCustomTextureDataMap(), programs.getPack().getCustomNoiseTexture());
 
 		whitePixel = new NativeImageBackedSingleColorTexture(255, 255, 255, 255);
 
-		GlStateManager._activeTexture(GL20C.GL_TEXTURE0);
+		GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
 
 		this.flippedBeforeShadow = ImmutableSet.of();
 
@@ -318,8 +293,8 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 			ProgramId finalId = id;
 
-			return cachedPasses.computeIfAbsent(new Pair<>(id, availability), p -> {
-				ProgramSource source = resolver.resolveNullable(p.getFirst());
+			return cachedPasses.computeIfAbsent(Pair.of(id, availability), p -> {
+				ProgramSource source = resolver.resolveNullable(p.first());
 
 				if (condition == RenderCondition.SHADOW) {
 					if (!shadowDirectives.isShadowEnabled().orElse(shadowRenderTargets != null)) {
@@ -454,9 +429,9 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 			};
 		} else {
 			if (IrisRenderSystem.supportsCompute()) {
-				colorSpaceConverter = new ColorSpaceComputeConverter(mainTarget.width, mainTarget.height, IrisVideoSettings.colorSpace);
+				colorSpaceConverter = new ColorSpaceComputeConverter(mainTarget.framebufferWidth, mainTarget.framebufferHeight, IrisVideoSettings.colorSpace);
 			} else {
-				colorSpaceConverter = new ColorSpaceFragmentConverter(mainTarget.width, mainTarget.height, IrisVideoSettings.colorSpace);
+				colorSpaceConverter = new ColorSpaceFragmentConverter(mainTarget.framebufferWidth, mainTarget.framebufferHeight, IrisVideoSettings.colorSpace);
 			}
 		}
 
@@ -469,7 +444,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 	private void checkWorld() {
 		// If we're not in a world, then obviously we cannot possibly be rendering a world.
-		if (Minecraft.getInstance().level == null) {
+		if (Minecraft.getMinecraft().world == null) {
 			isRenderingWorld = false;
 			current = null;
 		}
@@ -565,7 +540,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 			case TERRAIN_CUTOUT_MIPPED:
 				return RenderCondition.TERRAIN_OPAQUE;
 			case ENTITIES:
-				if (GlStateManagerAccessor.getBLEND().srcRgb == GlStateManager.SourceFactor.SRC_ALPHA.value && GlStateManagerAccessor.getBLEND().dstRgb == GlStateManager.SourceFactor.ONE_MINUS_SRC_ALPHA.value && GlStateManagerAccessor.getBLEND().srcAlpha == GlStateManager.SourceFactor.ONE.value && GlStateManagerAccessor.getBLEND().dstAlpha == GlStateManager.SourceFactor.ONE_MINUS_SRC_ALPHA.value) {
+				if (GlStateManagerAccessor.getBLEND().srcFactor == GlStateManager.SourceFactor.SRC_ALPHA.factor && GlStateManagerAccessor.getBLEND().dstFactor == GlStateManager.SourceFactor.ONE_MINUS_SRC_ALPHA.factor && GlStateManagerAccessor.getBLEND().srcFactorAlpha == GlStateManager.SourceFactor.ONE.factor && GlStateManagerAccessor.getBLEND().dstFactorAlpha == GlStateManager.SourceFactor.ONE_MINUS_SRC_ALPHA.factor) {
 					return RenderCondition.ENTITIES_TRANSLUCENT;
 				} else {
 					return RenderCondition.ENTITIES;
@@ -577,7 +552,6 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 			case HAND_SOLID:
 				return RenderCondition.HAND_OPAQUE;
 			case TERRAIN_TRANSLUCENT:
-			case TRIPWIRE:
 				return RenderCondition.TERRAIN_TRANSLUCENT;
 			case CLOUDS:
 				return RenderCondition.CLOUDS;
@@ -798,10 +772,10 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 			}
 
 			if (shadowViewport) {
-				RenderSystem.viewport(0, 0, shadowMapResolution, shadowMapResolution);
+				GlStateManager.viewport(0, 0, shadowMapResolution, shadowMapResolution);
 			} else {
-				RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
-				RenderSystem.viewport(0, 0, main.width, main.height);
+				Framebuffer main = Minecraft.getMinecraft().getFramebuffer();
+				GlStateManager.viewport(0, 0, main.framebufferWidth, main.framebufferHeight);
 			}
 
 			if (program != null && !sodiumTerrainRendering) {
@@ -867,11 +841,11 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 		horizonRenderer.destroy();
 
 		// Make sure that any custom framebuffers are not bound before destroying render targets
-		GlStateManager._glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, 0);
-		GlStateManager._glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, 0);
-		GlStateManager._glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
+		OpenGlHelper.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, 0);
+		OpenGlHelper.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
+		OpenGlHelper.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 
-		Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+		Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
 
 		// Destroy our render targets
 		//
@@ -886,7 +860,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 		// Destroy custom textures and the static samplers (normals, specular, and noise)
 		customTextureManager.destroy();
-		whitePixel.releaseId();
+		whitePixel.deleteGlTexture();
 	}
 
 	private static void destroyPasses(ProgramTable<Pass> table) {
@@ -908,7 +882,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 	private void prepareRenderTargets() {
 		// Make sure we're using texture unit 0 for this.
-		RenderSystem.activeTexture(GL15C.GL_TEXTURE0);
+		GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
 		Vector4f emptyClearColor = new Vector4f(1.0F);
 
 		if (shadowRenderTargets != null) {
@@ -922,7 +896,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 			} else {
 				// Clear depth first, regardless of any color clearing.
 				shadowRenderTargets.getDepthSourceFb().bind();
-				RenderSystem.clear(GL21C.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+				GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
 
 				ImmutableList<ClearPass> passes;
 
@@ -945,15 +919,15 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 			}
 		}
 
-		RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
+		Framebuffer main = Minecraft.getMinecraft().getFramebuffer();
 		Blaze3dRenderTargetExt mainExt = (Blaze3dRenderTargetExt) main;
 
-		int depthTextureId = main.getDepthTextureId();
+		int depthTextureId = main.depthBuffer;
 		int internalFormat = TextureInfoCache.INSTANCE.getInfo(depthTextureId).getInternalFormat();
 		DepthBufferFormat depthBufferFormat = DepthBufferFormat.fromGlEnumOrDefault(internalFormat);
 
-		boolean changed = renderTargets.resizeIfNeeded(mainExt.iris$getDepthBufferVersion(), depthTextureId, main.width,
-			main.height, depthBufferFormat, packDirectives);
+		boolean changed = renderTargets.resizeIfNeeded(mainExt.iris$getDepthBufferVersion(), depthTextureId, main.framebufferWidth,
+			main.framebufferHeight, depthBufferFormat, packDirectives);
 
 		if (changed) {
 			prepareRenderer.recalculateSizes();
@@ -972,7 +946,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 		if (changed || IrisVideoSettings.colorSpace != currentColorSpace) {
 			currentColorSpace = IrisVideoSettings.colorSpace;
-			colorSpaceConverter.rebuildProgram(main.width, main.height, currentColorSpace);
+			colorSpaceConverter.rebuildProgram(main.framebufferWidth, main.framebufferHeight, currentColorSpace);
 		}
 
 		final ImmutableList<ClearPass> passes;
@@ -995,7 +969,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 		}
 
 		// Reset framebuffer and viewport
-		Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
+		Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
 	}
 
 	private ComputeProgram[] createShadowComputes(ComputeSource[] compute, ProgramSet programSet) {
@@ -1073,8 +1047,8 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 		deferredRenderer.renderAll();
 
-		RenderSystem.enableBlend();
-		RenderSystem.enableAlphaTest();
+		GlStateManager.enableBlend();
+		GlStateManager.enableAlpha();
 
 		// note: we are careful not to touch the lightmap texture unit or overlay color texture unit here,
 		// so we don't need to do anything to restore them if needed.
@@ -1089,7 +1063,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 	}
 
 	@Override
-	public void renderShadows(LevelRendererAccessor levelRenderer, Camera playerCamera) {
+	public void renderShadows(LevelRendererAccessor levelRenderer, ICamera playerCamera) {
 		if (shouldRenderPrepareBeforeShadow) {
 			isRenderingFullScreenPass = true;
 
@@ -1170,19 +1144,18 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 		// while rendering the sky.
 		//
 		// A lot of dimension mods touch sky rendering, FabricSkyboxes injects at HEAD and cancels, etc.
-		DimensionSpecialEffects.SkyType skyType = Minecraft.getInstance().level.effects().skyType();
-
-		if (skyType == DimensionSpecialEffects.SkyType.NORMAL) {
-			RenderSystem.disableTexture();
-			RenderSystem.depthMask(false);
+		// TODO Not sure
+		if (Minecraft.getMinecraft().world.provider.hasSkyLight()) {
+			GlStateManager.disableTexture2D();
+			GlStateManager.depthMask(false);
 
 			Vector3d fogColor = CapturedRenderingState.INSTANCE.getFogColor();
-			RenderSystem.color3f((float) fogColor.x, (float) fogColor.y, (float) fogColor.z);
+			GlStateManager.color((float) fogColor.x, (float) fogColor.y, (float) fogColor.z);
 
 			horizonRenderer.renderHorizon(CapturedRenderingState.INSTANCE.getGbufferModelView());
 
-			RenderSystem.depthMask(true);
-			RenderSystem.enableTexture();
+			GlStateManager.depthMask(true);
+			GlStateManager.enableTexture2D();
 		}
 	}
 
@@ -1207,7 +1180,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 		compositeRenderer.renderAll();
 		finalPassRenderer.renderFinalPass();
-		colorSpaceConverter.process(Minecraft.getInstance().getMainRenderTarget().getColorTextureId());
+		colorSpaceConverter.process(Minecraft.getMinecraft().getFramebuffer().framebufferTexture);
 
 		isRenderingFullScreenPass = false;
 	}
@@ -1295,8 +1268,8 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 	public void onBindTexture(int id) {
 		if (shouldBindPBR && isRenderingWorld) {
 			PBRTextureHolder pbrHolder = PBRTextureManager.INSTANCE.getOrLoadHolder(id);
-			currentNormalTexture = pbrHolder.getNormalTexture().getId();
-			currentSpecularTexture = pbrHolder.getSpecularTexture().getId();
+			currentNormalTexture = pbrHolder.getNormalTexture().getGlTextureId();
+			currentSpecularTexture = pbrHolder.getSpecularTexture().getGlTextureId();
 
 			TextureFormat textureFormat = TextureFormatLoader.getFormat();
 			if (textureFormat != null) {

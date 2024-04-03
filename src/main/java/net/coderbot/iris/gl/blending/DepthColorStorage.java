@@ -3,6 +3,7 @@ package net.coderbot.iris.gl.blending;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class DepthColorStorage {
 	private static boolean originalDepthEnable;
@@ -25,8 +26,8 @@ public class DepthColorStorage {
 
 		depthColorLocked = false;
 
-		GlStateManager._depthMask(false);
-		GlStateManager._colorMask(false, false, false, false);
+		GlStateManager.depthMask(false);
+		GlStateManager.colorMask(false, false, false, false);
 
 		depthColorLocked = true;
 	}
@@ -47,11 +48,11 @@ public class DepthColorStorage {
 		depthColorLocked = false;
 
 		if (originalDepthEnable) {
-			GlStateManager._depthMask(true);
+			GlStateManager.depthMask(true);
 		} else {
-			GlStateManager._depthMask(false);
+			GlStateManager.depthMask(false);
 		}
 
-		GlStateManager._colorMask(originalColor.isRedMasked(), originalColor.isGreenMasked(), originalColor.isBlueMasked(), originalColor.isAlphaMasked());
+		GlStateManager.colorMask(originalColor.isRedMasked(), originalColor.isGreenMasked(), originalColor.isBlueMasked(), originalColor.isAlphaMasked());
 	}
 }

@@ -2,6 +2,7 @@ package net.coderbot.iris.mixin.optimized_stitching;
 
 import java.util.List;
 
+import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -9,18 +10,16 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import net.minecraft.client.renderer.texture.Stitcher;
 import net.minecraft.client.renderer.texture.Stitcher.Holder;
-import net.minecraft.client.renderer.texture.Stitcher.Region;
-import net.minecraft.util.Mth;
 
 @Mixin(Stitcher.class)
 public class MixinStitcher {
 	@Shadow
 	@Final
-	private List<Region> storage;
+	private List<Stitcher.Slot> stitchSlots;
 	@Shadow
-	private int storageX;
+	private int currentWidth;
 	@Shadow
-	private int storageY;
+	private int currentHeight;
 	@Shadow
 	@Final
 	private int maxWidth;
@@ -35,9 +34,9 @@ public class MixinStitcher {
 	 * @reason Optimize region creation to allow for a smaller atlas
 	 */
 	@Overwrite
-	private boolean expand(Holder holder) {
-		int newEffectiveWidth = Mth.smallestEncompassingPowerOfTwo(storageX + holder.width);
-		int newEffectiveHeight = Mth.smallestEncompassingPowerOfTwo(storageY + holder.height);
+	private boolean expandAndAllocateSlot(Holder holder) {
+		int newEffectiveWidth = MathHelper.smallestEncompassingPowerOfTwo(currentWidth + holder.getWidth());
+		int newEffectiveHeight = MathHelper.smallestEncompassingPowerOfTwo(currentHeight + holder.getHeight());
 		boolean canFitWidth = newEffectiveWidth <= maxWidth;
 		boolean canFitHeight = newEffectiveHeight <= maxHeight;
 
@@ -56,8 +55,8 @@ public class MixinStitcher {
 		 */
 		if (canFitWidth & canFitHeight) {
 			// Effective size calculation moved from head to be inside if block
-			int effectiveWidth = Mth.smallestEncompassingPowerOfTwo(storageX);
-			int effectiveHeight = Mth.smallestEncompassingPowerOfTwo(storageY);
+			int effectiveWidth = MathHelper.smallestEncompassingPowerOfTwo(currentWidth);
+			int effectiveHeight = MathHelper.smallestEncompassingPowerOfTwo(currentHeight);
 			boolean wouldGrowEffectiveWidth = effectiveWidth != newEffectiveWidth;
 			boolean wouldGrowEffectiveHeight = effectiveHeight != newEffectiveHeight;
 
@@ -112,7 +111,7 @@ public class MixinStitcher {
 					 *
 					 * Vanilla does not perform this check.
 					 */
-					growWidth = holder.width > storageX;
+					growWidth = holder.getWidth() > currentWidth;
 				}
 			} else {
 				if (wouldGrowEffectiveHeight) {
@@ -141,21 +140,21 @@ public class MixinStitcher {
 		}
 		// Iris end
 
-		Region region;
+		Stitcher.Slot region;
 		if (growWidth) {
-			if (storageY == 0) {
-				storageY = holder.height;
+			if (currentHeight == 0) {
+				currentHeight = holder.getHeight();
 			}
 
-			region = new Region(storageX, 0, holder.width, storageY);
-			storageX += holder.width;
+			region = new Stitcher.Slot(currentWidth, 0, holder.getWidth(), currentHeight);
+			currentWidth += holder.getWidth();
 		} else {
-			region = new Region(0, storageY, storageX, holder.height);
-			storageY += holder.height;
+			region = new Stitcher.Slot(0, currentHeight, currentWidth, holder.getHeight());
+			currentHeight += holder.getHeight();
 		}
 
-		region.add(holder);
-		storage.add(region);
+		region.addSlot(holder);
+		stitchSlots.add(region);
 		return true;
 	}
 }

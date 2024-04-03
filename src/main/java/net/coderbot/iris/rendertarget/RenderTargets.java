@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.opengl.GL20C;
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
@@ -175,9 +175,9 @@ public class RenderTargets {
 	public void copyPreTranslucentDepth() {
 		if (translucentDepthDirty) {
 			translucentDepthDirty = false;
-			RenderSystem.bindTexture(noTranslucents.getTextureId());
+			GlStateManager.bindTexture(noTranslucents.getTextureId());
 			depthSourceFb.bindAsReadBuffer();
-			IrisRenderSystem.copyTexImage2D(GL20C.GL_TEXTURE_2D, 0, currentDepthFormat.getGlInternalFormat(), 0, 0, cachedWidth, cachedHeight, 0);
+			IrisRenderSystem.copyTexImage2D(GL11.GL_TEXTURE_2D, 0, currentDepthFormat.getGlInternalFormat(), 0, 0, cachedWidth, cachedHeight, 0);
 		} else {
 			copyStrategy.copy(depthSourceFb, getDepthTexture(), noTranslucentsDestFb, noTranslucents.getTextureId(),
 				getCurrentWidth(), getCurrentHeight());
@@ -187,9 +187,9 @@ public class RenderTargets {
 	public void copyPreHandDepth() {
 		if (handDepthDirty) {
 			handDepthDirty = false;
-			RenderSystem.bindTexture(noHand.getTextureId());
+			GlStateManager.bindTexture(noHand.getTextureId());
 			depthSourceFb.bindAsReadBuffer();
-			IrisRenderSystem.copyTexImage2D(GL20C.GL_TEXTURE_2D, 0, currentDepthFormat.getGlInternalFormat(), 0, 0, cachedWidth, cachedHeight, 0);
+			IrisRenderSystem.copyTexImage2D(GL11.GL_TEXTURE_2D, 0, currentDepthFormat.getGlInternalFormat(), 0, 0, cachedWidth, cachedHeight, 0);
 		} else {
 			copyStrategy.copy(depthSourceFb, getDepthTexture(), noHandDestFb, noHand.getTextureId(),
 				getCurrentWidth(), getCurrentHeight());

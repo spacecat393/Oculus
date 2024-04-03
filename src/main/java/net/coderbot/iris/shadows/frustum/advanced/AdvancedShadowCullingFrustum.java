@@ -6,7 +6,6 @@ import net.coderbot.iris.vendored.joml.Matrix4f;
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.coderbot.iris.vendored.joml.Vector4f;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.world.phys.AABB;
 
 /**
  * A Frustum implementation that derives a tightly-fitted shadow pass frustum based on the player's camera frustum and
@@ -73,7 +72,7 @@ public class AdvancedShadowCullingFrustum extends Frustum {
 	public AdvancedShadowCullingFrustum(Matrix4f playerView, Matrix4f playerProjection, Vector3f shadowLightVectorFromOrigin,
 										BoxCuller boxCuller) {
 		// We're overriding all of the methods, don't pass any matrices down.
-		super(new com.mojang.math.Matrix4f(), new com.mojang.math.Matrix4f());
+		super(null);
 
 		this.shadowLightVectorFromOrigin = shadowLightVectorFromOrigin;
 		BaseClippingPlanes baseClippingPlanes = new BaseClippingPlanes(playerView, playerProjection);
@@ -268,7 +267,7 @@ public class AdvancedShadowCullingFrustum extends Frustum {
 
 	// Note: These functions are copied & modified from the vanilla Frustum class.
 	@Override
-	public void prepare(double cameraX, double cameraY, double cameraZ) {
+	public void setPosition(double cameraX, double cameraY, double cameraZ) {
 		if (this.boxCuller != null) {
 			boxCuller.setPosition(cameraX, cameraY, cameraZ);
 		}
@@ -279,12 +278,12 @@ public class AdvancedShadowCullingFrustum extends Frustum {
 	}
 
 	@Override
-	public boolean isVisible(AABB aabb) {
-		if (boxCuller != null && boxCuller.isCulled(aabb)) {
+	public boolean isBoxInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+		if (boxCuller != null && boxCuller.isCulled(minX, minY, minZ, maxX, maxY, maxZ)) {
 			return false;
 		}
 
-		return this.isVisible(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ);
+		return this.isVisible(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 
 	// For Sodium

@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.coderbot.iris.colorspace.ColorSpace;
 import net.coderbot.iris.shaderpack.materialmap.NamespacedId;
 import net.coderbot.iris.shaderpack.preprocessor.PropertiesPreprocessor;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
@@ -45,7 +45,8 @@ import net.coderbot.iris.shaderpack.texture.TextureFilteringData;
 import net.coderbot.iris.shaderpack.texture.TextureStage;
 import net.irisshaders.iris.api.v0.IrisApi;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TranslatableComponent;
+
+import javax.annotation.Nullable;
 
 public class ShaderPack {
 	private static final Gson GSON = new Gson();
@@ -97,7 +98,7 @@ public class ShaderPack {
 
 		// This cannot be done in IDMap, as we do not have the include graph, and subsequently the shader settings.
 		List<String> dimensionIdCreator = loadProperties(root, "dimension.properties", environmentDefines).map(dimensionProperties -> {
-			hasDimensionIds[0] = dimensionProperties.size() > 0;
+			hasDimensionIds[0] = !dimensionProperties.isEmpty();
 			dimensionMap = parseDimensionMap(dimensionProperties, "dimension.", "dimension.properties");
 			return parseDimensionIds(dimensionProperties, "dimension.");
 		}).orElse(new ArrayList<>());
@@ -131,9 +132,7 @@ public class ShaderPack {
 		IncludeGraph graph = new IncludeGraph(root, starts.build());
 
 		if (!graph.getFailures().isEmpty()) {
-			graph.getFailures().forEach((path, error) -> {
-				Iris.logger.error("{}", error.toString());
-			});
+			graph.getFailures().forEach((path, error) -> Iris.logger.error("{}", error.toString()));
 
 			throw new IOException("Failed to resolve some #include directives, see previous messages for details");
 		}
@@ -153,8 +152,8 @@ public class ShaderPack {
 		List<String> invalidFeatureFlags = invalidFlagList.stream().map(FeatureFlags::getHumanReadableName).collect(Collectors.toList());
 
 		if (!invalidFeatureFlags.isEmpty()) {
-			if (Minecraft.getInstance().screen instanceof ShaderPackScreen) {
-				Minecraft.getInstance().setScreen(new FeatureMissingErrorScreen(Minecraft.getInstance().screen, new TranslatableComponent("iris.unsupported.pack"), new TranslatableComponent("iris.unsupported.pack.description", FeatureFlags.getInvalidStatus(invalidFlagList), invalidFeatureFlags.stream()
+			if (Minecraft.getMinecraft().currentScreen instanceof ShaderPackScreen) {
+				Minecraft.getMinecraft().displayGuiScreen(new FeatureMissingErrorScreen(Minecraft.getMinecraft().currentScreen, new TextComponentTranslation("iris.unsupported.pack"), new TextComponentTranslation("iris.unsupported.pack.description", FeatureFlags.getInvalidStatus(invalidFlagList), invalidFeatureFlags.stream()
 					.collect(Collectors.joining(", ", ": ", ".")))));
 			}
 			IrisApi.getInstance().getConfig().setShadersEnabledAndApply(false);

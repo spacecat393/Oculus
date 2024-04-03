@@ -51,10 +51,10 @@ public class ProfileElementWidget extends BaseOptionElementWidget<OptionMenuProf
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int x, int y, int width, int height, int mouseX, int mouseY, float tickDelta, boolean hovered) {
-		this.updateRenderParams(width, width - (Minecraft.getInstance().font.width(PROFILE_LABEL) + 16));
+	public void render(int x, int y, int width, int height, int mouseX, int mouseY, float tickDelta, boolean hovered) {
+		this.updateRenderParams(width, width - (Minecraft.getMinecraft().fontRenderer.width(PROFILE_LABEL) + 16));
 
-		this.renderOptionWithValue(poseStack, x, y, width, height, hovered);
+		this.renderOptionWithValue(x, y, width, height, hovered);
 	}
 
 	@Override

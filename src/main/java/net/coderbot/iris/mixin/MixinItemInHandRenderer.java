@@ -1,28 +1,24 @@
 package net.coderbot.iris.mixin;
 
+import net.coderbot.iris.pipeline.HandRenderer;
+import net.irisshaders.iris.api.v0.IrisApi;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.coderbot.iris.pipeline.HandRenderer;
-import net.irisshaders.iris.api.v0.IrisApi;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
-
-@Mixin(ItemInHandRenderer.class)
+@Mixin(ItemRenderer.class)
 public class MixinItemInHandRenderer {
-	@Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
-	private void iris$skipTranslucentHands(AbstractClientPlayer abstractClientPlayer, float f, float g, InteractionHand interactionHand, float h, ItemStack itemStack, float i, PoseStack poseStack, MultiBufferSource multiBufferSource, int j, CallbackInfo ci) {
+	@Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At("HEAD"), cancellable = true)
+	private void iris$skipTranslucentHands(AbstractClientPlayer player, float p_187457_2_, float p_187457_3_, EnumHand hand, float p_187457_5_, ItemStack stack, float p_187457_7_, CallbackInfo ci) {
 		if (IrisApi.getInstance().isShaderPackInUse()) {
-			if (HandRenderer.INSTANCE.isRenderingSolid() && HandRenderer.INSTANCE.isHandTranslucent(interactionHand)) {
+			if (HandRenderer.INSTANCE.isRenderingSolid() && HandRenderer.INSTANCE.isHandTranslucent(hand)) {
 				ci.cancel();
-			} else if (!HandRenderer.INSTANCE.isRenderingSolid() && !HandRenderer.INSTANCE.isHandTranslucent(interactionHand)) {
+			} else if (!HandRenderer.INSTANCE.isRenderingSolid() && !HandRenderer.INSTANCE.isHandTranslucent(hand)) {
 				ci.cancel();
 			}
 		}

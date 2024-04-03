@@ -2,6 +2,8 @@ package net.coderbot.iris.gui.element.widget;
 
 import java.util.Optional;
 
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -21,6 +23,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+
+import javax.annotation.Nullable;
 
 public abstract class BaseOptionElementWidget<T extends OptionMenuElement> extends CommentedElementWidget<T> {
 	protected static final Component SET_TO_DEFAULT = new TranslatableComponent("options.iris.setToDefault").withStyle(ChatFormatting.GREEN);
@@ -62,7 +66,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 		}
 
 		// Determine the width of the value box
-		Font font = Minecraft.getInstance().font;
+		FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 		this.valueSectionWidth = Math.max(minValueSectionWidth, font.width(this.valueLabel) + 8);
 
 		// Determine maximum width of trimmed label
@@ -77,14 +81,14 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 		this.isLabelTrimmed = font.width(this.label) > this.maxLabelWidth;
 	}
 
-	protected final void renderOptionWithValue(PoseStack poseStack, int x, int y, int width, int height, boolean hovered, float sliderPosition, int sliderWidth) {
+	protected final void renderOptionWithValue(int x, int y, int width, int height, boolean hovered, float sliderPosition, int sliderWidth) {
 		GuiUtil.bindIrisWidgetsTexture();
 
 		// Draw button background
-		GuiUtil.drawButton(poseStack, x, y, width, height, hovered, false);
+		GuiUtil.drawButton(x, y, width, height, hovered, false);
 
 		// Draw the value box
-		GuiUtil.drawButton(poseStack, (x + width) - (this.valueSectionWidth + 2), y + 2, this.valueSectionWidth, height - 4, false, true);
+		GuiUtil.drawButton((x + width) - (this.valueSectionWidth + 2), y + 2, this.valueSectionWidth, height - 4, false, true);
 
 		// Draw the preview slider
 		if (sliderPosition >= 0) {
@@ -94,32 +98,32 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 			// Position of slider
 			int sliderPos = ((x + width) - this.valueSectionWidth) + (int)(sliderPosition * sliderSpace);
 
-			GuiUtil.drawButton(poseStack, sliderPos, y + 4, sliderWidth, height - 8, false, false);
+			GuiUtil.drawButton(sliderPos, y + 4, sliderWidth, height - 8, false, false);
 		}
 
-		Font font = Minecraft.getInstance().font;
+		FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 
 		// Draw the label
-		font.drawShadow(poseStack, this.trimmedLabel, x + 6, y + 7, 0xFFFFFF);
+		font.drawShadow(this.trimmedLabel, x + 6, y + 7, 0xFFFFFF);
 		// Draw the value label
-		font.drawShadow(poseStack, this.valueLabel, (x + (width - 2)) - (int)(this.valueSectionWidth * 0.5) - (int)(font.width(this.valueLabel) * 0.5), y + 7, 0xFFFFFF);
+		font.drawShadow(this.valueLabel, (x + (width - 2)) - (int)(this.valueSectionWidth * 0.5) - (int)(font.width(this.valueLabel) * 0.5), y + 7, 0xFFFFFF);
 	}
 
-	protected final void renderOptionWithValue(PoseStack poseStack, int x, int y, int width, int height, boolean hovered) {
-		this.renderOptionWithValue(poseStack, x, y, width, height, hovered, -1, 0);
+	protected final void renderOptionWithValue(int x, int y, int width, int height, boolean hovered) {
+		this.renderOptionWithValue(x, y, width, height, hovered, -1, 0);
 	}
 
-	protected final void tryRenderTooltip(PoseStack poseStack, int mouseX, int mouseY, boolean hovered) {
-		if (Screen.hasShiftDown()) {
-			renderTooltip(poseStack, SET_TO_DEFAULT, mouseX, mouseY, hovered);
+	protected final void tryRenderTooltip(int mouseX, int mouseY, boolean hovered) {
+		if (GuiScreen.isShiftKeyDown()) {
+			renderTooltip(SET_TO_DEFAULT, mouseX, mouseY, hovered);
 		} else if (this.isLabelTrimmed && !this.screen.isDisplayingComment()) {
-			renderTooltip(poseStack, this.unmodifiedLabel, mouseX, mouseY, hovered);
+			renderTooltip(this.unmodifiedLabel, mouseX, mouseY, hovered);
 		}
 	}
 
-	protected final void renderTooltip(PoseStack poseStack, Component text, int mouseX, int mouseY, boolean hovered) {
+	protected final void renderTooltip(Component text, int mouseX, int mouseY, boolean hovered) {
 		if (hovered) {
-			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(Minecraft.getInstance().font, poseStack, text, mouseX + 2, mouseY - 16));
+			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(Minecraft.getMinecraft().fontRenderer, text, mouseX + 2, mouseY - 16));
 		}
 	}
 
@@ -130,7 +134,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 
 	protected final Component createTrimmedLabel() {
 		MutableComponent label = GuiUtil.shortenText(
-				Minecraft.getInstance().font,
+				Minecraft.getMinecraft().fontRenderer,
 				this.label.copy(),
 				this.maxLabelWidth);
 
@@ -168,7 +172,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 		if (button == GLFW.GLFW_MOUSE_BUTTON_1 || button == GLFW.GLFW_MOUSE_BUTTON_2) {
 			boolean refresh = false;
 
-			if (Screen.hasShiftDown()) {
+			if (GuiScreen.isShiftKeyDown()) {
 				refresh = applyOriginalValue();
 			}
 			if (!refresh) {

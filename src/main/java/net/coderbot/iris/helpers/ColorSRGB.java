@@ -1,7 +1,6 @@
 package net.coderbot.iris.helpers;
 
-
-import com.mojang.blaze3d.platform.NativeImage;
+import nanolive.compat.NativeImage;
 
 /**
  * This is a port of the fast-srgb8 library from thomcc on <a href="https://github.com/thomcc/fast-srgb8">GitHub</a>.

@@ -2,22 +2,23 @@ package net.coderbot.iris.block_rendering;
 
 import java.util.Map;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraftforge.registries.IRegistryDelegate;
-import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.coderbot.iris.shaderpack.materialmap.NamespacedId;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nullable;
 
 public class BlockRenderingSettings {
 	public static final BlockRenderingSettings INSTANCE = new BlockRenderingSettings();
 
 	private boolean reloadRequired;
-	private Object2IntMap<BlockState> blockStateIds;
-	private Map<IRegistryDelegate<Block>, RenderType> blockTypeIds;
+	private Object2IntMap<IBlockState> blockStateIds;
+	private Map<IRegistryDelegate<Block>, BlockRenderLayer> blockTypeIds;
 	private Object2IntFunction<NamespacedId> entityIds;
 	private float ambientOcclusionLevel;
 	private boolean disableDirectionalShading;
@@ -43,12 +44,12 @@ public class BlockRenderingSettings {
 	}
 
 	@Nullable
-	public Object2IntMap<BlockState> getBlockStateIds() {
+	public Object2IntMap<IBlockState> getBlockStateIds() {
 		return blockStateIds;
 	}
 
 	@Nullable
-	public Map<IRegistryDelegate<Block>, RenderType> getBlockTypeIds() {
+	public Map<IRegistryDelegate<Block>, BlockRenderLayer> getBlockTypeIds() {
 		return blockTypeIds;
 	}
 
@@ -58,7 +59,7 @@ public class BlockRenderingSettings {
 		return entityIds;
 	}
 
-	public void setBlockStateIds(Object2IntMap<BlockState> blockStateIds) {
+	public void setBlockStateIds(Object2IntMap<IBlockState> blockStateIds) {
 		if (this.blockStateIds != null && this.blockStateIds.equals(blockStateIds)) {
 			return;
 		}
@@ -67,7 +68,7 @@ public class BlockRenderingSettings {
 		this.blockStateIds = blockStateIds;
 	}
 
-	public void setBlockTypeIds(Map<IRegistryDelegate<Block>, RenderType> blockTypeIds) {
+	public void setBlockTypeIds(Map<IRegistryDelegate<Block>, BlockRenderLayer> blockTypeIds) {
 		if (this.blockTypeIds != null && this.blockTypeIds.equals(blockTypeIds)) {
 			return;
 		}

@@ -1,5 +1,7 @@
 package net.coderbot.iris.compat.sodium.mixin.shadow_map;
 
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.tileentity.TileEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -24,8 +26,6 @@ import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPassManager;
 import net.coderbot.iris.compat.sodium.impl.shadow_map.SwappableChunkRenderManager;
 import net.coderbot.iris.shadows.ShadowRenderingState;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * Modifies {@link ChunkRenderManager} to support maintaining a separate visibility list for the shadow camera, as well
@@ -54,7 +54,7 @@ public class MixinChunkRenderManager implements SwappableChunkRenderManager {
 	@Shadow(remap = false)
 	@Final
 	@Mutable
-	private ObjectList<BlockEntity> visibleBlockEntities;
+	private ObjectList<TileEntity> visibleBlockEntities;
 
 	@Shadow(remap = false)
 	private boolean dirty;
@@ -69,7 +69,7 @@ public class MixinChunkRenderManager implements SwappableChunkRenderManager {
 	private ObjectList<ChunkRenderContainer<?>> tickableChunksSwap;
 
 	@Unique
-	private ObjectList<BlockEntity> visibleBlockEntitiesSwap;
+	private ObjectList<TileEntity> visibleBlockEntitiesSwap;
 
 	@Unique
 	private int visibleChunkCountSwap;
@@ -82,7 +82,7 @@ public class MixinChunkRenderManager implements SwappableChunkRenderManager {
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void iris$onInit(SodiumWorldRenderer renderer, ChunkRenderBackend<?> backend,
-							 BlockRenderPassManager renderPassManager, ClientLevel level, int renderDistance,
+							 BlockRenderPassManager renderPassManager, WorldClient level, int renderDistance,
 							 CallbackInfo ci) {
 		this.chunkRenderListsSwap = new ChunkRenderList[BlockRenderPass.COUNT];
 		this.tickableChunksSwap = new ObjectArrayList<>();
@@ -105,7 +105,7 @@ public class MixinChunkRenderManager implements SwappableChunkRenderManager {
 		tickableChunks = tickableChunksSwap;
 		tickableChunksSwap = tickableChunksTmp;
 
-		ObjectList<BlockEntity> visibleBlockEntitiesTmp = visibleBlockEntities;
+		ObjectList<TileEntity> visibleBlockEntitiesTmp = visibleBlockEntities;
 		visibleBlockEntities = visibleBlockEntitiesSwap;
 		visibleBlockEntitiesSwap = visibleBlockEntitiesTmp;
 

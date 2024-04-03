@@ -1,28 +1,12 @@
 package net.coderbot.iris.postprocess;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
-
-import org.lwjgl.opengl.GL15C;
-import org.lwjgl.opengl.GL20C;
-import org.lwjgl.opengl.GL30C;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
-import net.coderbot.iris.gl.program.ComputeProgram;
-import net.coderbot.iris.gl.program.Program;
-import net.coderbot.iris.gl.program.ProgramBuilder;
-import net.coderbot.iris.gl.program.ProgramSamplers;
-import net.coderbot.iris.gl.program.ProgramUniforms;
+import net.coderbot.iris.gl.program.*;
 import net.coderbot.iris.gl.sampler.SamplerLimits;
 import net.coderbot.iris.pipeline.PatchedShaderPrinter;
 import net.coderbot.iris.pipeline.transform.PatchShaderType;
@@ -31,15 +15,22 @@ import net.coderbot.iris.rendertarget.RenderTarget;
 import net.coderbot.iris.rendertarget.RenderTargets;
 import net.coderbot.iris.samplers.IrisImages;
 import net.coderbot.iris.samplers.IrisSamplers;
-import net.coderbot.iris.shaderpack.ComputeSource;
-import net.coderbot.iris.shaderpack.PackDirectives;
-import net.coderbot.iris.shaderpack.PackRenderTargetDirectives;
-import net.coderbot.iris.shaderpack.ProgramDirectives;
-import net.coderbot.iris.shaderpack.ProgramSource;
+import net.coderbot.iris.shaderpack.*;
 import net.coderbot.iris.shadows.ShadowRenderTargets;
 import net.coderbot.iris.uniforms.CommonUniforms;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.shader.Framebuffer;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 public class CompositeRenderer {
 	private final RenderTargets renderTargets;
@@ -143,7 +134,7 @@ public class CompositeRenderer {
 		this.passes = passes.build();
 		this.flippedAtLeastOnceFinal = flippedAtLeastOnce.build();
 
-		GlStateManager._glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, 0);
+		OpenGlHelper.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, 0);
 	}
 
 	public ImmutableSet<Integer> getFlippedAtLeastOnceFinal() {
@@ -206,8 +197,8 @@ public class CompositeRenderer {
 	}
 
 	public void renderAll() {
-		RenderSystem.disableBlend();
-		RenderSystem.disableAlphaTest();
+		GlStateManager.disableBlend();
+		GlStateManager.disableAlpha();
 
 		FullScreenQuadRenderer.INSTANCE.begin();
 
@@ -216,8 +207,8 @@ public class CompositeRenderer {
 			for (ComputeProgram computeProgram : renderPass.computes) {
 				if (computeProgram != null) {
 					ranCompute = true;
-					com.mojang.blaze3d.pipeline.RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
-					computeProgram.dispatch(main.width, main.height);
+					Framebuffer main = Minecraft.getMinecraft().getFramebuffer();
+					computeProgram.dispatch(main.framebufferWidth, main.framebufferHeight);
 				}
 			}
 
@@ -232,7 +223,7 @@ public class CompositeRenderer {
 			}
 
 			if (!renderPass.mipmappedBuffers.isEmpty()) {
-				RenderSystem.activeTexture(GL15C.GL_TEXTURE0);
+				GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
 
 				for (int index : renderPass.mipmappedBuffers) {
 					setupMipmapping(CompositeRenderer.this.renderTargets.get(index), renderPass.stageReadsFromAlt.contains(index));
@@ -241,7 +232,7 @@ public class CompositeRenderer {
 
 			float scaledWidth = renderPass.viewWidth * renderPass.viewportScale;
 			float scaledHeight = renderPass.viewHeight * renderPass.viewportScale;
-			RenderSystem.viewport(0, 0, (int) scaledWidth, (int) scaledHeight);
+			GlStateManager.viewport(0, 0, (int) scaledWidth, (int) scaledHeight);
 
 			renderPass.framebuffer.bind();
 			renderPass.program.use();
@@ -253,20 +244,20 @@ public class CompositeRenderer {
 
 		// Make sure to reset the viewport to how it was before... Otherwise weird issues could occur.
 		// Also bind the "main" framebuffer if it isn't already bound.
-		Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
+		Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
 		ProgramUniforms.clearActiveUniforms();
 		ProgramSamplers.clearActiveSamplers();
-		GlStateManager._glUseProgram(0);
+		OpenGlHelper.glUseProgram(0);
 
 		// NB: Unbinding all of these textures is necessary for proper shaderpack reloading.
 		for (int i = 0; i < SamplerLimits.get().getMaxTextureUnits(); i++) {
 			// Unbind all textures that we may have used.
 			// NB: This is necessary for shader pack reloading to work propely
-			RenderSystem.activeTexture(GL15C.GL_TEXTURE0 + i);
-			RenderSystem.bindTexture(0);
+			GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + i);
+			GlStateManager.bindTexture(0);
 		}
 
-		RenderSystem.activeTexture(GL15C.GL_TEXTURE0);
+		GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
 	}
 
 	private static void setupMipmapping(net.coderbot.iris.rendertarget.RenderTarget target, boolean readFromAlt) {
@@ -283,14 +274,14 @@ public class CompositeRenderer {
 		//
 		// Also note that this only applies to one of the two buffers in a render target buffer pair - making it
 		// unlikely that this issue occurs in practice with most shader packs.
-		IrisRenderSystem.generateMipmaps(texture, GL20C.GL_TEXTURE_2D);
+		IrisRenderSystem.generateMipmaps(texture, GL11.GL_TEXTURE_2D);
 
-		int filter = GL20C.GL_LINEAR_MIPMAP_LINEAR;
+		int filter = GL11.GL_LINEAR_MIPMAP_LINEAR;
 		if (target.getInternalFormat().getPixelFormat().isInteger()) {
-			filter = GL20C.GL_NEAREST_MIPMAP_NEAREST;
+			filter = GL11.GL_NEAREST_MIPMAP_NEAREST;
 		}
 
-		IrisRenderSystem.texParameteri(texture, GL20C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_MIN_FILTER, filter);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter);
 	}
 
 	// TODO: Don't just copy this from DeferredWorldRenderingPipeline

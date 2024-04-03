@@ -1,6 +1,6 @@
 package net.coderbot.iris.texture.util;
 
-import com.mojang.blaze3d.platform.NativeImage;
+import nanolive.compat.NativeImage;
 
 public class ImageManipulationUtil {
 	public static NativeImage scaleNearestNeighbor(NativeImage image, int newWidth, int newHeight) {

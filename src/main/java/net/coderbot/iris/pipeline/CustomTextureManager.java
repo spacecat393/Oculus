@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.IntSupplier;
 
+import net.coderbot.iris.mixin.GlStateManagerAccessor;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.ITextureObject;
+import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.FilenameUtils;
-
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
@@ -26,12 +29,9 @@ import net.coderbot.iris.texture.format.TextureFormatLoader;
 import net.coderbot.iris.texture.pbr.PBRTextureHolder;
 import net.coderbot.iris.texture.pbr.PBRTextureManager;
 import net.coderbot.iris.texture.pbr.PBRType;
-import net.minecraft.ResourceLocationException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
 
 public class CustomTextureManager {
 	private final EnumMap<TextureStage, Object2ObjectMap<String, IntSupplier>> customTextureIdMap = new EnumMap<>(TextureStage.class);
@@ -53,7 +53,7 @@ public class CustomTextureManager {
 			customTextureStageDataMap.forEach((samplerName, textureData) -> {
 				try {
 					customTextureIds.put(samplerName, createCustomTexture(textureData));
-				} catch (IOException | ResourceLocationException e) {
+				} catch (IOException e) {
 					Iris.logger.error("Unable to parse the image data for the custom texture on stage "
 							+ textureStage + ", sampler " + samplerName, e);
 				}
@@ -65,7 +65,7 @@ public class CustomTextureManager {
 		noise = customNoiseTextureData.flatMap(textureData -> {
 			try {
 				return Optional.of(createCustomTexture(textureData));
-			} catch (IOException | ResourceLocationException e) {
+			} catch (IOException e) {
 				Iris.logger.error("Unable to parse the image data for the custom noise texture", e);
 
 				return Optional.empty();
@@ -76,16 +76,16 @@ public class CustomTextureManager {
 			AbstractTexture texture = new NativeImageBackedNoiseTexture(noiseTextureResolution);
 			ownedTextures.add(texture);
 
-			return texture::getId;
+			return texture::getGlTextureId;
 		});
 	}
 
-	private IntSupplier createCustomTexture(CustomTextureData textureData) throws IOException, ResourceLocationException {
+	private IntSupplier createCustomTexture(CustomTextureData textureData) throws IOException {
 		if (textureData instanceof CustomTextureData.PngData) {
 			AbstractTexture texture = new NativeImageBackedCustomTexture((CustomTextureData.PngData) textureData);
 			ownedTextures.add(texture);
 
-			return texture::getId;
+			return texture::getGlTextureId;
 		} else if (textureData instanceof CustomTextureData.LightmapMarker) {
 			// Special code path for the light texture. While shader packs hardcode the primary light texture, it's
 			// possible that a mod will create a different light texture, so this code path is robust to that.
@@ -106,7 +106,7 @@ public class CustomTextureManager {
 			}
 			PBRType pbrType = PBRType.fromFileLocation(withoutExtension);
 
-			TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+			TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 
 			if (pbrType == null) {
 				ResourceLocation textureLocation = new ResourceLocation(namespace, location);
@@ -117,20 +117,20 @@ public class CustomTextureManager {
 				//     reloads. Re-fetching the texture from the TextureManager every time is the most robust approach for
 				//     now.
 				return () -> {
-					AbstractTexture texture = textureManager.getTexture(textureLocation);
+					ITextureObject texture = textureManager.getTexture(textureLocation);
 
 					// TODO: Should we give something else if the texture isn't there? This will need some thought
-					return texture != null ? texture.getId() : MissingTextureAtlasSprite.getTexture().getId();
+					return texture != null ? texture.getGlTextureId() : TextureUtil.MISSING_TEXTURE.getGlTextureId();
 				};
 			} else {
 				location = location.substring(0, extensionIndex - pbrType.getSuffix().length()) + location.substring(extensionIndex);
 				ResourceLocation textureLocation = new ResourceLocation(namespace, location);
 
 				return () -> {
-					AbstractTexture texture = textureManager.getTexture(textureLocation);
+					ITextureObject texture = textureManager.getTexture(textureLocation);
 
 					if (texture != null) {
-						int id = texture.getId();
+						int id = texture.getGlTextureId();
 						PBRTextureHolder pbrHolder = PBRTextureManager.INSTANCE.getOrLoadHolder(id);
 						AbstractTexture pbrTexture;
 						switch (pbrType) {
@@ -146,16 +146,16 @@ public class CustomTextureManager {
 
 						TextureFormat textureFormat = TextureFormatLoader.getFormat();
 						if (textureFormat != null) {
-							int previousBinding = GlStateManager.getActiveTextureName();
-							GlStateManager._bindTexture(pbrTexture.getId());
+							int previousBinding = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].textureName;
+							GlStateManager.bindTexture(pbrTexture.getGlTextureId());
 							textureFormat.setupTextureParameters(pbrType, pbrTexture);
-							GlStateManager._bindTexture(previousBinding);
+							GlStateManager.bindTexture(previousBinding);
 						}
 
-						return pbrTexture.getId();
+						return pbrTexture.getGlTextureId();
 					}
 
-					return MissingTextureAtlasSprite.getTexture().getId();
+					return TextureUtil.MISSING_TEXTURE.getGlTextureId();
 				};
 			}
 		} else {

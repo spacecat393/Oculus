@@ -1,37 +1,39 @@
 plugins {
-	id 'dev.architectury.loom' version '0.10.0-SNAPSHOT'
+	id "java-library"
+	id "com.gtnewhorizons.retrofuturagradle" version "1.3.26"
 	id 'com.github.johnrengelman.shadow' version '7.1.2'
-	id 'maven-publish'
 }
 
-loom {
-	silentMojangMappingsLicense()
+archivesBaseName = "${project.mod_id}-mc${project.minecraft_version}-${project.mod_version}"
 
-	forge {
-		mixinConfigs = [
-				"mixins.oculus.json",
-				"mixins.oculus.fantastic.json",
-				"mixins.oculus.vertexformat.json",
-				"mixins.oculus.bettermipmaps.json",
-				"mixins.oculus.fixes.maxfpscrash.json",
-				"mixins.oculus.optimized-stitching.json",
-				"oculus-batched-entity-rendering.mixins.json",
-				"mixins.oculus.compat.sodium.json",
-				"mixins.oculus.compat.json"
-		]
-	}
-	mixin.defaultRefmapName = "oculus-mixins-refmap.json"
+// Set the toolchain version to decouple the Java we run Gradle with from the Java used to compile and run the mod
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+        // Azul covers the most platforms for Java 8 toolchains, crucially including MacOS arm64
+        vendor.set(org.gradle.jvm.toolchain.JvmVendorSpec.AZUL)
+    }
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+minecraft {
+	mcVersion.set(minecraft_version)
+	username.set("Developer")
 
-archivesBaseName = "${project.archives_base_name}-mc${project.minecraft_version}"
-version = project.mod_version
-group = project.maven_group
+	injectedTags.put("MOD_VERSION", mod_version)
+	injectedTags.put("MOD_NAME", "Vintagium")
+}
+
+tasks.injectTags.outputClassName.set("${mod_base_package}.Tags")
+
+tasks.deobfuscateMergedJarToSrg.configure {accessTransformerFiles.from("src/main/resources/META-INF/oculus_at.cfg")}
 
 repositories {
 	mavenLocal()
+	maven {	url "https://maven.cleanroommc.com" }
+	maven {
+        name 'SpongePowered Maven'
+        url 'https://repo.spongepowered.org/maven'
+    }
 	maven {
 		name = "CurseForge"
 		url = "https://cursemaven.com"
@@ -49,15 +51,18 @@ repositories {
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
-	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+	def mixinBooter = modUtils.enableMixins("zone.rong:mixinbooter:8.9", "oculus-mixins-refmap.json")
+    api (mixinBooter) {
+        transitive = false
+    }
+	annotationProcessor "org.ow2.asm:asm-debug-all:5.2"
+    annotationProcessor "com.google.guava:guava:32.1.2-jre"
+    annotationProcessor "com.google.code.gson:gson:2.8.9"
+    annotationProcessor (mixinBooter) {
+        transitive = false
+    }
 
-	modCompileOnly "maven.modrinth:rubidium:0.2.13"
-	//modCompileOnly "me.jellysquid.mods:Rubidium:0.2.13"
-	modCompileOnly "curse.maven:epic-fight-mod-405076:4029362"
-
-	modRuntimeOnly "curse.maven:lazydfu-460819:3249059"
+	//modCompileOnly "maven.modrinth:rubidium:0.2.13"
 
 	implementation(shadow(project(path: ":glsl-relocated", configuration: "bundledJar"))) {
 		transitive = false
@@ -66,27 +71,20 @@ dependencies {
 		transitive = false
 	}
 	shadow("org.slf4j:slf4j-api:1.7.12") // for jcpp
+
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 processResources {
-	inputs.property "version", project.version
-
-	filesMatching("META-INF/mods.toml") {
-		expand "version": project.version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
-
-	def targetVersion = 8
-	if (JavaVersion.current().isJava9Compatible()) {
-		it.options.release = targetVersion
-	}
-}
-
-java {
-	withSourcesJar()
+	filesMatching("mcmod.info") { fcd ->
+        fcd.expand(
+                'mod_id': project.mod_id,
+                'mod_name': project.mod_name,
+                'mod_version': project.mod_version,
+                'mod_description': project.mod_description,
+                'minecraft_version': project.minecraft_version
+        )
+    }
 }
 
 shadowJar {
@@ -104,26 +102,5 @@ shadowJar {
 		attributes(
 				'Main-Class': 'net.coderbot.iris.LaunchWarn'
 		)
-	}
-}
-
-remapJar {
-	input.set shadowJar.archiveFile
-	dependsOn shadowJar
-}
-
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
-	}
-
-	repositories {
 	}
 }

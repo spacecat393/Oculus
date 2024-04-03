@@ -3,6 +3,9 @@ package net.coderbot.iris.mixin.vertices;
 import java.nio.ByteBuffer;
 
 import net.coderbot.iris.vertices.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +23,8 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.vendored.joml.Vector3f;
+
+import javax.annotation.Nullable;
 
 /**
  * Dynamically and transparently extends the vanilla vertex formats with additional data
@@ -105,19 +110,19 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 	@Inject(method = "begin", at = @At("HEAD"))
 	private void iris$onBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		boolean shouldExtend = (!iris$shouldNotExtend) && BlockRenderingSettings.INSTANCE.shouldUseExtendedVertexFormat();
-		extending = shouldExtend && (format == DefaultVertexFormat.BLOCK || format == DefaultVertexFormat.NEW_ENTITY
-			|| format == DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
+		extending = shouldExtend && (format == DefaultVertexFormats.BLOCK || format == DefaultVertexFormats.NEW_ENTITY
+			|| format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
 		vertexCount = 0;
 
 		if (extending) {
-			injectNormal = format == DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP;
+			injectNormal = format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP;
 		}
 	}
 
 	@Inject(method = "begin", at = @At("RETURN"))
 	private void iris$afterBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		if (extending) {
-			if (format == DefaultVertexFormat.NEW_ENTITY) {
+			if (format == DefaultVertexFormats.NEW_ENTITY) {
 				this.switchFormat(IrisVertexFormats.ENTITY);
 				this.iris$isTerrain = false;
 			} else {
@@ -192,7 +197,7 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 	private void fillExtendedData(int vertexAmount) {
 		vertexCount = 0;
 
-		int stride = format.getVertexSize();
+		int stride = format.getSize();
 
 		polygon.setup(buffer, nextElementByte, stride, vertexAmount);
 

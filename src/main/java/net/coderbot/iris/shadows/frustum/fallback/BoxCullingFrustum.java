@@ -1,22 +1,19 @@
 package net.coderbot.iris.shadows.frustum.fallback;
 
-import com.mojang.math.Matrix4f;
-
 import net.coderbot.iris.shadows.frustum.BoxCuller;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.world.phys.AABB;
 
 public class BoxCullingFrustum extends Frustum {
 	private final BoxCuller boxCuller;
 
 	public BoxCullingFrustum(BoxCuller boxCuller) {
-		super(new Matrix4f(), new Matrix4f());
+		super(null);
 
 		this.boxCuller = boxCuller;
 	}
 
 	@Override
-	public void prepare(double cameraX, double cameraY, double cameraZ) {
+	public void setPosition(double cameraX, double cameraY, double cameraZ) {
 		boxCuller.setPosition(cameraX, cameraY, cameraZ);
 	}
 
@@ -35,7 +32,7 @@ public class BoxCullingFrustum extends Frustum {
 	}
 
 	@Override
-	public boolean isVisible(AABB aabb) {
-		return !boxCuller.isCulled(aabb);
+	public boolean isBoxInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+		return !boxCuller.isCulled(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 }

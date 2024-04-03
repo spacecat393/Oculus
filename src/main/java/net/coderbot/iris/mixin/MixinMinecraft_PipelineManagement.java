@@ -1,32 +1,30 @@
 package net.coderbot.iris.mixin;
 
-import org.jetbrains.annotations.Nullable;
+import net.coderbot.iris.Iris;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.coderbot.iris.Iris;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ClientLevel;
 
 @Mixin(Minecraft.class)
 public class MixinMinecraft_PipelineManagement {
 	/**
 	 * Should run before the Minecraft.level field is updated after disconnecting from a server or leaving a singleplayer world
 	 */
-	@Inject(method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
+	/*@Inject(method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
 	public void iris$trackLastDimensionOnLeave(Screen arg, CallbackInfo ci) {
 		Iris.lastDimension = Iris.getCurrentDimension();
-	}
+	}*/
 
 	/**
 	 * Should run before the Minecraft.level field is updated after receiving a login or respawn packet
 	 * NB: Not on leave, another inject is used for that
 	 */
-	@Inject(method = "setLevel", at = @At("HEAD"))
-	private void iris$trackLastDimensionOnLevelChange(@Nullable ClientLevel level, CallbackInfo ci) {
+	@Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At("HEAD"))
+	private void iris$trackLastDimensionOnLevelChange(WorldClient worldClient, String loadingMessage, CallbackInfo ci) {
 		Iris.lastDimension = Iris.getCurrentDimension();
 	}
 
@@ -44,8 +42,8 @@ public class MixinMinecraft_PipelineManagement {
 	 *
 	 * See: https://github.com/IrisShaders/Iris/issues/1330
 	 */
-	@Inject(method = "updateLevelInEngines", at = @At("HEAD"))
-	private void iris$resetPipeline(@Nullable ClientLevel level, CallbackInfo ci) {
+	@Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;world:Lnet/minecraft/client/multiplayer/WorldClient;", opcode = Opcodes.PUTFIELD))
+	private void iris$resetPipeline(WorldClient level, String loadingMessage, CallbackInfo ci) {
 		if (Iris.getCurrentDimension() != Iris.lastDimension) {
 			Iris.logger.info("Reloading pipeline on dimension change: " + Iris.lastDimension + " => " + Iris.getCurrentDimension());
 			// Destroy pipelines when changing dimensions.

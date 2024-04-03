@@ -2,12 +2,9 @@ package net.coderbot.iris.texture.util;
 
 import java.io.File;
 
+import nanolive.compat.NativeImage;
+import net.minecraft.client.renderer.GlStateManager;
 import org.apache.commons.io.FilenameUtils;
-
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 
 public class TextureExporter {
@@ -21,10 +18,10 @@ public class TextureExporter {
 
 	public static void exportTexture(String directory, String filename, int textureId, int level, int width, int height) {
 		NativeImage nativeImage = new NativeImage(width, height, false);
-		RenderSystem.bindTexture(textureId);
+		GlStateManager.bindTexture(textureId);
 		nativeImage.downloadTexture(level, false);
 
-		File dir = new File(Minecraft.getInstance().gameDirectory, directory);
+		File dir = new File(Minecraft.getMinecraft().gameDir, directory);
 		dir.mkdirs();
 		File file = new File(dir, filename);
 

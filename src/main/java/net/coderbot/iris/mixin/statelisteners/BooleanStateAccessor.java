@@ -5,6 +5,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(targets = "com/mojang/blaze3d/platform/GlStateManager$BooleanState")
 public interface BooleanStateAccessor {
-	@Accessor("enabled")
+	@Accessor("currentState")
 	boolean isEnabled();
 }

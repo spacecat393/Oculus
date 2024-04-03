@@ -1,8 +1,8 @@
 package net.coderbot.iris.texture.pbr;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+
+import javax.annotation.Nullable;
 
 public class PBRSpriteHolder {
 	protected TextureAtlasSprite normalSprite;
@@ -24,14 +24,5 @@ public class PBRSpriteHolder {
 
 	public void setSpecularSprite(TextureAtlasSprite sprite) {
 		specularSprite = sprite;
-	}
-
-	public void close() {
-		if (normalSprite != null) {
-			normalSprite.close();
-		}
-		if (specularSprite != null) {
-			specularSprite.close();
-		}
 	}
 }

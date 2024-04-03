@@ -1,11 +1,10 @@
 package net.coderbot.iris.uniforms;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import net.coderbot.iris.gl.state.StateUpdateNotifiers;
 import net.coderbot.iris.gl.uniform.DynamicUniformHolder;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.coderbot.iris.mixin.statelisteners.BooleanStateAccessor;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class FogUniforms {
 	private FogUniforms() {
@@ -16,7 +15,7 @@ public class FogUniforms {
 		uniforms.uniform1i("fogMode", () -> {
 			GlStateManager.FogState fog = GlStateManagerAccessor.getFOG();
 
-			if (!((BooleanStateAccessor) fog.enable).isEnabled()) {
+			if (!((BooleanStateAccessor) fog.fog).isEnabled()) {
 				return 0;
 			}
 

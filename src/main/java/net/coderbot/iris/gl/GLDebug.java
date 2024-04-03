@@ -8,15 +8,13 @@ package net.coderbot.iris.gl;
 import java.io.PrintStream;
 import java.util.function.Consumer;
 
-import org.lwjgl.opengl.AMDDebugOutput;
-import org.lwjgl.opengl.ARBDebugOutput;
+import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL43C;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLDebugMessageAMDCallback;
 import org.lwjgl.opengl.GLDebugMessageARBCallback;
 import org.lwjgl.opengl.GLDebugMessageCallback;
-import org.lwjgl.opengl.KHRDebug;
 import org.lwjgl.system.APIUtil;
 
 import net.coderbot.iris.Iris;
@@ -74,7 +72,7 @@ public final class GLDebug {
 	}
 
 	public static int setupDebugMessageCallback(PrintStream stream) {
-		GLCapabilities caps = GL.getCapabilities();
+		ContextCapabilities caps = GLContext.getCapabilities();
 		if (caps.OpenGL43) {
 			Iris.logger.info("[GL] Using OpenGL 4.3 for error logging.");
 			GLDebugMessageCallback proc = GLDebugMessageCallback.create((source, type, id, severity, length, message, userParam) -> {
@@ -159,7 +157,7 @@ public final class GLDebug {
 	}
 
 	public static int disableDebugMessages() {
-		GLCapabilities caps = GL.getCapabilities();
+		ContextCapabilities caps = GLContext.getCapabilities();
 		if (caps.OpenGL43) {
 			GL43C.glDebugMessageCallback(null, 0L);
 			return 1;
@@ -381,7 +379,7 @@ public final class GLDebug {
 	}
 
 	public static void initRenderer() {
-		if (GL.getCapabilities().GL_KHR_debug || GL.getCapabilities().OpenGL43) {
+		if (GLContext.getCapabilities().GL_KHR_debug || GLContext.getCapabilities().OpenGL43) {
 			debugState = new KHRDebugState();
 		} else {
 			debugState = new UnsupportedDebugState();

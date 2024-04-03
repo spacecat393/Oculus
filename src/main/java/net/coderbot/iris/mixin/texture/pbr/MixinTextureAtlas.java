@@ -1,5 +1,6 @@
 package net.coderbot.iris.mixin.texture.pbr;
 
+import net.minecraft.client.renderer.texture.TextureMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -9,14 +10,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.coderbot.iris.texture.pbr.PBRAtlasHolder;
 import net.coderbot.iris.texture.pbr.TextureAtlasExtension;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 
-@Mixin(TextureAtlas.class)
+@Mixin(TextureMap.class)
 public abstract class MixinTextureAtlas extends AbstractTexture implements TextureAtlasExtension {
 	@Unique
 	private PBRAtlasHolder pbrHolder;
 
-	@Inject(method = "cycleAnimationFrames()V", at = @At("TAIL"))
+	@Inject(method = "updateAnimations()V", at = @At("TAIL"))
 	private void iris$onTailCycleAnimationFrames(CallbackInfo ci) {
 		if (pbrHolder != null) {
 			pbrHolder.cycleAnimationFrames();

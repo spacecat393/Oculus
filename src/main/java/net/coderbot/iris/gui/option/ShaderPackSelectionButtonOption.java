@@ -4,16 +4,17 @@ import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Option;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.OptionButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 
 public class ShaderPackSelectionButtonOption extends Option {
-	private final Screen parent;
+	private final GuiScreen parent;
 	private final Minecraft client;
 
-	public ShaderPackSelectionButtonOption(Screen parent, Minecraft client) {
+	public ShaderPackSelectionButtonOption(GuiScreen parent, Minecraft client) {
 		super("options.iris.shaderPackSelection");
 		this.parent = parent;
 		this.client = client;

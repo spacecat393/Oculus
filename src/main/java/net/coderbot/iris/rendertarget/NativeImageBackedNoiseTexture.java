@@ -3,8 +3,7 @@ package net.coderbot.iris.rendertarget;
 import java.util.Objects;
 import java.util.Random;
 
-import com.mojang.blaze3d.platform.NativeImage;
-
+import nanolive.compat.NativeImage;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
 public class NativeImageBackedNoiseTexture extends DynamicTexture {

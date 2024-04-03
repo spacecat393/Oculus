@@ -2,6 +2,8 @@ package net.coderbot.iris.compat.sodium.impl.shader_overrides;
 
 import java.nio.FloatBuffer;
 
+import me.jellysquid.mods.sodium.client.render.GameRendererContext;
+import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.MemoryStack;
 
@@ -16,6 +18,8 @@ import net.coderbot.iris.gl.program.ProgramImages;
 import net.coderbot.iris.gl.program.ProgramSamplers;
 import net.coderbot.iris.gl.program.ProgramUniforms;
 import net.minecraft.resources.ResourceLocation;
+
+import javax.annotation.Nullable;
 
 public class IrisChunkProgram extends ChunkProgram {
 	// Uniform variable binding indexes
@@ -42,8 +46,9 @@ public class IrisChunkProgram extends ChunkProgram {
 		this.irisProgramImages = irisProgramImages;
 	}
 
-	public void setup(PoseStack poseStack, float modelScale, float textureScale) {
-		super.setup(poseStack, modelScale, textureScale);
+	@Override
+	public void setup(float modelScale, float textureScale) {
+		super.setup(modelScale, textureScale);
 
 		if (irisProgramUniforms != null) {
 			irisProgramUniforms.update();
@@ -57,12 +62,11 @@ public class IrisChunkProgram extends ChunkProgram {
 			irisProgramImages.update();
 		}
 
-		Matrix4f modelViewMatrix = poseStack.last().pose();
 		Matrix4f normalMatrix = poseStack.last().pose().copy();
 		normalMatrix.invert();
 		normalMatrix.transpose();
 
-		uniformMatrix(uModelViewMatrix, modelViewMatrix);
+		uniformMatrix(uModelViewMatrix, GameRendererContext.getModelViewProjectionMatrix());
 		uniformMatrix(uNormalMatrix, normalMatrix);
 	}
 
@@ -84,17 +88,11 @@ public class IrisChunkProgram extends ChunkProgram {
 		}
 	}
 
-	private void uniformMatrix(int location, Matrix4f matrix) {
+	private void uniformMatrix(int location, FloatBuffer buffer) {
 		if (location == -1) {
 			return;
 		}
 
-		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			FloatBuffer buffer = memoryStack.mallocFloat(16);
-
-			matrix.store(buffer);
-
-			IrisRenderSystem.uniformMatrix4fv(location, false, buffer);
-		}
+		IrisRenderSystem.uniformMatrix4fv(location, false, buffer);
 	}
 }

@@ -2,7 +2,10 @@ package net.coderbot.iris.rendertarget;
 
 import java.nio.ByteBuffer;
 
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13C;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -48,20 +51,20 @@ public class RenderTarget {
 
 		// Clean up after ourselves
 		// This is strictly defensive to ensure that other buggy code doesn't tamper with our textures
-		GlStateManager._bindTexture(0);
+		GlStateManager.bindTexture(0);
 	}
 
 	private void setupTexture(int texture, int width, int height, boolean allowsLinear) {
 		resizeTexture(texture, width, height);
 
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MIN_FILTER, allowsLinear ? GL11C.GL_LINEAR : GL11C.GL_NEAREST);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, allowsLinear ? GL11C.GL_LINEAR : GL11C.GL_NEAREST);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_WRAP_S, GL13C.GL_CLAMP_TO_EDGE);
-		IrisRenderSystem.texParameteri(texture, GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_WRAP_T, GL13C.GL_CLAMP_TO_EDGE);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, allowsLinear ? GL11.GL_LINEAR : GL11.GL_NEAREST);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, allowsLinear ? GL11.GL_LINEAR : GL11.GL_NEAREST);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 	}
 
 	private void resizeTexture(int texture, int width, int height) {
-		IrisRenderSystem.texImage2D(texture, GL11C.GL_TEXTURE_2D, 0, internalFormat.getGlFormat(), width, height, 0, format.getGlFormat(), type.getGlFormat(), NULL_BUFFER);
+		IrisRenderSystem.texImage2D(texture, GL11.GL_TEXTURE_2D, 0, internalFormat.getGlFormat(), width, height, 0, format.getGlFormat(), type.getGlFormat(), NULL_BUFFER);
 	}
 
 	void resize(Vector2i textureScaleOverride) {
@@ -108,7 +111,8 @@ public class RenderTarget {
 		requireValid();
 		isValid = false;
 
-		GlStateManager._deleteTextures(new int[]{mainTexture, altTexture});
+		GlStateManager.deleteTexture(mainTexture);
+		GlStateManager.deleteTexture(altTexture);
 	}
 
 	private void requireValid() {

@@ -3,7 +3,7 @@ package net.coderbot.iris.texture.format;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public class TextureFormatRegistry {
 	public static final TextureFormatRegistry INSTANCE = new TextureFormatRegistry();

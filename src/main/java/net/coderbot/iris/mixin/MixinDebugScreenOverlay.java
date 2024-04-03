@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Objects;
 
 import net.coderbot.iris.gui.option.IrisVideoSettings;
+import net.minecraft.client.gui.GuiOverlayDebug;
+import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,10 +17,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.coderbot.iris.Iris;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.DebugScreenOverlay;
 
-@Mixin(DebugScreenOverlay.class)
+@Mixin(GuiOverlayDebug.class)
 public abstract class MixinDebugScreenOverlay {
 	@Unique
 	private static final List<BufferPoolMXBean> iris$pools = ManagementFactory.getPlatformMXBeans(BufferPoolMXBean.class);
@@ -39,7 +39,7 @@ public abstract class MixinDebugScreenOverlay {
 		iris$directPool = Objects.requireNonNull(found);
 	}
 
-    @Inject(method = "getSystemInformation", at = @At("RETURN"))
+    @Inject(method = "getDebugInfoRight", at = @At("RETURN"))
     private void iris$appendShaderPackText(CallbackInfoReturnable<List<String>> cir) {
         List<String> messages = cir.getReturnValue();
 
@@ -64,13 +64,13 @@ public abstract class MixinDebugScreenOverlay {
 		}
 	}
 
-	@Inject(method = "getGameInformation", at = @At("RETURN"))
+	@Inject(method = "call", at = @At("RETURN"))
 	private void iris$appendShadowDebugText(CallbackInfoReturnable<List<String>> cir) {
 		List<String> messages = cir.getReturnValue();
 
 		if (!Iris.isSodiumInstalled() && Iris.getCurrentPack().isPresent()) {
-			messages.add(1, ChatFormatting.YELLOW + "[" + Iris.MODNAME + "] Rubidium isn't installed; you will have poor performance.");
-			messages.add(2, ChatFormatting.YELLOW + "[" + Iris.MODNAME + "] Install Rubidium if you want to run benchmarks or get higher FPS!");
+			messages.add(1, TextFormatting.YELLOW + "[" + Iris.MODNAME + "] Vintagium isn't installed; you will have poor performance.");
+			messages.add(2, TextFormatting.YELLOW + "[" + Iris.MODNAME + "] Install Vintagium if you want to run benchmarks or get higher FPS!");
 		}
 
 		Iris.getPipelineManager().getPipeline().ifPresent(pipeline -> pipeline.addDebugText(messages));

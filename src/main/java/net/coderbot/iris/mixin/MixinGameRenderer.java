@@ -1,46 +1,38 @@
 package net.coderbot.iris.mixin;
 
+import net.coderbot.iris.Iris;
+import net.irisshaders.iris.api.v0.IrisApi;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.resources.IResourceManager;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.mojang.blaze3d.platform.GlUtil;
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.coderbot.iris.Iris;
-import net.irisshaders.iris.api.v0.IrisApi;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
-import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.server.packs.resources.ResourceManager;
-
-@Mixin(GameRenderer.class)
+@Mixin(EntityRenderer.class)
 public class MixinGameRenderer {
-	@Shadow
-	private boolean renderHand;
 
 	@Inject(method = "<init>", at = @At("TAIL"))
-	private void iris$logSystem(Minecraft client, ResourceManager resourceManager, RenderBuffers bufferBuilderStorage,
-								CallbackInfo ci) {
+	private void iris$logSystem(Minecraft client, IResourceManager resourceManager, CallbackInfo ci) {
 		Iris.logger.info("Hardware information:");
-		Iris.logger.info("CPU: " + GlUtil.getCpuInfo());
-		Iris.logger.info("GPU: " + GlUtil.getRenderer() + " (Supports OpenGL " + GlUtil.getOpenGLVersion() + ")");
+		Iris.logger.info("CPU: " + OpenGlHelper.getCpu());
+		Iris.logger.info("GPU: " + GlStateManager.glGetString(GL11.GL_RENDERER) + " (Supports OpenGL " + GlStateManager.glGetString(GL11.GL_VERSION) + ")");
 		Iris.logger.info("OS: " + System.getProperty("os.name") + " (" + System.getProperty("os.version") + ")");
 	}
 
-	@Redirect(method = "renderItemInHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderHandsWithItems(FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lnet/minecraft/client/player/LocalPlayer;I)V"))
-	private void disableVanillaHandRendering(ItemInHandRenderer itemInHandRenderer, float tickDelta, PoseStack poseStack, BufferSource bufferSource, LocalPlayer localPlayer, int light) {
+	@Redirect(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;renderItemInFirstPerson(F)V"))
+	private void disableVanillaHandRendering(ItemRenderer instance, float partialTicks) {
 		if (IrisApi.getInstance().isShaderPackInUse()) {
 			return;
 		}
 
-		itemInHandRenderer.renderHandsWithItems(tickDelta, poseStack, bufferSource, localPlayer, light);
+		instance.renderItemInFirstPerson(partialTicks);
 	}
 
 }

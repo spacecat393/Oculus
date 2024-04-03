@@ -1,30 +1,12 @@
 package net.coderbot.iris.postprocess;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL15C;
-import org.lwjgl.opengl.GL20C;
-import org.lwjgl.opengl.GL30C;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
-import net.coderbot.iris.gl.program.ComputeProgram;
-import net.coderbot.iris.gl.program.Program;
-import net.coderbot.iris.gl.program.ProgramBuilder;
-import net.coderbot.iris.gl.program.ProgramSamplers;
-import net.coderbot.iris.gl.program.ProgramUniforms;
+import net.coderbot.iris.gl.program.*;
 import net.coderbot.iris.gl.sampler.SamplerLimits;
 import net.coderbot.iris.pipeline.PatchedShaderPrinter;
 import net.coderbot.iris.pipeline.transform.PatchShaderType;
@@ -34,15 +16,23 @@ import net.coderbot.iris.rendertarget.RenderTarget;
 import net.coderbot.iris.rendertarget.RenderTargets;
 import net.coderbot.iris.samplers.IrisImages;
 import net.coderbot.iris.samplers.IrisSamplers;
-import net.coderbot.iris.shaderpack.ComputeSource;
-import net.coderbot.iris.shaderpack.PackRenderTargetDirectives;
-import net.coderbot.iris.shaderpack.ProgramDirectives;
-import net.coderbot.iris.shaderpack.ProgramSet;
-import net.coderbot.iris.shaderpack.ProgramSource;
+import net.coderbot.iris.shaderpack.*;
 import net.coderbot.iris.shadows.ShadowRenderTargets;
 import net.coderbot.iris.uniforms.CommonUniforms;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.shader.Framebuffer;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
+
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 public class FinalPassRenderer {
 	private final RenderTargets renderTargets;
@@ -96,8 +86,8 @@ public class FinalPassRenderer {
 		// passes that write to framebuffers).
 		this.baseline = renderTargets.createGbufferFramebuffer(flippedBuffers, new int[] {0});
 		this.colorHolder = new GlFramebuffer();
-		this.lastColorTextureId = Minecraft.getInstance().getMainRenderTarget().getColorTextureId();
-		this.lastColorTextureVersion = ((Blaze3dRenderTargetExt) Minecraft.getInstance().getMainRenderTarget()).iris$getColorBufferVersion();
+		this.lastColorTextureId = Minecraft.getMinecraft().getFramebuffer().framebufferTexture;
+		this.lastColorTextureVersion = ((Blaze3dRenderTargetExt) Minecraft.getMinecraft().getFramebuffer()).iris$getColorBufferVersion();
 		this.colorHolder.addColorAttachment(0, lastColorTextureId);
 
 		// TODO: We don't actually fully swap the content, we merely copy it from alt to main
@@ -127,7 +117,7 @@ public class FinalPassRenderer {
 
 		this.swapPasses = swapPasses.build();
 
-		GlStateManager._glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, 0);
+		OpenGlHelper.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, 0);
 	}
 
 	private static final class Pass {
@@ -150,13 +140,13 @@ public class FinalPassRenderer {
 	}
 
 	public void renderFinalPass() {
-		RenderSystem.disableBlend();
-		RenderSystem.disableAlphaTest();
-		RenderSystem.depthMask(false);
+		GlStateManager.disableBlend();
+		GlStateManager.disableAlpha();
+		GlStateManager.depthMask(false);
 
-		final com.mojang.blaze3d.pipeline.RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
-		final int baseWidth = main.width;
-		final int baseHeight = main.height;
+		final Framebuffer main = Minecraft.getMinecraft().getFramebuffer();
+		final int baseWidth = main.framebufferWidth;
+		final int baseHeight = main.framebufferHeight;
 
 		// Note that since DeferredWorldRenderingPipeline uses the depth texture of the main Minecraft framebuffer,
 		// we'll be writing to that depth buffer directly automatically and won't need to futz around with copying
@@ -171,9 +161,9 @@ public class FinalPassRenderer {
 		//
 		// This is not a concern for depthtex1 / depthtex2 since the copy call extracts the depth values, and the
 		// shader pack only ever uses them to read the depth values.
-		if (((Blaze3dRenderTargetExt) main).iris$getColorBufferVersion() != lastColorTextureVersion || main.getColorTextureId() != lastColorTextureId) {
+		if (((Blaze3dRenderTargetExt) main).iris$getColorBufferVersion() != lastColorTextureVersion || main.framebufferTexture != lastColorTextureId) {
 			lastColorTextureVersion = ((Blaze3dRenderTargetExt) main).iris$getColorBufferVersion();
-			this.lastColorTextureId = main.getColorTextureId();
+			this.lastColorTextureId = main.framebufferTexture;
 			colorHolder.addColorAttachment(0, lastColorTextureId);
 		}
 
@@ -194,7 +184,7 @@ public class FinalPassRenderer {
 			IrisRenderSystem.memoryBarrier(40);
 
 			if (!finalPass.mipmappedBuffers.isEmpty()) {
-				RenderSystem.activeTexture(GL15C.GL_TEXTURE0);
+				GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
 
 				for (int index : finalPass.mipmappedBuffers) {
 					setupMipmapping(renderTargets.get(index), finalPass.stageReadsFromAlt.contains(index));
@@ -218,10 +208,10 @@ public class FinalPassRenderer {
 			// https://stackoverflow.com/a/23994979/18166885
 			this.baseline.bindAsReadBuffer();
 
-			IrisRenderSystem.copyTexSubImage2D(main.getColorTextureId(), GL11C.GL_TEXTURE_2D, 0, 0, 0, 0, 0, baseWidth, baseHeight);
+			IrisRenderSystem.copyTexSubImage2D(main.framebufferTexture, GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, baseWidth, baseHeight);
 		}
 
-		RenderSystem.activeTexture(GL15C.GL_TEXTURE0);
+		GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
 
 		for (int i = 0; i < renderTargets.getRenderTargetCount(); i++) {
 			// Reset mipmapping states at the end of the frame.
@@ -239,25 +229,25 @@ public class FinalPassRenderer {
 			// Also note that RenderTargets already calls readBuffer(0) for us.
 			swapPass.from.bind();
 
-			RenderSystem.bindTexture(swapPass.targetTexture);
-			GlStateManager._glCopyTexSubImage2D(GL20C.GL_TEXTURE_2D, 0, 0, 0, 0, 0, swapPass.width, swapPass.height);
+			GlStateManager.bindTexture(swapPass.targetTexture);
+			GlStateManager.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, swapPass.width, swapPass.height);
 		}
 
 		// Make sure to reset the viewport to how it was before... Otherwise weird issues could occur.
 		// Also bind the "main" framebuffer if it isn't already bound.
-		main.bindWrite(true);
+		main.bindFramebuffer(true);
 		ProgramUniforms.clearActiveUniforms();
 		ProgramSamplers.clearActiveSamplers();
-		GlStateManager._glUseProgram(0);
+		OpenGlHelper.glUseProgram(0);
 
 		for (int i = 0; i < SamplerLimits.get().getMaxTextureUnits(); i++) {
 			// Unbind all textures that we may have used.
 			// NB: This is necessary for shader pack reloading to work properly
-			RenderSystem.activeTexture(GL15C.GL_TEXTURE0 + i);
-			RenderSystem.bindTexture(0);
+			GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + i);
+			GlStateManager.bindTexture(0);
 		}
 
-		RenderSystem.activeTexture(GL15C.GL_TEXTURE0);
+		GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
 	}
 
 	public void recalculateSwapPassSize() {
@@ -285,28 +275,28 @@ public class FinalPassRenderer {
 		//
 		// Also note that this only applies to one of the two buffers in a render target buffer pair - making it
 		// unlikely that this issue occurs in practice with most shader packs.
-		IrisRenderSystem.generateMipmaps(texture, GL20C.GL_TEXTURE_2D);
+		IrisRenderSystem.generateMipmaps(texture, GL11.GL_TEXTURE_2D);
 
-		int filter = GL20C.GL_LINEAR_MIPMAP_LINEAR;
+		int filter = GL11.GL_LINEAR_MIPMAP_LINEAR;
 		if (target.getInternalFormat().getPixelFormat().isInteger()) {
-			filter = GL20C.GL_NEAREST_MIPMAP_NEAREST;
+			filter = GL11.GL_NEAREST_MIPMAP_NEAREST;
 		}
 
-		IrisRenderSystem.texParameteri(texture, GL20C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_MIN_FILTER, filter);
+		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter);
 	}
 
 	private static void resetRenderTarget(RenderTarget target) {
 		// Resets the sampling mode of the given render target and then unbinds it to prevent accidental sampling of it
 		// elsewhere.
-		int filter = GL20C.GL_LINEAR;
+		int filter = GL11.GL_LINEAR;
 		if (target.getInternalFormat().getPixelFormat().isInteger()) {
-			filter = GL20C.GL_NEAREST;
+			filter = GL11.GL_NEAREST;
 		}
 
-		IrisRenderSystem.texParameteri(target.getMainTexture(), GL20C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_MIN_FILTER, filter);
-		IrisRenderSystem.texParameteri(target.getAltTexture(), GL20C.GL_TEXTURE_2D, GL20C.GL_TEXTURE_MIN_FILTER, filter);
+		IrisRenderSystem.texParameteri(target.getMainTexture(), GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter);
+		IrisRenderSystem.texParameteri(target.getAltTexture(), GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter);
 
-		RenderSystem.bindTexture(0);
+		GlStateManager.bindTexture(0);
 	}
 
 	// TODO: Don't just copy this from DeferredWorldRenderingPipeline

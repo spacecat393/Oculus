@@ -1,20 +1,20 @@
 package net.coderbot.iris.texture.pbr;
 
-import org.jetbrains.annotations.NotNull;
-
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.state.StateUpdateNotifiers;
+import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.coderbot.iris.rendertarget.NativeImageBackedSingleColorTexture;
 import net.coderbot.iris.texture.TextureTracker;
 import net.coderbot.iris.texture.pbr.loader.PBRTextureLoader;
 import net.coderbot.iris.texture.pbr.loader.PBRTextureLoader.PBRTextureConsumer;
 import net.coderbot.iris.texture.pbr.loader.PBRTextureLoaderRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.AbstractTexture;
+
+import javax.annotation.Nonnull;
 
 public class PBRTextureManager {
 	public static final PBRTextureManager INSTANCE = new PBRTextureManager();
@@ -38,12 +38,12 @@ public class PBRTextureManager {
 	// Not PBRTextureHolderImpl to directly reference fields
 	private final PBRTextureHolder defaultHolder = new PBRTextureHolder() {
 		@Override
-		public @NotNull AbstractTexture getNormalTexture() {
+		public @Nonnull AbstractTexture getNormalTexture() {
 			return defaultNormalTexture;
 		}
 
 		@Override
-		public @NotNull AbstractTexture getSpecularTexture() {
+		public @Nonnull AbstractTexture getSpecularTexture() {
 			return defaultSpecularTexture;
 		}
 	};
@@ -80,15 +80,15 @@ public class PBRTextureManager {
 			Class<? extends AbstractTexture> clazz = texture.getClass();
 			PBRTextureLoader loader = PBRTextureLoaderRegistry.INSTANCE.getLoader(clazz);
 			if (loader != null) {
-				int previousTextureBinding = GlStateManager.getActiveTextureName();
+				int previousTextureBinding = GlStateManagerAccessor.getTEXTURES()[GlStateManagerAccessor.getActiveTexture()].textureName;
 				consumer.clear();
 				try {
-					loader.load(texture, Minecraft.getInstance().getResourceManager(), consumer);
+					loader.load(texture, Minecraft.getMinecraft().getResourceManager(), consumer);
 					return consumer.toHolder();
 				} catch (Exception e) {
 					Iris.logger.debug("Failed to load PBR textures for texture " + id, e);
 				} finally {
-					GlStateManager._bindTexture(previousTextureBinding);
+					GlStateManager.bindTexture(previousTextureBinding);
 				}
 			}
 		}
@@ -134,7 +134,7 @@ public class PBRTextureManager {
 		} catch (Exception e) {
 			//
 		}
-		texture.releaseId();
+		texture.deleteGlTexture();
 	}
 
 	public static void notifyPBRTexturesChanged() {
@@ -153,13 +153,13 @@ public class PBRTextureManager {
 		private boolean changed;
 
 		@Override
-		public void acceptNormalTexture(@NotNull AbstractTexture texture) {
+		public void acceptNormalTexture(@Nonnull AbstractTexture texture) {
 			normalTexture = texture;
 			changed = true;
 		}
 
 		@Override
-		public void acceptSpecularTexture(@NotNull AbstractTexture texture) {
+		public void acceptSpecularTexture(@Nonnull AbstractTexture texture) {
 			specularTexture = texture;
 			changed = true;
 		}
@@ -189,12 +189,12 @@ public class PBRTextureManager {
 		}
 
 		@Override
-		public @NotNull AbstractTexture getNormalTexture() {
+		public @Nonnull AbstractTexture getNormalTexture() {
 			return normalTexture;
 		}
 
 		@Override
-		public @NotNull AbstractTexture getSpecularTexture() {
+		public @Nonnull AbstractTexture getSpecularTexture() {
 			return specularTexture;
 		}
 	}

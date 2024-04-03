@@ -12,6 +12,7 @@ import net.coderbot.iris.gl.uniform.UniformHolder;
 import net.coderbot.iris.vendored.joml.Vector4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.WorldClient;
 
 /**
  * @see <a href="https://github.com/IrisShaders/ShaderDoc/blob/master/uniforms.md#celestial-bodies">Uniforms: Celestial bodies</a>
@@ -104,7 +105,7 @@ public final class CelestialUniforms {
 	}
 
 	private static Vector4f getUpPosition() {
-		com.mojang.math.Vector4f upVector = new com.mojang.math.Vector4f(0.0F, 100.0F, 0.0F, 0.0F);
+		Vector4f upVector = new Vector4f(0.0F, 100.0F, 0.0F, 0.0F);
 
 		// Get the current GBuffer model view matrix, since that is the basis of the celestial model view matrix
 		Matrix4f preCelestial = CapturedRenderingState.INSTANCE.getGbufferModelView().copy();
@@ -126,11 +127,11 @@ public final class CelestialUniforms {
 		return getSunAngle() <= 0.5;
 	}
 
-	private static ClientLevel getWorld() {
-		return Objects.requireNonNull(Minecraft.getInstance().level);
+	private static WorldClient getWorld() {
+		return Objects.requireNonNull(Minecraft.getMinecraft().world);
 	}
 
 	private static float getSkyAngle() {
-		return getWorld().getTimeOfDay(CapturedRenderingState.INSTANCE.getTickDelta());
+		return getWorld().getCelestialAngle(CapturedRenderingState.INSTANCE.getTickDelta());
 	}
 }

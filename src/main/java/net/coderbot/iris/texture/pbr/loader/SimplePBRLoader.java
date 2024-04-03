@@ -2,18 +2,19 @@ package net.coderbot.iris.texture.pbr.loader;
 
 import java.io.IOException;
 
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.util.ResourceLocation;
 
 import net.coderbot.iris.mixin.texture.SimpleTextureAccessor;
 import net.coderbot.iris.texture.pbr.PBRType;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
+
+import javax.annotation.Nullable;
 
 public class SimplePBRLoader implements PBRTextureLoader<SimpleTexture> {
 	@Override
-	public void load(SimpleTexture texture, ResourceManager resourceManager, PBRTextureConsumer pbrTextureConsumer) {
+	public void load(SimpleTexture texture, IResourceManager resourceManager, PBRTextureConsumer pbrTextureConsumer) {
 		ResourceLocation location = ((SimpleTextureAccessor) texture).getLocation();
 
 		AbstractTexture normalTexture = createPBRTexture(location, resourceManager, PBRType.NORMAL);
@@ -28,12 +29,12 @@ public class SimplePBRLoader implements PBRTextureLoader<SimpleTexture> {
 	}
 
 	@Nullable
-	protected AbstractTexture createPBRTexture(ResourceLocation imageLocation, ResourceManager resourceManager, PBRType pbrType) {
+	protected AbstractTexture createPBRTexture(ResourceLocation imageLocation, IResourceManager resourceManager, PBRType pbrType) {
 		ResourceLocation pbrImageLocation = pbrType.appendToFileLocation(imageLocation);
 
 		SimpleTexture pbrTexture = new SimpleTexture(pbrImageLocation);
 		try {
-			pbrTexture.load(resourceManager);
+			pbrTexture.loadTexture(resourceManager);
 		} catch (IOException e) {
 			return null;
 		}

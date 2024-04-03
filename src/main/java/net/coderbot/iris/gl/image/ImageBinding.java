@@ -2,7 +2,7 @@ package net.coderbot.iris.gl.image;
 
 import java.util.function.IntSupplier;
 
-import org.lwjgl.opengl.GL42C;
+import org.lwjgl.opengl.GL15;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
 
@@ -21,6 +21,6 @@ public class ImageBinding {
 		// We can assume that image bindings are supported here as either the EXT extension or 4.2 core, as otherwise ImageLimits
 		// would report that zero image units are supported.
 		// RRe36: I'm not sure if its perfectly fine to always have it be layered, but according to Balint its *probably* fine. Still might need to verify that though.
-		IrisRenderSystem.bindImageTexture(imageUnit, textureID.getAsInt(), 0, true, 0, GL42C.GL_READ_WRITE, internalFormat);
+		IrisRenderSystem.bindImageTexture(imageUnit, textureID.getAsInt(), 0, true, 0, GL15.GL_READ_WRITE, internalFormat);
 	}
 }

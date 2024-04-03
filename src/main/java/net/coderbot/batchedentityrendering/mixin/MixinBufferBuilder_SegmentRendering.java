@@ -3,6 +3,8 @@ package net.coderbot.batchedentityrendering.mixin;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -110,7 +112,7 @@ public class MixinBufferBuilder_SegmentRendering implements BufferBuilderExt {
     private boolean dupeNextVertex;
 
     private void duplicateLastVertex() {
-        int i = this.format.getVertexSize();
+        int i = this.format.getSize();
         this.buffer.position(this.nextElementByte);
         ByteBuffer byteBuffer = this.buffer.duplicate();
         byteBuffer.position(this.nextElementByte - i).limit(this.nextElementByte);

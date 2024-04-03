@@ -1,31 +1,20 @@
 package net.coderbot.iris.gl.shader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20C;
-
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.GlUtil;
-
 import net.coderbot.iris.pipeline.HandRenderer;
 import net.coderbot.iris.pipeline.WorldRenderingPhase;
 import net.coderbot.iris.shaderpack.StringPair;
 import net.coderbot.iris.texture.format.TextureFormat;
 import net.coderbot.iris.texture.format.TextureFormatLoader;
-import net.minecraft.SharedConstants;
-import net.minecraft.Util;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.Util;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class StandardMacros {
 	private static final Pattern SEMVER_PATTERN = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.*(?<bugfix>\\d*)(.*)");
@@ -42,8 +31,8 @@ public class StandardMacros {
 		ArrayList<StringPair> standardDefines = new ArrayList<>();
 
 		define(standardDefines, "MC_VERSION", getMcVersion());
-		define(standardDefines, "MC_GL_VERSION", getGlVersion(GL20C.GL_VERSION));
-		define(standardDefines, "MC_GLSL_VERSION", getGlVersion(GL20C.GL_SHADING_LANGUAGE_VERSION));
+		define(standardDefines, "MC_GL_VERSION", getGlVersion(GL11.GL_VERSION));
+		define(standardDefines, "MC_GLSL_VERSION", getGlVersion(GL20.GL_SHADING_LANGUAGE_VERSION));
 		define(standardDefines, getOsString());
 		define(standardDefines, getVendor());
 		define(standardDefines, getRenderer());
@@ -81,16 +70,12 @@ public class StandardMacros {
 	 * @see <a href="https://github.com/sp614x/optifine/blob/9c6a5b5326558ccc57c6490b66b3be3b2dc8cbef/OptiFineDoc/doc/shaders.txt#L696-L699">Optifine Doc</a>
 	 */
 	public static String getMcVersion() {
-		String version = SharedConstants.getCurrentVersion().getReleaseTarget();
+		String version = "1.12.2";
 			// release target so snapshots are set to the higher version
 			//
 			// For example if we were running iris on 21w07a, getReleaseTarget() would return 1.17
 
-		if (version == null) {
-			throw new IllegalStateException("Could not get the current minecraft version!");
-		}
-
-		String[] splitVersion = version.split("\\.");
+        String[] splitVersion = version.split("\\.");
 
 		if (splitVersion.length < 2) {
 			throw new IllegalStateException("Could not parse game version \"" + version +  "\"");
@@ -125,7 +110,7 @@ public class StandardMacros {
 	 * @see <a href="https://github.com/sp614x/optifine/blob/9c6a5b5326558ccc57c6490b66b3be3b2dc8cbef/OptiFineDoc/doc/shaders.txt#L705-L707">Optifine Doc for GLSL Version</a>
 	 */
 	public static String getGlVersion(int name) {
-		String info = GlStateManager._getString(name);
+		String info = GlStateManager.glGetString(name);
 
 		Matcher matcher = SEMVER_PATTERN.matcher(Objects.requireNonNull(info));
 
@@ -172,7 +157,7 @@ public class StandardMacros {
 	 * @see <a href="https://github.com/sp614x/optifine/blob/9c6a5b5326558ccc57c6490b66b3be3b2dc8cbef/OptiFineDoc/doc/shaders.txt#L709-L714">Optifine Doc</a>
 	 */
 	public static String getOsString() {
-		switch (Util.getPlatform()) {
+		switch (Util.getOSType()) {
 			case OSX:
 				return "MC_OS_MAC";
 			case LINUX:
@@ -193,7 +178,7 @@ public class StandardMacros {
 	 * @see <a href="https://github.com/sp614x/optifine/blob/9c6a5b5326558ccc57c6490b66b3be3b2dc8cbef/OptiFineDoc/doc/shaders.txt#L716-L723">Optifine Doc</a>
 	 */
 	public static String getVendor() {
-		String vendor = Objects.requireNonNull(GlUtil.getVendor()).toLowerCase(Locale.ROOT);
+		String vendor = Objects.requireNonNull(GlStateManager.glGetString(GL11.GL_VENDOR)).toLowerCase(Locale.ROOT);
 		if (vendor.startsWith("ati")) {
 			return "MC_GL_VENDOR_ATI";
 		} else if (vendor.startsWith("intel")) {
@@ -215,7 +200,7 @@ public class StandardMacros {
 	 * @see <a href="https://github.com/sp614x/optifine/blob/9c6a5b5326558ccc57c6490b66b3be3b2dc8cbef/OptiFineDoc/doc/shaders.txt#L725-L733">Optifine Doc</a>
 	 */
 	public static String getRenderer() {
-		String renderer = Objects.requireNonNull(GlUtil.getRenderer()).toLowerCase(Locale.ROOT);
+		String renderer = Objects.requireNonNull(GlStateManager.glGetString(GL11.GL_RENDERER)).toLowerCase(Locale.ROOT);
 		if (renderer.startsWith("amd")) {
 			return "MC_GL_RENDERER_RADEON";
 		} else if (renderer.startsWith("ati")) {
@@ -248,7 +233,7 @@ public class StandardMacros {
 	 * @see <a href="https://github.com/sp614x/optifine/blob/9c6a5b5326558ccc57c6490b66b3be3b2dc8cbef/OptiFineDoc/doc/shaders.txt#L735-L738">Optifine Doc</a>
 	 */
 	public static Set<String> getGlExtensions() {
-		String[] extensions = Objects.requireNonNull(GlStateManager._getString(GL11.GL_EXTENSIONS)).split("\\s+");
+		String[] extensions = Objects.requireNonNull(GlStateManager.glGetString(GL11.GL_EXTENSIONS)).split("\\s+");
 
 		// TODO note that we do not add extensions based on if the shader uses them and if they are supported
 		// see https://github.com/sp614x/optifine/blob/master/OptiFineDoc/doc/shaders.txt#L738

@@ -1,6 +1,6 @@
 package net.coderbot.iris.texture.mipmap;
 
-import com.mojang.blaze3d.platform.NativeImage;
+import nanolive.compat.NativeImage;
 
 public class ChannelMipmapGenerator extends AbstractMipmapGenerator {
 	protected final BlendFunction redFunc;

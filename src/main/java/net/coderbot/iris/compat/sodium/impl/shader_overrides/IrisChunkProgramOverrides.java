@@ -4,7 +4,7 @@ import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.ResourceLocation;
 
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gl.shader.GlProgram;
@@ -22,7 +22,8 @@ import net.coderbot.iris.gl.program.ProgramUniforms;
 import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
 import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.coderbot.iris.shadows.ShadowRenderingState;
-import net.minecraft.resources.ResourceLocation;
+
+import javax.annotation.Nullable;
 
 public class IrisChunkProgramOverrides {
 	private static final ShaderConstants EMPTY_CONSTANTS = ShaderConstants.builder().build();
