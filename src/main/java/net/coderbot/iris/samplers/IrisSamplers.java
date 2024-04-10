@@ -52,7 +52,7 @@ public class IrisSamplers {
 	}
 
 	public static void addRenderTargetSamplers(SamplerHolder samplers, Supplier<ImmutableSet<Integer>> flipped,
-											   RenderTargets renderTargets, boolean isFullscreenPass) {
+											   RenderTargets renderTargets, boolean isFullscreenPass, WorldRenderingPipeline pipeline) {
 		// colortex0,1,2,3 are only able to be sampled from fullscreen passes.
 		// Iris could lift this restriction, though I'm not sure if it could cause issues.
 		int startIndex = isFullscreenPass ? 0 : 4;
@@ -96,6 +96,10 @@ public class IrisSamplers {
 				samplers.addDynamicSampler(texture, name);
 			}
 		}
+
+		// Add the DH texture here, to make sure it's always visible.
+		samplers.addDynamicSampler(TextureType.TEXTURE_2D, () -> pipeline.getDHCompat().getDepthTex(), null, "dhDepthTex", "dhDepthTex0");
+		samplers.addDynamicSampler(TextureType.TEXTURE_2D, () -> pipeline.getDHCompat().getDepthTexNoTranslucent(), null, "dhDepthTex1");
 	}
 
 	public static void addNoiseSampler(SamplerHolder samplers, TextureAccess sampler) {
@@ -106,7 +110,7 @@ public class IrisSamplers {
 		// TODO: Keep this up to date with the actual definitions.
 		// TODO: Don't query image presence using the sampler interface even though the current underlying implementation
 		//       is the same.
-		ImmutableList.Builder<String> shadowSamplers = ImmutableList.<String>builder().add("shadowtex0", "shadowtex0HW", "shadowtex1", "shadowtex1HW", "shadow", "watershadow",
+		ImmutableList.Builder<String> shadowSamplers = ImmutableList.<String>builder().add("shadowtex0", "shadowtex0DH", "shadowtex0HW", "shadowtex1", "shadowtex1HW", "shadowtex1DH", "shadow", "watershadow",
 				"shadowcolor");
 
 		for (int i = 0; i < PackShadowDirectives.MAX_SHADOW_COLOR_BUFFERS_IRIS; i++) {
@@ -194,6 +198,31 @@ public class IrisSamplers {
 		}
 
 		if (availability.overlay) {
+			samplers.addExternalSampler(OVERLAY_TEXTURE_UNIT, "iris_overlay");
+		} else {
+			samplers.addDynamicSampler(whitePixel::getId, "iris_overlay");
+		}
+
+		samplers.addDynamicSampler(pipeline::getCurrentNormalTexture, StateUpdateNotifiers.normalTextureChangeNotifier, "normals");
+		samplers.addDynamicSampler(pipeline::getCurrentSpecularTexture, StateUpdateNotifiers.specularTextureChangeNotifier, "specular");
+	}
+
+	public static void addLevelSamplers(SamplerHolder samplers, WorldRenderingPipeline pipeline, AbstractTexture whitePixel, boolean hasTexture, boolean hasLightmap, boolean hasOverlay) {
+		if (hasTexture) {
+			samplers.addExternalSampler(ALBEDO_TEXTURE_UNIT, "tex", "texture", "gtexture");
+		} else {
+			// TODO: Rebind unbound sampler IDs instead of hardcoding a list...
+			samplers.addDynamicSampler(whitePixel::getId, "tex", "texture", "gtexture",
+					"gcolor", "colortex0");
+		}
+
+		if (hasLightmap) {
+			samplers.addExternalSampler(LIGHTMAP_TEXTURE_UNIT, "lightmap");
+		} else {
+			samplers.addDynamicSampler(whitePixel::getId, "lightmap");
+		}
+
+		if (hasOverlay) {
 			samplers.addExternalSampler(OVERLAY_TEXTURE_UNIT, "iris_overlay");
 		} else {
 			samplers.addDynamicSampler(whitePixel::getId, "iris_overlay");

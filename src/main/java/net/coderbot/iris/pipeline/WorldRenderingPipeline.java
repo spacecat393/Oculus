@@ -18,16 +18,16 @@ import java.util.List;
 import java.util.OptionalInt;
 
 public interface WorldRenderingPipeline {
-    void onShadowBufferChange();
+	void onShadowBufferChange();
 
-    void beginLevelRendering();
+	void beginLevelRendering();
 	void renderShadows(LevelRendererAccessor worldRenderer, Camera camera);
 	void addDebugText(List<String> messages);
 	OptionalInt getForcedShadowRenderDistanceChunksForDisplay();
 
-    Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> getTextureMap();
+	Object2ObjectMap<Tri<String, TextureType, TextureStage>, String> getTextureMap();
 
-    WorldRenderingPhase getPhase();
+	WorldRenderingPhase getPhase();
 
 	void beginSodiumTerrainRendering();
 	void endSodiumTerrainRendering();
@@ -66,5 +66,5 @@ public interface WorldRenderingPipeline {
 
 	float getSunPathRotation();
 
-    DHCompat getDHCompat();
+	DHCompat getDHCompat();
 }

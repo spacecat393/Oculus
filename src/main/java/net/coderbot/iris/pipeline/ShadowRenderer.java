@@ -10,6 +10,7 @@ import net.coderbot.batchedentityrendering.impl.FullyBufferedMultiBufferSource;
 import net.coderbot.batchedentityrendering.impl.MemoryTrackingRenderBuffers;
 import net.coderbot.batchedentityrendering.impl.RenderBuffersExt;
 import net.coderbot.iris.Iris;
+import net.coderbot.iris.compat.dh.DHCompat;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.program.ComputeProgram;
 import net.coderbot.iris.gl.texture.DepthCopyStrategy;
@@ -70,6 +71,7 @@ public class ShadowRenderer {
 	public static int renderDistance;
 
 	private final float halfPlaneLength;
+	private final float nearPlane, farPlane;
 	private final float voxelDistance;
 	private final float renderDistanceMultiplier;
 	private final float entityShadowDistanceMultiplier;
@@ -77,6 +79,8 @@ public class ShadowRenderer {
 	private final float intervalSize;
 	private final Float fov;
 	public static Matrix4f MODELVIEW;
+	public static Matrix4f PROJECTION;
+	public static Frustum FRUSTUM;
 
 	private final ShadowRenderTargets targets;
 	private final ShadowCullState packCullingState;
@@ -87,6 +91,7 @@ public class ShadowRenderer {
 	private final boolean shouldRenderEntities;
 	private final boolean shouldRenderPlayer;
 	private final boolean shouldRenderBlockEntities;
+	private final boolean shouldRenderDH;
 	private final float sunPathRotation;
 	private final RenderBuffers buffers;
 	private final RenderBuffersExt renderBuffersExt;
@@ -111,6 +116,8 @@ public class ShadowRenderer {
 		final PackShadowDirectives shadowDirectives = directives.getShadowDirectives();
 
 		this.halfPlaneLength = shadowDirectives.getDistance();
+		this.nearPlane = shadowDirectives.getNearPlane();
+		this.farPlane = shadowDirectives.getFarPlane();
 		this.voxelDistance = shadowDirectives.getVoxelDistance();
 		this.renderDistanceMultiplier = shadowDirectives.getDistanceRenderMul();
 		this.entityShadowDistanceMultiplier = shadowDirectives.getEntityShadowDistanceMul();
@@ -121,6 +128,7 @@ public class ShadowRenderer {
 		this.shouldRenderEntities = shadowDirectives.shouldRenderEntities();
 		this.shouldRenderPlayer = shadowDirectives.shouldRenderPlayer();
 		this.shouldRenderBlockEntities = shadowDirectives.shouldRenderBlockEntities();
+		this.shouldRenderDH = shadowDirectives.isDhShadowEnabled().orElse(false);
 
 		this.compositeRenderer = compositeRenderer;
 
@@ -342,10 +350,10 @@ public class ShadowRenderer {
 
 			if (isReversed) {
 				return holder.setInfo(new ReversedAdvancedShadowCullingFrustum(CapturedRenderingState.INSTANCE.getGbufferModelView(),
-					CapturedRenderingState.INSTANCE.getGbufferProjection(), shadowLightVectorFromOrigin, boxCuller, new BoxCuller(halfPlaneLength * renderMultiplier)), distanceInfo, cullingInfo);
+						(shouldRenderDH && DHCompat.hasRenderingEnabled()) ? DHCompat.getProjection() : CapturedRenderingState.INSTANCE.getGbufferProjection(), shadowLightVectorFromOrigin, boxCuller, new BoxCuller(halfPlaneLength * renderMultiplier)), distanceInfo, cullingInfo);
 			} else {
 				return holder.setInfo(new AdvancedShadowCullingFrustum(CapturedRenderingState.INSTANCE.getGbufferModelView(),
-					CapturedRenderingState.INSTANCE.getGbufferProjection(), shadowLightVectorFromOrigin, boxCuller), distanceInfo, cullingInfo);
+						(shouldRenderDH && DHCompat.hasRenderingEnabled()) ? DHCompat.getProjection() : CapturedRenderingState.INSTANCE.getGbufferProjection(), shadowLightVectorFromOrigin, boxCuller), distanceInfo, cullingInfo);
 			}
 		}
 
@@ -382,6 +390,7 @@ public class ShadowRenderer {
 		levelRenderer.setRenderBuffers(buffers);
 
 		visibleBlockEntities = new ArrayList<>();
+		setupShadowViewport();
 
 		// Create our camera
 		PoseStack modelView = createShadowModelView(this.sunPathRotation, this.intervalSize);
@@ -396,6 +405,8 @@ public class ShadowRenderer {
 		levelRenderer.getLevel().getProfiler().push("initialize frustum");
 
 		terrainFrustumHolder = createShadowFrustum(renderDistanceMultiplier, terrainFrustumHolder);
+
+		FRUSTUM = terrainFrustumHolder.getFrustum();
 
 		// Determine the player camera position
 		Vector3d cameraPos = CameraUniforms.getUnshiftedCameraPosition();
@@ -436,18 +447,18 @@ public class ShadowRenderer {
 
 		levelRenderer.getLevel().getProfiler().popPush("terrain");
 
-		setupShadowViewport();
-
 		// Set up our orthographic projection matrix and load it into RenderSystem
 		Matrix4f shadowProjection;
 		if (this.fov != null) {
 			// If FOV is not null, the pack wants a perspective based projection matrix. (This is to support legacy packs)
 			shadowProjection = ShadowMatrices.createPerspectiveMatrix(this.fov);
 		} else {
-			shadowProjection = ShadowMatrices.createOrthoMatrix(halfPlaneLength);
+			shadowProjection = ShadowMatrices.createOrthoMatrix(halfPlaneLength, nearPlane < 0 ? -DHCompat.getRenderDistance() : nearPlane, farPlane < 0 ? DHCompat.getRenderDistance() : farPlane);
 		}
 
 		IrisRenderSystem.setShadowProjection(shadowProjection);
+
+		PROJECTION = shadowProjection;
 
 		// Disable backface culling
 		// This partially works around an issue where if the front face of a mountain isn't visible, it casts no

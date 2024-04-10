@@ -1,6 +1,6 @@
 plugins {
 	id 'com.github.johnrengelman.shadow' version '8.1.1'
-	id 'dev.architectury.loom' version '1.4-SNAPSHOT'
+	id 'dev.architectury.loom' version '1.6-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -19,7 +19,6 @@ loom {
 				"oculus-batched-entity-rendering.mixins.json",
 				"mixins.oculus.compat.sodium.json",
 				"mixins.oculus.compat.indigo.json",
-				"mixins.oculus.compat.dh.json",
 				"mixins.oculus.compat.indium.json",
 				"mixins.oculus.compat.pixelmon.json"
 		]
@@ -106,12 +105,13 @@ dependencies {
 	forge "net.neoforged:forge:${minecraft_version}-${forge_version}"
 
 	modImplementation "org.embeddedt:embeddium-${minecraft_version}:${embeddium_version}"
-	compileOnly "maven.modrinth:distanthorizons:2.0.1-a-1.20.1"
 
 	forgeRuntimeLibrary(implementation(shadow(project(path: ":glsl-relocated", configuration: "bundledJar")))) {
 		transitive = false
 	}
 	forgeRuntimeLibrary(implementation(include("org.anarres:jcpp:1.4.14")))
+
+	modImplementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 processResources {

@@ -372,7 +372,7 @@ public class FinalPassRenderer {
 
 		ProgramSamplers.CustomTextureSamplerInterceptor customTextureSamplerInterceptor = ProgramSamplers.customTextureSamplerInterceptor(builder, customTextureIds, flippedAtLeastOnceSnapshot);
 
-		IrisSamplers.addRenderTargetSamplers(customTextureSamplerInterceptor, () -> flipped, renderTargets, true);
+		IrisSamplers.addRenderTargetSamplers(customTextureSamplerInterceptor, () -> flipped, renderTargets, true, pipeline);
 		IrisSamplers.addCustomImages(customTextureSamplerInterceptor, customImages);
 		IrisImages.addRenderTargetImages(builder, () -> flipped, renderTargets);
 		IrisImages.addCustomImages(builder, customImages);
@@ -427,7 +427,7 @@ public class FinalPassRenderer {
 				CommonUniforms.addDynamicUniforms(builder, FogMode.OFF);
 				customUniforms.assignTo(builder);
 
-				IrisSamplers.addRenderTargetSamplers(customTextureSamplerInterceptor, () -> flipped, renderTargets, true);
+				IrisSamplers.addRenderTargetSamplers(customTextureSamplerInterceptor, () -> flipped, renderTargets, true, pipeline);
 				IrisSamplers.addCustomTextures(builder, irisCustomTextures);
 				IrisSamplers.addCustomImages(customTextureSamplerInterceptor, customImages);
 

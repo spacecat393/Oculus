@@ -4,25 +4,19 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlUtil;
 import net.coderbot.iris.Iris;
+import net.coderbot.iris.compat.dh.DHCompat;
 import net.coderbot.iris.pipeline.HandRenderer;
 import net.coderbot.iris.pipeline.WorldRenderingPhase;
 import net.coderbot.iris.shaderpack.StringPair;
 import net.coderbot.iris.texture.format.TextureFormat;
 import net.coderbot.iris.texture.format.TextureFormatLoader;
-import net.minecraft.SharedConstants;
 import net.minecraft.Util;
+import net.minecraftforge.fml.loading.LoadingModList;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30C;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -48,6 +42,26 @@ public class StandardMacros {
 		define(standardDefines, getVendor());
 		define(standardDefines, getRenderer());
 		define(standardDefines, "IS_IRIS");
+
+		if (LoadingModList.get().getModFileById("distanthorizons") != null && DHCompat.hasRenderingEnabled()) {
+			define(standardDefines, "DISTANT_HORIZONS");
+		}
+
+		define(standardDefines, "DH_BLOCK_UNKNOWN", String.valueOf(0));
+		define(standardDefines, "DH_BLOCK_LEAVES", String.valueOf(1));
+		define(standardDefines, "DH_BLOCK_STONE", String.valueOf(2));
+		define(standardDefines, "DH_BLOCK_WOOD", String.valueOf(3));
+		define(standardDefines, "DH_BLOCK_METAL", String.valueOf(4));
+		define(standardDefines, "DH_BLOCK_DIRT", String.valueOf(5));
+		define(standardDefines, "DH_BLOCK_LAVA", String.valueOf(6));
+		define(standardDefines, "DH_BLOCK_DEEPSLATE", String.valueOf(7));
+		define(standardDefines, "DH_BLOCK_SNOW", String.valueOf(8));
+		define(standardDefines, "DH_BLOCK_SAND", String.valueOf(9));
+		define(standardDefines, "DH_BLOCK_TERRACOTTA", String.valueOf(10));
+		define(standardDefines, "DH_BLOCK_NETHER_STONE", String.valueOf(11));
+		define(standardDefines, "DH_BLOCK_WATER", String.valueOf(12));
+		define(standardDefines, "DH_BLOCK_AIR", String.valueOf(14));
+		define(standardDefines, "DH_BLOCK_ILLUMINATED", String.valueOf(15));
 
 		for (String glExtension : getGlExtensions()) {
 			define(standardDefines, glExtension);
