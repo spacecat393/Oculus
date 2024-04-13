@@ -1,5 +1,6 @@
 package net.coderbot.iris.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import nanolive.utils.RenderGlobalExtended;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.program.Program;
@@ -9,6 +10,7 @@ import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.coderbot.iris.uniforms.SystemTimeUniforms;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.settings.GameSettings;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,6 +60,13 @@ public class MixinEntityRenderer {
         renderGlobalExtended.setPipeline(null);
 
         Program.unbind();
+    }
+
+    // Setup shadow terrain & render shadows before the main terrain setup. We need to do things in this order to
+    // avoid breaking other mods such as Light Overlay: https://github.com/IrisShaders/Iris/issues/1356
+    @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;setupTerrain(Lnet/minecraft/entity/Entity;DLnet/minecraft/client/renderer/culling/ICamera;IZ)V"))
+    private void iris$renderTerrainShadows(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci, @Local ICamera icamera) {
+        ((RenderGlobalExtended) this.mc.renderGlobal).getPipeline().renderShadows((LevelRendererAccessor) this, icamera);
     }
 
     @Redirect(method = "renderWorldPass", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;renderDistanceChunks:I"),

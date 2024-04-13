@@ -1,8 +1,8 @@
 package net.coderbot.iris.shaderpack.option;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.collect.ImmutableSet;
+
+import javax.annotation.Nullable;
 
 public class MergedStringOption {
 	private final StringOption option;

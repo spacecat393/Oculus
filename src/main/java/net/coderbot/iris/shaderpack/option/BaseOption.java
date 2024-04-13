@@ -1,19 +1,18 @@
 package net.coderbot.iris.shaderpack.option;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 public abstract class BaseOption {
-	@NotNull
+	@Nonnull
 	private final OptionType type;
-	@NotNull
+	@Nonnull
 	private final String name;
 	@Nullable
 	private final String comment;
 
-	BaseOption(@NotNull OptionType type, @NotNull String name, @Nullable String comment) {
+	BaseOption(@Nonnull OptionType type, @Nonnull String name, @Nullable String comment) {
 		this.type = type;
 		this.name = name;
 
@@ -24,12 +23,12 @@ public abstract class BaseOption {
 		}
 	}
 
-	@NotNull
+	@Nonnull
 	public OptionType getType() {
 		return type;
 	}
 
-	@NotNull
+	@Nonnull
 	public String getName() {
 		return name;
 	}

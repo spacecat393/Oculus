@@ -44,13 +44,6 @@ public class MixinLevelRenderer implements RenderGlobalExtended {
 	@Unique
 	private WorldRenderingPipeline pipeline;
 
-	// Setup shadow terrain & render shadows before the main terrain setup. We need to do things in this order to
-	// avoid breaking other mods such as Light Overlay: https://github.com/IrisShaders/Iris/issues/1356
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/LevelRenderer.setupRender (Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/culling/Frustum;ZIZ)V"))
-	private void iris$renderTerrainShadows(PoseStack poseStack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projection, CallbackInfo callback) {
-		pipeline.renderShadows((LevelRendererAccessor) this, camera);
-	}
-
 	/*@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_SKY))
 	private void iris$beginSky(PoseStack poseStack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projection, CallbackInfo callback) {
 		// Use CUSTOM_SKY until levelFogColor is called as a heuristic to catch FabricSkyboxes.

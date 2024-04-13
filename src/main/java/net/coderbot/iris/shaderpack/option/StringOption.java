@@ -2,10 +2,10 @@ package net.coderbot.iris.shaderpack.option;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.collect.ImmutableList;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class StringOption extends BaseOption {
 	private final String defaultValue;
@@ -65,12 +65,12 @@ public class StringOption extends BaseOption {
 		return new StringOption(type, name, comment.trim(), defaultValue, builder.build());
 	}
 
-	@NotNull
+	@Nonnull
 	public String getDefaultValue() {
 		return defaultValue;
 	}
 
-	@NotNull
+	@Nonnull
 	public ImmutableList<String> getAllowedValues() {
 		return allowedValues;
 	}

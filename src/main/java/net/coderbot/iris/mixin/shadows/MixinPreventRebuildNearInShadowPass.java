@@ -1,6 +1,10 @@
 package net.coderbot.iris.mixin.shadows;
 
-import org.spongepowered.asm.mixin.Final;
+import net.coderbot.iris.pipeline.ShadowRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -8,12 +12,7 @@ import org.spongepowered.asm.mixin.injection.Group;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.coderbot.iris.pipeline.ShadowRenderer;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.culling.Frustum;
+import java.util.List;
 
 /**
  * Prevent nearby chunks from being rebuilt on the main thread in the shadow pass. Aside from causing  FPS to tank,
@@ -26,38 +25,35 @@ import net.minecraft.client.renderer.culling.Frustum;
  * if we apply with the same priority, then we'll just get a Mixin error due to the injects conflicting with the
  * {@code @Overwrite}. Using {@code @Group} allows us to avoid a fragile Mixin plugin.
  */
-@Mixin(value = LevelRenderer.class, priority = 1010)
+@Mixin(value = RenderGlobal.class, priority = 1010)
 public class MixinPreventRebuildNearInShadowPass {
 	@Shadow
-	@Final
-	private ObjectList<LevelRenderer.RenderChunkInfo> renderChunks;
+	private List<RenderGlobal.ContainerLocalRenderInformation> renderInfos;
 
 	@Group(name = "iris_MixinPreventRebuildNearInShadowPass", min = 1, max = 1)
-	@Inject(method = "setupRender",
+	@Inject(method = "setupTerrain",
 			at = @At(value = "INVOKE_STRING",
-					target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
+					target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V",
 					args = "ldc=rebuildNear"),
 			cancellable = true,
 			require = 0)
-	private void iris$preventRebuildNearInShadowPass(Camera camera, Frustum frustum, boolean hasForcedFrustum,
-													 int frame, boolean spectator, CallbackInfo callback) {
+	private void iris$preventRebuildNearInShadowPass(Entity viewEntity, double partialTicks, ICamera camera, int frameCount, boolean playerSpectator, CallbackInfo ci) {
 		if (ShadowRenderer.ACTIVE) {
-			for (LevelRenderer.RenderChunkInfo chunk : this.renderChunks) {
-				ShadowRenderer.visibleBlockEntities.addAll(((ChunkInfoAccessor) chunk).getChunk().getCompiledChunk().getRenderableBlockEntities());
+			for (RenderGlobal.ContainerLocalRenderInformation chunk : this.renderInfos) {
+				ShadowRenderer.visibleBlockEntities.addAll(((ChunkInfoAccessor) chunk).getChunk().getCompiledChunk().getTileEntities());
 			}
-			Minecraft.getInstance().getProfiler().pop();
-			callback.cancel();
+			Minecraft.getMinecraft().profiler.endSection();
+			ci.cancel();
 		}
 	}
 
 	@Group(name = "iris_MixinPreventRebuildNearInShadowPass", min = 1, max = 1)
-	@Inject(method = "setupRender",
+	@Inject(method = "setupTerrain",
 			at = @At(value = "INVOKE",
 					target = "me/jellysquid/mods/sodium/client/gl/device/RenderDevice.enterManagedCode ()V",
 					remap = false),
 			require = 0)
-	private void iris$cannotInject(Camera camera, Frustum frustum, boolean hasForcedFrustum, int frame,
-								   boolean spectator, CallbackInfo callback) {
+	private void iris$cannotInject(Entity viewEntity, double partialTicks, ICamera camera, int frameCount, boolean playerSpectator, CallbackInfo ci) {
 		// Dummy injection just to assert that either Sodium is present, or the vanilla injection passed.
 	}
 }

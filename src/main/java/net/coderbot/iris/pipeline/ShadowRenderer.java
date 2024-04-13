@@ -7,11 +7,15 @@ import java.util.Objects;
 
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.GL20C;
@@ -356,7 +360,7 @@ public class ShadowRenderer {
 	}
 
 	private void renderEntities(LevelRendererAccessor levelRenderer, Frustum frustum, MultiBufferSource.BufferSource bufferSource, PoseStack modelView, double cameraX, double cameraY, double cameraZ, float tickDelta) {
-		EntityRenderDispatcher dispatcher = levelRenderer.getEntityRenderDispatcher();
+		RenderManager dispatcher = levelRenderer.getEntityRenderDispatcher();
 
 		int shadowEntities = 0;
 
@@ -365,7 +369,7 @@ public class ShadowRenderer {
 		List<Entity> renderedEntities = new ArrayList<>(32);
 
 		// TODO: I'm sure that this can be improved / optimized.
-		for (Entity entity : getLevel().entitiesForRendering()) {
+		for (Entity entity : getLevel().loadedEntityList) {
 			if (!dispatcher.shouldRender(entity, frustum, cameraX, cameraY, cameraZ) || (entity instanceof EntityPlayer && ((EntityPlayer) entity).isSpectator())) {
 				continue;
 			}
@@ -392,7 +396,7 @@ public class ShadowRenderer {
 	}
 
 	private void renderPlayerEntity(LevelRendererAccessor levelRenderer, Frustum frustum, MultiBufferSource.BufferSource bufferSource, PoseStack modelView, double cameraX, double cameraY, double cameraZ, float tickDelta) {
-		EntityRenderDispatcher dispatcher = levelRenderer.getEntityRenderDispatcher();
+		RenderManager dispatcher = levelRenderer.getEntityRenderDispatcher();
 
 		profiler.startSection("cull");
 
@@ -413,8 +417,8 @@ public class ShadowRenderer {
 			}
 		}
 
-		if (player.getVehicle() != null) {
-			levelRenderer.invokeRenderEntity(player.getVehicle(), cameraX, cameraY, cameraZ, tickDelta, modelView, bufferSource);
+		if (player.getRidingEntity() != null) {
+			levelRenderer.invokeRenderEntity(player.getRidingEntity(), cameraX, cameraY, cameraZ, tickDelta, modelView, bufferSource);
 			shadowEntities++;
 		}
 
@@ -444,10 +448,10 @@ public class ShadowRenderer {
 					continue;
 				}
 			}
-			modelView.pushPose();
-			modelView.translate(pos.getX() - cameraX, pos.getY() - cameraY, pos.getZ() - cameraZ);
-			BlockEntityRenderDispatcher.instance.render(entity, tickDelta, modelView, bufferSource);
-			modelView.popPose();
+			//modelView.pushPose();
+			//modelView.translate(pos.getX() - cameraX, pos.getY() - cameraY, pos.getZ() - cameraZ);
+			TileEntityRendererDispatcher.instance.render(entity, pos.getX() - cameraX, pos.getY() - cameraY, pos.getZ() - cameraZ, tickDelta, bufferSource);
+			//modelView.popPose();
 
 			shadowBlockEntities++;
 		}
@@ -525,7 +529,7 @@ public class ShadowRenderer {
 		// We have to ensure that we don't regenerate clouds every frame, since that's what needsUpdate ends up doing.
 		// This took up to 10% of the frame time before we applied this fix! That's really bad!
 		boolean regenerateClouds = levelRenderer.shouldRegenerateClouds();
-		((LevelRenderer) levelRenderer).needsUpdate();
+		((RenderGlobal) levelRenderer).setDisplayListEntitiesDirty();
 		levelRenderer.setShouldRegenerateClouds(regenerateClouds);
 
 		// Execute the vanilla terrain setup / culling routines using our shadow frustum.
@@ -544,9 +548,9 @@ public class ShadowRenderer {
 
 		// Render all opaque terrain unless pack requests not to
 		if (shouldRenderTerrain) {
-			levelRenderer.invokeRenderChunkLayer(RenderType.solid(), modelView, cameraX, cameraY, cameraZ);
-			levelRenderer.invokeRenderChunkLayer(RenderType.cutout(), modelView, cameraX, cameraY, cameraZ);
-			levelRenderer.invokeRenderChunkLayer(RenderType.cutoutMipped(), modelView, cameraX, cameraY, cameraZ);
+			levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.SOLID, modelView, cameraX, cameraY, cameraZ);
+			levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT, modelView, cameraX, cameraY, cameraZ);
+			levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT_MIPPED, modelView, cameraX, cameraY, cameraZ);
 		}
 
 		profiler.endStartSection("entities");
@@ -608,7 +612,7 @@ public class ShadowRenderer {
 		// It doesn't matter a ton, since this just means that they won't be sorted in the normal rendering pass.
 		// Just something to watch out for, however...
 		if (shouldRenderTranslucent) {
-			levelRenderer.invokeRenderChunkLayer(RenderType.translucent(), modelView, cameraX, cameraY, cameraZ);
+			levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.TRANSLUCENT, modelView, cameraX, cameraY, cameraZ);
 		}
 
 		// Note: Apparently tripwire isn't rendered in the shadow pass.
@@ -618,7 +622,7 @@ public class ShadowRenderer {
 			renderBuffersExt.endLevelRendering();
 		}
 
-		debugStringTerrain = ((LevelRenderer) levelRenderer).getChunkStatistics();
+		debugStringTerrain = ((RenderGlobal) levelRenderer).getDebugInfoRenders();
 
 		profiler.endStartSection("generate mipmaps");
 

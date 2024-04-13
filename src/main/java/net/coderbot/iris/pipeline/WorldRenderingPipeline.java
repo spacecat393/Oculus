@@ -9,7 +9,6 @@ import net.coderbot.iris.gbuffer_overrides.state.RenderTargetStateListener;
 import net.coderbot.iris.mixin.LevelRendererAccessor;
 import net.coderbot.iris.shaderpack.CloudSetting;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
-import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.culling.ICamera;
 
 public interface WorldRenderingPipeline {

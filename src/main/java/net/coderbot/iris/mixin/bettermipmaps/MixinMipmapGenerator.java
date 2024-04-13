@@ -1,12 +1,11 @@
 package net.coderbot.iris.mixin.bettermipmaps;
 
-import com.mojang.blaze3d.platform.NativeImage;
+import nanolive.compat.NativeImage;
 import net.coderbot.iris.helpers.ColorSRGB;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
-
-import net.minecraft.client.renderer.texture.MipmapGenerator;
 
 /**
  * Implements a significantly enhanced mipmap downsampling filter.
@@ -25,7 +24,7 @@ import net.minecraft.client.renderer.texture.MipmapGenerator;
  *         artifacts.</ul>
  * </li>
  */
-@Mixin(MipmapGenerator.class)
+@Mixin(TextureUtil.class)
 public class MixinMipmapGenerator {
 
 	/**
@@ -33,7 +32,7 @@ public class MixinMipmapGenerator {
 	 * @reason replace the vanilla blending function with our improved function
 	 */
 	@Overwrite
-	private static int alphaBlend(int one, int two, int three, int four, boolean checkAlpha) {
+	private static int blendColors(int one, int two, int three, int four, boolean checkAlpha) {
 		// First blend horizontally, then blend vertically.
 		//
 		// This works well for the case where our change is the most impactful (grass side overlays)
