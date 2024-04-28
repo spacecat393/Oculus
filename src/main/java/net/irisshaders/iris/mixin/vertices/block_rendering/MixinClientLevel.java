@@ -23,7 +23,7 @@ public class MixinClientLevel {
 
 	@ModifyVariable(method = "getShade(FFFZ)F", at = @At("HEAD"), argsOnly = true, remap = false)
 	private boolean iris$maybeDisableDirectionalShadingForge(boolean shaded) {
-		if (BlockRenderingSettings.INSTANCE.shouldDisableDirectionalShading()) {
+		if (WorldRenderingSettings.INSTANCE.shouldDisableDirectionalShading()) {
 			return false;
 		} else {
 			return shaded;

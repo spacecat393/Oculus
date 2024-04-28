@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.primitives.Ints;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.fabricmc.loader.api.FabricLoader;
 import net.irisshaders.iris.gl.blending.AlphaTest;
 import net.irisshaders.iris.gl.blending.BlendModeOverride;
 import net.irisshaders.iris.gl.blending.BufferBlendOverride;
@@ -28,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceProvider;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -217,7 +217,7 @@ public class ShaderCreator {
 		private final String content;
 
 		private StringResource(ResourceLocation id, String content) {
-			super(new PathPackResources("<iris shaderpack shaders>", FabricLoader.getInstance().getConfigDir(), true), () -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+			super(new PathPackResources("<iris shaderpack shaders>", FMLPaths.CONFIGDIR.get(), true), () -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
 			this.content = content;
 		}
 

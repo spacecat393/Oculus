@@ -19,9 +19,7 @@ loom {
 				"oculus-batched-entity-rendering.mixins.json",
 				"mixins.oculus.compat.sodium.json",
 				"mixins.oculus.compat.indigo.json",
-				"mixins.oculus.compat.dh.json",
-				"mixins.oculus.compat.indium.json",
-				"mixins.oculus.compat.pixelmon.json"
+				"mixins.oculus.compat.indium.json"
 		]
 	}
 	mixin.defaultRefmapName = "oculus-mixins-refmap.json"
@@ -106,7 +104,7 @@ dependencies {
 	forge "net.neoforged:forge:${minecraft_version}-${forge_version}"
 
 	modImplementation "org.embeddedt:embeddium-${minecraft_version}:${embeddium_version}"
-	compileOnly "maven.modrinth:distanthorizons:2.0.1-a-1.20.1"
+	modCompileOnly(files("DHApi.jar"))
 
 	forgeRuntimeLibrary(implementation(shadow(project(path: ":glsl-relocated", configuration: "bundledJar")))) {
 		transitive = false

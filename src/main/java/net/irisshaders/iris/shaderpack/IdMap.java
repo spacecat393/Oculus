@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import net.fabricmc.loader.api.FabricLoader;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.helpers.StringPair;
 import net.irisshaders.iris.pipeline.transform.ShaderPrinter;
@@ -19,6 +18,7 @@ import net.irisshaders.iris.shaderpack.materialmap.NamespacedId;
 import net.irisshaders.iris.shaderpack.option.OrderBackedProperties;
 import net.irisshaders.iris.shaderpack.option.ShaderPackOptions;
 import net.irisshaders.iris.shaderpack.preprocessor.PropertiesPreprocessor;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -115,7 +115,7 @@ public class IdMap {
 
 		if (Iris.getIrisConfig().areDebugOptionsEnabled()) {
 			ShaderPrinter.deleteIfClearing();
-			try (OutputStream os = Files.newOutputStream(FabricLoader.getInstance().getGameDir().resolve("patched_shaders").resolve(name))) {
+			try (OutputStream os = Files.newOutputStream(FMLPaths.GAMEDIR.get().resolve("patched_shaders").resolve(name))) {
 				properties.store(new OutputStreamWriter(os, StandardCharsets.UTF_8), "Patched version of properties");
 			} catch (IOException e) {
 				throw new RuntimeException(e);

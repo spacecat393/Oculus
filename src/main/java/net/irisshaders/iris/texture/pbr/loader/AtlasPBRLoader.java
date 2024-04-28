@@ -22,6 +22,7 @@ import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,10 +32,10 @@ import java.util.Optional;
 
 public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 	public static final ChannelMipmapGenerator LINEAR_MIPMAP_GENERATOR = new ChannelMipmapGenerator(
-		LinearBlendFunction.INSTANCE,
-		LinearBlendFunction.INSTANCE,
-		LinearBlendFunction.INSTANCE,
-		LinearBlendFunction.INSTANCE
+			LinearBlendFunction.INSTANCE,
+			LinearBlendFunction.INSTANCE,
+			LinearBlendFunction.INSTANCE,
+			LinearBlendFunction.INSTANCE
 	);
 
 	@Override
@@ -90,9 +91,9 @@ public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 		}
 		Resource resource = optionalResource.get();
 
-		AnimationMetadataSection animationMetadata;
+		ResourceMetadata animationMetadata;
 		try {
-			animationMetadata = resource.metadata().getSection(AnimationMetadataSection.SERIALIZER).orElse(AnimationMetadataSection.EMPTY);
+			animationMetadata = resource.metadata();
 		} catch (Exception e) {
 			Iris.logger.error("Unable to parse metadata from {}", pbrImageLocation, e);
 			return null;
@@ -108,7 +109,8 @@ public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 
 		int imageWidth = nativeImage.getWidth();
 		int imageHeight = nativeImage.getHeight();
-		FrameSize frameSize = animationMetadata.calculateFrameSize(imageWidth, imageHeight);
+		AnimationMetadataSection metadataSection = animationMetadata.getSection(AnimationMetadataSection.SERIALIZER).orElse(AnimationMetadataSection.EMPTY);
+		FrameSize frameSize = metadataSection.calculateFrameSize(imageWidth, imageHeight);
 		int frameWidth = frameSize.width();
 		int frameHeight = frameSize.height();
 		if (!Mth.isMultipleOf(imageWidth, frameWidth) || !Mth.isMultipleOf(imageHeight, frameHeight)) {
@@ -120,33 +122,38 @@ public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 		int targetFrameWidth = sprite.contents().width();
 		int targetFrameHeight = sprite.contents().height();
 		if (frameWidth != targetFrameWidth || frameHeight != targetFrameHeight) {
-			// We can assume the following is always true:
-			// imageWidth % frameWidth == 0 && imageHeight % frameHeight == 0
-			int targetImageWidth = imageWidth / frameWidth * targetFrameWidth;
-			int targetImageHeight = imageHeight / frameHeight * targetFrameHeight;
+			try {
+				// We can assume the following is always true:
+				// imageWidth % frameWidth == 0 && imageHeight % frameHeight == 0
+				int targetImageWidth = imageWidth / frameWidth * targetFrameWidth;
+				int targetImageHeight = imageHeight / frameHeight * targetFrameHeight;
 
-			NativeImage scaledImage;
-			if (targetImageWidth % imageWidth == 0 && targetImageHeight % imageHeight == 0) {
-				scaledImage = ImageManipulationUtil.scaleNearestNeighbor(nativeImage, targetImageWidth, targetImageHeight);
-			} else {
-				scaledImage = ImageManipulationUtil.scaleBilinear(nativeImage, targetImageWidth, targetImageHeight);
-			}
-			nativeImage.close();
-			nativeImage = scaledImage;
-
-			frameWidth = targetFrameWidth;
-			frameHeight = targetFrameHeight;
-
-			if (animationMetadata != AnimationMetadataSection.EMPTY) {
-				AnimationMetadataSectionAccessor animationAccessor = (AnimationMetadataSectionAccessor) animationMetadata;
-				int internalFrameWidth = animationAccessor.getFrameWidth();
-				int internalFrameHeight = animationAccessor.getFrameHeight();
-				if (internalFrameWidth != -1) {
-					animationAccessor.setFrameWidth(frameWidth);
+				NativeImage scaledImage;
+				if (targetImageWidth % imageWidth == 0 && targetImageHeight % imageHeight == 0) {
+					scaledImage = ImageManipulationUtil.scaleNearestNeighbor(nativeImage, targetImageWidth, targetImageHeight);
+				} else {
+					scaledImage = ImageManipulationUtil.scaleBilinear(nativeImage, targetImageWidth, targetImageHeight);
 				}
-				if (internalFrameHeight != -1) {
-					animationAccessor.setFrameHeight(frameHeight);
+				nativeImage.close();
+				nativeImage = scaledImage;
+
+				frameWidth = targetFrameWidth;
+				frameHeight = targetFrameHeight;
+
+				if (metadataSection != AnimationMetadataSection.EMPTY) {
+					AnimationMetadataSectionAccessor animationAccessor = (AnimationMetadataSectionAccessor) metadataSection;
+					int internalFrameWidth = animationAccessor.getFrameWidth();
+					int internalFrameHeight = animationAccessor.getFrameHeight();
+					if (internalFrameWidth != -1) {
+						animationAccessor.setFrameWidth(frameWidth);
+					}
+					if (internalFrameHeight != -1) {
+						animationAccessor.setFrameHeight(frameHeight);
+					}
 				}
+			} catch (Exception e) {
+				Iris.logger.error("Something bad happened trying to load PBR texture " + spriteName.getPath() + pbrType.getSuffix() + "!", e);
+				throw e;
 			}
 		}
 

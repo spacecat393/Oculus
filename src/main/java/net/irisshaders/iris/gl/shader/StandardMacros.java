@@ -3,7 +3,6 @@ package net.irisshaders.iris.gl.shader;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlUtil;
-import net.fabricmc.loader.api.FabricLoader;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.compat.dh.DHCompat;
 import net.irisshaders.iris.helpers.StringPair;
@@ -12,6 +11,7 @@ import net.irisshaders.iris.pipeline.WorldRenderingPhase;
 import net.irisshaders.iris.texture.format.TextureFormat;
 import net.irisshaders.iris.texture.format.TextureFormatLoader;
 import net.minecraft.Util;
+import net.minecraftforge.fml.loading.LoadingModList;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30C;
@@ -51,7 +51,7 @@ public class StandardMacros {
 		define(standardDefines, "IS_IRIS");
 
 
-		if (FabricLoader.getInstance().isModLoaded("distanthorizons") && DHCompat.hasRenderingEnabled()) {
+		if (LoadingModList.get().getModFileById("distanthorizons") != null && DHCompat.hasRenderingEnabled()) {
 			define(standardDefines, "DISTANT_HORIZONS");
 		}
 
