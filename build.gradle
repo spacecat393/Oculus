@@ -19,7 +19,9 @@ loom {
 				"oculus-batched-entity-rendering.mixins.json",
 				"mixins.oculus.compat.sodium.json",
 				"mixins.oculus.compat.indigo.json",
-				"mixins.oculus.compat.indium.json"
+				"mixins.oculus.compat.indium.json",
+				"mixins.oculus.compat.dh.json",
+				"mixins.oculus.compat.pixelmon.json"
 		]
 	}
 	mixin.defaultRefmapName = "oculus-mixins-refmap.json"
@@ -48,13 +50,6 @@ sourceSets {
 		}
 	}
 
-	dhCompatibility {
-		java {
-			compileClasspath += main.compileClasspath
-			compileClasspath += main.output
-		}
-	}
-
 	sodiumCompatibility {
 		java {
 			compileClasspath += main.compileClasspath
@@ -79,7 +74,6 @@ loom {
 					sourceSet sourceSets.main
 					sourceSet sourceSets.vendored
 					sourceSet sourceSets.sodiumCompatibility
-					sourceSet sourceSets.dhCompatibility
 				}
 			}
 		}
@@ -155,7 +149,6 @@ remapJar {
 
 jar {
 	from sourceSets.sodiumCompatibility.output
-	from sourceSets.dhCompatibility.output
 	from sourceSets.vendored.output
 	from sourceSets.desktop.output
 }
@@ -166,7 +159,6 @@ java {
 
 sourcesJar {
 	from sourceSets.sodiumCompatibility.allSource
-	from sourceSets.dhCompatibility.allSource
 	from sourceSets.vendored.allSource
 	from sourceSets.desktop.allSource
 }
