@@ -48,6 +48,13 @@ sourceSets {
 		}
 	}
 
+	dhCompatibility {
+		java {
+			compileClasspath += main.compileClasspath
+			compileClasspath += main.output
+		}
+	}
+
 	sodiumCompatibility {
 		java {
 			compileClasspath += main.compileClasspath
@@ -72,6 +79,7 @@ loom {
 					sourceSet sourceSets.main
 					sourceSet sourceSets.vendored
 					sourceSet sourceSets.sodiumCompatibility
+					sourceSet sourceSets.dhCompatibility
 				}
 			}
 		}
@@ -108,7 +116,7 @@ dependencies {
 	forge "net.neoforged:forge:${minecraft_version}-${forge_version}"
 
 	modImplementation "org.embeddedt:embeddium-${minecraft_version}:${embeddium_version}"
-	modCompileOnly(files("DHApi.jar"))
+	modCompileOnly(files("DistantHorizons-forge-2.0.4-a-dev-1.20.1.jar"))
 
 	forgeRuntimeLibrary(implementation(shadow(project(path: ":glsl-relocated", configuration: "bundledJar")))) {
 		transitive = false
@@ -147,6 +155,7 @@ remapJar {
 
 jar {
 	from sourceSets.sodiumCompatibility.output
+	from sourceSets.dhCompatibility.output
 	from sourceSets.vendored.output
 	from sourceSets.desktop.output
 }
@@ -157,6 +166,7 @@ java {
 
 sourcesJar {
 	from sourceSets.sodiumCompatibility.allSource
+	from sourceSets.dhCompatibility.allSource
 	from sourceSets.vendored.allSource
 	from sourceSets.desktop.allSource
 }
