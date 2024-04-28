@@ -1,4 +1,4 @@
-package net.coderbot.iris.mixin;
+package net.irisshaders.iris.mixin;
 
 import net.minecraftforge.fml.loading.LoadingModList;
 import org.objectweb.asm.tree.ClassNode;

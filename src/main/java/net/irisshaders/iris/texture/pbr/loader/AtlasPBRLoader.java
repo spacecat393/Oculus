@@ -32,10 +32,10 @@ import java.util.Optional;
 
 public class AtlasPBRLoader implements PBRTextureLoader<TextureAtlas> {
 	public static final ChannelMipmapGenerator LINEAR_MIPMAP_GENERATOR = new ChannelMipmapGenerator(
-			LinearBlendFunction.INSTANCE,
-			LinearBlendFunction.INSTANCE,
-			LinearBlendFunction.INSTANCE,
-			LinearBlendFunction.INSTANCE
+		LinearBlendFunction.INSTANCE,
+		LinearBlendFunction.INSTANCE,
+		LinearBlendFunction.INSTANCE,
+		LinearBlendFunction.INSTANCE
 	);
 
 	@Override

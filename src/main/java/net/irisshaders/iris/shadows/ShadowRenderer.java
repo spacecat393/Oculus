@@ -48,7 +48,6 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.ARBTextureSwizzle;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30C;
-import org.lwjgl.opengl.GL43C;
 
 import java.util.ArrayList;
 import java.util.Comparator;

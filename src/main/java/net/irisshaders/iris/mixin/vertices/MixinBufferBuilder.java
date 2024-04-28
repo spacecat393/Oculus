@@ -33,7 +33,7 @@ import java.nio.ByteBuffer;
 /**
  * Dynamically and transparently extends the vanilla vertex formats with additional data
  */
-@Mixin(BufferBuilder.class)
+@Mixin(BufferBuilder.class) // TODO OCULUS: ???
 public abstract class MixinBufferBuilder extends DefaultedVertexConsumer implements BufferVertexConsumer, BlockSensitiveBufferBuilder, ExtendingBufferBuilder, IrisExtendedBufferBuilder {
 	@Unique
 	private final BufferBuilderPolygonView polygon = new BufferBuilderPolygonView();

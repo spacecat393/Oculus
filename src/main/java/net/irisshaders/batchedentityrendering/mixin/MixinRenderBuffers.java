@@ -1,6 +1,5 @@
 package net.irisshaders.batchedentityrendering.mixin;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.irisshaders.batchedentityrendering.impl.DrawCallTrackingRenderBuffers;
 import net.irisshaders.batchedentityrendering.impl.FullyBufferedMultiBufferSource;
 import net.irisshaders.batchedentityrendering.impl.MemoryTrackingBuffer;

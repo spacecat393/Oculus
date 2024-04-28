@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(HumanoidArmorLayer.class)
 public abstract class MixinHumanoidArmorLayer<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>>
-		extends RenderLayer<T, M> {
+	extends RenderLayer<T, M> {
 	private int backupValue = 0;
 
 	public MixinHumanoidArmorLayer(RenderLayerParent<T, M> pRenderLayer0) {

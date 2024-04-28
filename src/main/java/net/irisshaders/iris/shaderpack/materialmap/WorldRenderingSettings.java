@@ -3,8 +3,10 @@ package net.irisshaders.iris.shaderpack.materialmap;
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.ChunkRenderTypeSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -14,7 +16,7 @@ public class WorldRenderingSettings {
 
 	private boolean reloadRequired;
 	private Object2IntMap<BlockState> blockStateIds;
-	private Map<Block, RenderType> blockTypeIds;
+	private Map<Holder.Reference<Block>, ChunkRenderTypeSet> blockTypeIds;
 	private Object2IntFunction<NamespacedId> entityIds;
 	private Object2IntFunction<NamespacedId> itemIds;
 	private float ambientOcclusionLevel;
@@ -61,11 +63,11 @@ public class WorldRenderingSettings {
 	}
 
 	@Nullable
-	public Map<Block, RenderType> getBlockTypeIds() {
+	public Map<Holder.Reference<Block>, ChunkRenderTypeSet> getBlockTypeIds() {
 		return blockTypeIds;
 	}
 
-	public void setBlockTypeIds(Map<Block, RenderType> blockTypeIds) {
+	public void setBlockTypeIds(Map<Holder.Reference<Block>, ChunkRenderTypeSet> blockTypeIds) {
 		if (this.blockTypeIds != null && this.blockTypeIds.equals(blockTypeIds)) {
 			return;
 		}

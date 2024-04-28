@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SodiumBufferBuilder.class)
-public abstract class MixinSodiumBufferBuilder implements BlockSensitiveBufferBuilder {
+public abstract class MixinSodiumBufferBuilder implements BlockSensitiveBufferBuilder { // TODO OCULUS: Deleted?
 	@Unique
 	private static final int
 		ATTRIBUTE_TANGENT_BIT = 1 << IrisCommonVertexAttributes.TANGENT.ordinal(),
