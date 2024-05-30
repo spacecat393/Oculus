@@ -4,7 +4,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import com.mojang.math.Matrix4f;
+//import com.mojang.math.Matrix4f;
+import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import me.jellysquid.mods.sodium.client.render.GameRendererContext;
 import net.coderbot.iris.shadows.ShadowRenderingState;

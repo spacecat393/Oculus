@@ -1,6 +1,7 @@
 package net.coderbot.iris.vertices;
 
-import com.mojang.math.Vector3f;
+//import com.mojang.math.Vector3f;
+import net.coderbot.iris.vendored.joml.Vector3f;
 import net.minecraft.util.math.MathHelper;
 
 /**

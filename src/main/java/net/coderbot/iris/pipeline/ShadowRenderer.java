@@ -18,13 +18,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.GL20C;
-import org.lwjgl.opengl.GL30C;
+//import org.lwjgl.opengl.GL20C;
+//import org.lwjgl.opengl.GL30C;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
+//import com.mojang.blaze3d.systems.RenderSystem;
+//import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.math.Matrix4f;
+import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.coderbot.batchedentityrendering.impl.BatchingDebugMessageHelper;
 import net.coderbot.batchedentityrendering.impl.DrawCallTrackingRenderBuffers;
@@ -52,20 +53,20 @@ import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.coderbot.iris.uniforms.CelestialUniforms;
 import net.coderbot.iris.vendored.joml.Vector3d;
 import net.coderbot.iris.vendored.joml.Vector4f;
-import net.minecraft.client.Camera;
+//import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
+/*import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;*/
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+/*import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;*/
 
 public class ShadowRenderer {
 	public static Matrix4f MODELVIEW;
@@ -87,7 +88,7 @@ public class ShadowRenderer {
 	private final boolean shouldRenderPlayer;
 	private final boolean shouldRenderBlockEntities;
 	private final float sunPathRotation;
-	private final RenderBuffers buffers;
+	//todo private final RenderBuffers buffers;
 	private final RenderBuffersExt renderBuffersExt;
 	private final List<MipmapPass> mipmapPasses = new ArrayList<>();
 	private final String debugStringOverall;
@@ -136,13 +137,14 @@ public class ShadowRenderer {
 
 		this.sunPathRotation = directives.getSunPathRotation();
 
-		this.buffers = new RenderBuffers();
+		//todo this.buffers = new RenderBuffers();
 
-		if (this.buffers instanceof RenderBuffersExt) {
+		/*todo if (this.buffers instanceof RenderBuffersExt) {
 			this.renderBuffersExt = (RenderBuffersExt) buffers;
 		} else {
 			this.renderBuffersExt = null;
-		}
+		}*/
+		this.renderBuffersExt = null;
 
 		configureSamplingSettings(shadowDirectives);
 	}
@@ -533,7 +535,7 @@ public class ShadowRenderer {
 		levelRenderer.setShouldRegenerateClouds(regenerateClouds);
 
 		// Execute the vanilla terrain setup / culling routines using our shadow frustum.
-		levelRenderer.invokeSetupRender(playerCamera, terrainFrustumHolder.getFrustum(), false, levelRenderer.getFrameId(), false);
+		// todo levelRenderer.invokeSetupRender(playerCamera, terrainFrustumHolder.getFrustum(), false, levelRenderer.getFrameId(), false);
 
 		// Don't forget to increment the frame counter! This variable is arbitrary and only used in terrain setup,
 		// and if it's not incremented, the vanilla culling code will get confused and think that it's already seen
@@ -548,9 +550,9 @@ public class ShadowRenderer {
 
 		// Render all opaque terrain unless pack requests not to
 		if (shouldRenderTerrain) {
-			levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.SOLID, modelView, cameraX, cameraY, cameraZ);
-			levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT, modelView, cameraX, cameraY, cameraZ);
-			levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT_MIPPED, modelView, cameraX, cameraY, cameraZ);
+			//todo levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.SOLID, modelView, cameraX, cameraY, cameraZ);
+			//todo levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT, modelView, cameraX, cameraY, cameraZ);
+			//todo levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT_MIPPED, modelView, cameraX, cameraY, cameraZ);
 		}
 
 		profiler.endStartSection("entities");
@@ -581,20 +583,20 @@ public class ShadowRenderer {
 			renderBuffersExt.beginLevelRendering();
 		}
 
-		if (buffers instanceof DrawCallTrackingRenderBuffers) {
+		/*todo if (buffers instanceof DrawCallTrackingRenderBuffers) {
 			((DrawCallTrackingRenderBuffers) buffers).resetDrawCounts();
-		}
+		}*/
 
-		MultiBufferSource.BufferSource bufferSource = buffers.bufferSource();
+		//todo MultiBufferSource.BufferSource bufferSource = buffers.bufferSource();
 
 		if (shouldRenderEntities) {
-			renderEntities(levelRenderer, entityShadowFrustum, bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta);
+			// todo renderEntities(levelRenderer, entityShadowFrustum, bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta);
 		} else if (shouldRenderPlayer) {
-			renderPlayerEntity(levelRenderer, entityShadowFrustum, bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta);
+			// todo renderPlayerEntity(levelRenderer, entityShadowFrustum, bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta);
 		}
 
 		if (shouldRenderBlockEntities) {
-			renderBlockEntities(bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta, hasEntityFrustum);
+			// todo renderBlockEntities(bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta, hasEntityFrustum);
 		}
 
 		profiler.endStartSection("draw entities");
@@ -602,7 +604,7 @@ public class ShadowRenderer {
 		// NB: Don't try to draw the translucent parts of entities afterwards. It'll cause problems since some
 		// shader packs assume that everything drawn afterwards is actually translucent and should cast a colored
 		// shadow...
-		bufferSource.endBatch();
+		// todo bufferSource.endBatch();
 
 		copyPreTranslucentDepth();
 
@@ -612,7 +614,7 @@ public class ShadowRenderer {
 		// It doesn't matter a ton, since this just means that they won't be sorted in the normal rendering pass.
 		// Just something to watch out for, however...
 		if (shouldRenderTranslucent) {
-			levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.TRANSLUCENT, modelView, cameraX, cameraY, cameraZ);
+			// todo levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.TRANSLUCENT, modelView, cameraX, cameraY, cameraZ);
 		}
 
 		// Note: Apparently tripwire isn't rendered in the shadow pass.
@@ -636,7 +638,7 @@ public class ShadowRenderer {
 			((CullingDataCache) levelRenderer).restoreState();
 		}
 
-		levelRenderer.setRenderBuffers(playerBuffers);
+		// todo levelRenderer.setRenderBuffers(playerBuffers);
 
 		ACTIVE = false;
 		profiler.endSection();
@@ -657,10 +659,10 @@ public class ShadowRenderer {
 		messages.add("[" + Iris.MODNAME + "] Shadow Entities: " + getEntitiesDebugString());
 		messages.add("[" + Iris.MODNAME + "] Shadow Block Entities: " + getBlockEntitiesDebugString());
 
-		if (buffers instanceof DrawCallTrackingRenderBuffers && (shouldRenderEntities || shouldRenderPlayer)) {
+		/*todo if (buffers instanceof DrawCallTrackingRenderBuffers && (shouldRenderEntities || shouldRenderPlayer)) {
 			DrawCallTrackingRenderBuffers drawCallTracker = (DrawCallTrackingRenderBuffers) buffers;
 			messages.add("[" + Iris.MODNAME + "] Shadow Entity Batching: " + BatchingDebugMessageHelper.getDebugMessage(drawCallTracker));
-		}
+		}*/
 	}
 
 	private String getEntitiesDebugString() {

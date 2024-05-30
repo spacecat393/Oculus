@@ -1,7 +1,7 @@
 package net.coderbot.iris;
 
 import com.google.common.base.Throwables;
-import com.mojang.blaze3d.platform.GlDebug;
+//import com.mojang.blaze3d.platform.GlDebug;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.coderbot.iris.config.IrisConfig;
 import net.coderbot.iris.gl.GLDebug;
@@ -28,13 +28,17 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.ModList;
+//import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+//import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+//import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
@@ -50,7 +54,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipError;
 import java.util.zip.ZipException;
 
-@Mod(Iris.MODID)
+@Mod(modid = Iris.MODID, name = Iris.MODNAME)
 public class Iris {
 	public static final String MODID = "oculus";
 
@@ -90,9 +94,10 @@ public class Iris {
 	// Wrapped in try-catch due to early initializing class
 	public Iris() {
 		try {
-			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onInitializeClient);
-			MinecraftForge.EVENT_BUS.addListener(this::onKeyInput);
-		}catch(Exception ignored) {}
+//			MinecraftForge.EVENT_BUS.register(this::onInitializeClient);
+//			MinecraftForge.EVENT_BUS.register(this::onKeyInput);
+			MinecraftForge.EVENT_BUS.register(this);
+		} catch(Exception ignored) {}
 	}
 
     /**
@@ -129,14 +134,22 @@ public class Iris {
 
 		initialized = true;
 	}
-	
-	public void onInitializeClient(final FMLClientSetupEvent event) {
-		IRIS_VERSION = ModList.get().getModContainerById(MODID).get().getModInfo().getVersion().toString();
+
+	@SubscribeEvent
+	public void onInitializeClient(FMLInitializationEvent event) {
+//		IRIS_VERSION = ModList.get().getModContainerById(MODID).get().getModInfo().getVersion().toString();
+		ModContainer modContainer = Loader.instance().getIndexedModList().get(MODID);
+		if (modContainer != null) {
+			IRIS_VERSION = modContainer.getVersion();
+		} else {
+			IRIS_VERSION = "N/A";
+		}
 		ClientRegistry.registerKeyBinding(reloadKeybind);
 		ClientRegistry.registerKeyBinding(toggleShadersKeybind);
 		ClientRegistry.registerKeyBinding(shaderpackScreenKeybind);
 	}
 
+	@SubscribeEvent
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		handleKeybinds(Minecraft.getMinecraft());
 	}
@@ -189,7 +202,10 @@ public class Iris {
 				logger.error("Error while reloading Shaders for " + MODNAME + "!", e);
 
 				if (minecraft.player != null) {
-					minecraft.player.sendMessage(new TextComponentTranslation("iris.shaders.reloaded.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED));
+					minecraft.player.sendMessage(
+							new TextComponentTranslation("iris.shaders.reloaded.failure",
+									TextFormatting.RED + Throwables.getRootCause(e).getMessage())
+					);
 				}
 			}
 		} else if (toggleShadersKeybind.isPressed()) {
@@ -199,7 +215,10 @@ public class Iris {
 				logger.error("Error while toggling shaders!", e);
 
 				if (minecraft.player != null) {
-					minecraft.player.sendMessage(new TextComponentTranslation("iris.shaders.toggled.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED));
+					minecraft.player.sendMessage(
+							new TextComponentTranslation("iris.shaders.toggled.failure",
+									TextFormatting.RED + Throwables.getRootCause(e).getMessage())
+					);
 				}
 				setShadersDisabled();
 				fallback = true;

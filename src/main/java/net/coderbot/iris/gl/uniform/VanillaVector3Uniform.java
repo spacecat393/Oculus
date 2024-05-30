@@ -2,7 +2,8 @@ package net.coderbot.iris.gl.uniform;
 
 import java.util.function.Supplier;
 
-import com.mojang.math.Vector3f;
+//import com.mojang.math.Vector3f;
+import net.coderbot.iris.vendored.joml.Vector3f;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
 

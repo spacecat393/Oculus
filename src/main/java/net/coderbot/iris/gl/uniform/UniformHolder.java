@@ -5,7 +5,8 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-import com.mojang.math.Matrix4f;
+//import com.mojang.math.Matrix4f;
+import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.coderbot.iris.vendored.joml.Vector2f;
 import net.coderbot.iris.vendored.joml.Vector2i;
@@ -30,7 +31,7 @@ public interface UniformHolder {
 
 	UniformHolder uniform3f(UniformUpdateFrequency updateFrequency, String name, Supplier<Vector3f> value);
 
-	UniformHolder uniformVanilla3f(UniformUpdateFrequency updateFrequency, String name, Supplier<com.mojang.math.Vector3f> value);
+	UniformHolder uniformVanilla3f(UniformUpdateFrequency updateFrequency, String name, Supplier<Vector3f> value);
 
 	UniformHolder uniformTruncated3f(UniformUpdateFrequency updateFrequency, String name, Supplier<Vector4f> value);
 
@@ -38,6 +39,7 @@ public interface UniformHolder {
 
 	UniformHolder uniform4f(UniformUpdateFrequency updateFrequency, String name, Supplier<Vector4f> value);
 
+	// currently does the same thing as uniformJomlMatrix, as com.mojang.math.Matrix4f doesn't exist
 	UniformHolder uniformMatrix(UniformUpdateFrequency updateFrequency, String name, Supplier<Matrix4f> value);
 
 	UniformHolder uniformJomlMatrix(UniformUpdateFrequency updateFrequency, String name, Supplier<net.coderbot.iris.vendored.joml.Matrix4f> value);

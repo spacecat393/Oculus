@@ -322,7 +322,7 @@ public final class NativeImage implements AutoCloseable {
         OPEN_OPTIONS = EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    // @OnlyIn(Dist.CLIENT)
     public static enum InternalGlFormat {
         RGBA(6408),
         RGB(6407),
@@ -341,7 +341,7 @@ public final class NativeImage implements AutoCloseable {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    // @OnlyIn(Dist.CLIENT)
     public static enum Format {
         RGBA(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
         RGB(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
