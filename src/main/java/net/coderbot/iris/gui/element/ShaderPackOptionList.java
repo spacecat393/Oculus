@@ -1,5 +1,6 @@
 package net.coderbot.iris.gui.element;
 
+import lombok.Getter;
 import net.coderbot.iris.gui.NavigationController;
 import net.coderbot.iris.gui.element.shaderoptions.BaseEntry;
 import net.coderbot.iris.gui.element.shaderoptions.ElementRowEntry;
