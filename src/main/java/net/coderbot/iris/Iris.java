@@ -26,7 +26,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
 import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 //import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -413,7 +417,7 @@ public class Iris {
 		if (enable) {
 			success = GLDebug.setupDebugMessageCallback();
 		} else {
-			GlDebug.enableDebugCallback(Minecraft.getMinecraft().gameSettings.glDebugVerbosity, false);
+			// GlDebug.enableDebugCallback(Minecraft.getMinecraft().gameSettings.glDebugVerbosity, false);
 			success = 1;
 		}
 
@@ -604,10 +608,14 @@ public class Iris {
 	public static NamespacedId lastDimension = null;
 
 	public static NamespacedId getCurrentDimension() {
-		WorldClient level = Minecraft.getMinecraft().world;
-
-		if (level != null) {
-			return new NamespacedId(level.dimension().location().getNamespace(), level.dimension().location().getPath());
+		//WorldClient level = Minecraft.getMinecraft().world;
+		World world = Minecraft.getMinecraft().world;
+		if (world != null) {
+			//return new NamespacedId(level.dimension().location().getNamespace(), level.dimension().location().getPath());
+			return new NamespacedId(
+					"minecraft", // todo
+					world.provider.getDimensionType().getName()
+			);
 		} else {
 			// This prevents us from reloading the shaderpack unless we need to. Otherwise, if the player is in the
 			// nether and quits the game, we might end up reloading the shaders on exit and on entry to the level
