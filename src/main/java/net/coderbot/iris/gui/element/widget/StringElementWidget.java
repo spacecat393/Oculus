@@ -13,6 +13,7 @@ import net.coderbot.iris.shaderpack.option.menu.OptionMenuStringOptionElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.text.ITextComponent;
 
 public class StringElementWidget extends BaseOptionElementWidget<OptionMenuStringOptionElement> {
 	protected final StringOption option;
@@ -61,7 +62,7 @@ public class StringElementWidget extends BaseOptionElementWidget<OptionMenuStrin
 	}
 
 	@Override
-	protected Component createValueLabel() {
+	protected ITextComponent createValueLabel() {
 		return GuiUtil.translateOrDefault(
 				new TextComponent(getValue()).withStyle(style -> style.withColor(TextColor.fromRgb(0x6688ff))),
 				"value." + this.option.getName() + "." + getValue());

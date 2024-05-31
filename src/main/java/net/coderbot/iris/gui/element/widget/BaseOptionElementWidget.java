@@ -4,39 +4,40 @@ import java.util.Optional;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.util.text.ITextComponent;
+//import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
+//import org.lwjgl.glfw.GLFW;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.gui.NavigationController;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuElement;
-import net.minecraft.ChatFormatting;
+//import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-
-import javax.annotation.Nullable;
+//import net.minecraft.client.gui.Font;
+//import net.minecraft.client.gui.screens.Screen;
+//import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.I18n;
+//import net.minecraft.network.chat.Component;
+//import net.minecraft.network.chat.MutableComponent;
+//import net.minecraft.network.chat.TextColor;
+//import net.minecraft.network.chat.TextComponent;
+//import net.minecraft.network.chat.TranslatableComponent;
 
 public abstract class BaseOptionElementWidget<T extends OptionMenuElement> extends CommentedElementWidget<T> {
-	protected static final Component SET_TO_DEFAULT = new TranslatableComponent("options.iris.setToDefault").withStyle(ChatFormatting.GREEN);
-	protected static final Component DIVIDER = new TextComponent(": ");
+	protected static final ITextComponent SET_TO_DEFAULT = new TranslatableComponent("options.iris.setToDefault").withStyle(ChatFormatting.GREEN);
+	protected static final ITextComponent DIVIDER = new TextComponent(": ");
 
-	protected MutableComponent unmodifiedLabel;
+	protected ITextComponent unmodifiedLabel;
 	protected ShaderPackScreen screen;
 	protected NavigationController navigation;
-	private MutableComponent label;
+	private ITextComponent label;
 
-	protected Component trimmedLabel;
-	protected Component valueLabel;
+	protected ITextComponent trimmedLabel;
+	protected ITextComponent valueLabel;
 
 	private boolean isLabelTrimmed;
 	private int maxLabelWidth;
@@ -132,7 +133,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 		this.valueLabel = createValueLabel();
 	}
 
-	protected final Component createTrimmedLabel() {
+	protected final ITextComponent createTrimmedLabel() {
 		MutableComponent label = GuiUtil.shortenText(
 				Minecraft.getMinecraft().fontRenderer,
 				this.label.copy(),
@@ -145,7 +146,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 		return label;
 	}
 
-	protected abstract Component createValueLabel();
+	protected abstract ITextComponent createValueLabel();
 
 	public abstract boolean applyNextValue();
 
@@ -158,18 +159,19 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 	public abstract @Nullable String getCommentKey();
 
 	@Override
-	public Optional<Component> getCommentTitle() {
+	public Optional<ITextComponent> getCommentTitle() {
 		return Optional.of(this.unmodifiedLabel);
 	}
 
 	@Override
-	public Optional<Component> getCommentBody() {
+	public Optional<ITextComponent> getCommentBody() {
 		return Optional.ofNullable(getCommentKey()).map(key -> I18n.exists(key) ? new TranslatableComponent(key) : null);
 	}
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
-		if (button == GLFW.GLFW_MOUSE_BUTTON_1 || button == GLFW.GLFW_MOUSE_BUTTON_2) {
+//		if (button == GLFW.GLFW_MOUSE_BUTTON_1 || button == GLFW.GLFW_MOUSE_BUTTON_2) {
+		if (button == 0 || button == 1) {
 			boolean refresh = false;
 
 			if (GuiScreen.isShiftKeyDown()) {

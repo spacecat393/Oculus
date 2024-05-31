@@ -1,27 +1,34 @@
 package net.coderbot.iris.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.systems.RenderSystem;
+//import com.mojang.blaze3d.vertex.PoseStack;
 
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.client.gui.Font;
+//import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiComponent;
+//import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+//import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
+//import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
+//import net.minecraft.network.chat.Component;
+//import net.minecraft.network.chat.MutableComponent;
+//import net.minecraft.network.chat.TextComponent;
+//import net.minecraft.network.chat.TranslatableComponent;
+//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Class serving as abstraction and
@@ -51,6 +58,52 @@ public final class GuiUtil {
 	}
 
 	/**
+	 * Draws a textured rectangle at the specified position.
+	 *
+	 * @param x      The x position of the rectangle
+	 * @param y      The y position of the rectangle
+	 * @param u      The x coordinate on the texture to start drawing from
+	 * @param v      The y coordinate on the texture to start drawing from
+	 * @param width  The width of the rectangle
+	 * @param height The height of the rectangle
+	 */
+	private static void drawTexturedModalRect(int x, int y, int u, int v, int width, int height) {
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder buffer = tessellator.getBuffer();
+
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		buffer.pos(x, y + height, 0).tex(u / 256.0F, (v + height) / 256.0F).endVertex();
+		buffer.pos(x + width, y + height, 0).tex((u + width) / 256.0F, (v + height) / 256.0F).endVertex();
+		buffer.pos(x + width, y, 0).tex((u + width) / 256.0F, v / 256.0F).endVertex();
+		buffer.pos(x, y, 0).tex(u / 256.0F, v / 256.0F).endVertex();
+		tessellator.draw();
+	}
+
+	/**
+	 * Draws a textured rectangle with a subset of a texture at the specified position.
+	 *
+	 * @param x         The x position of the rectangle
+	 * @param y         The y position of the rectangle
+	 * @param uOffset   The x coordinate on the texture to start drawing from
+	 * @param vOffset   The y coordinate on the texture to start drawing from
+	 * @param width     The width of the rectangle
+	 * @param height    The height of the rectangle
+	 * @param textureWidth  The width of the texture
+	 * @param textureHeight The height of the texture
+	 */
+	private static void drawTexturedModalRectWithOffset(int x, int y, int uOffset, int vOffset, int width, int height, int textureWidth, int textureHeight) {
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder buffer = tessellator.getBuffer();
+
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		buffer.pos(x, y + height, 0).tex(uOffset / (float) textureWidth, (vOffset + height) / (float) textureHeight).endVertex();
+		buffer.pos(x + width, y + height, 0).tex((uOffset + width) / (float) textureWidth, (vOffset + height) / (float) textureHeight).endVertex();
+		buffer.pos(x + width, y, 0).tex((uOffset + width) / (float) textureWidth, vOffset / (float) textureHeight).endVertex();
+		buffer.pos(x, y, 0).tex(uOffset / (float) textureWidth, vOffset / (float) textureHeight).endVertex();
+		tessellator.draw();
+	}
+
+	/**
 	 * Draws a button. Button textures must be mapped with the
 	 * same coordinates as those on the vanilla widgets texture.
 	 *
@@ -72,20 +125,21 @@ public final class GuiUtil {
 		int vOffset = disabled ? 46 : hovered ? 86 : 66;
 
 		// Sets RenderSystem to use solid white as the tint color for blend mode, and enables blend mode
-		RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 1.0f);
+//		RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 1.0f);
+		GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
 		GlStateManager.enableBlend();
 
 		// Sets RenderSystem to be able to use textures when drawing
 		GlStateManager.enableTexture2D();
 
 		// Top left section
-		GuiComponent.blit(x, y, 0, vOffset, halfWidth, halfHeight, 256, 256);
+		drawTexturedModalRectWithOffset(x, y, 0, vOffset, halfWidth, halfHeight, 256, 256);
 		// Top right section
-		GuiComponent.blit(x + halfWidth, y, 200 - (width - halfWidth), vOffset, width - halfWidth, halfHeight, 256, 256);
+		drawTexturedModalRectWithOffset(x + halfWidth, y, 200 - (width - halfWidth), vOffset, width - halfWidth, halfHeight, 256, 256);
 		// Bottom left section
-		GuiComponent.blit(x, y + halfHeight, 0, vOffset + (20 - (height - halfHeight)), halfWidth, height - halfHeight, 256, 256);
+		drawTexturedModalRectWithOffset(x, y + halfHeight, 0, vOffset + (20 - (height - halfHeight)), halfWidth, height - halfHeight, 256, 256);
 		// Bottom right section
-		GuiComponent.blit(x + halfWidth, y + halfHeight, 200 - (width - halfWidth), vOffset + (20 - (height - halfHeight)), width - halfWidth, height - halfHeight, 256, 256);
+		drawTexturedModalRectWithOffset(x + halfWidth, y + halfHeight, 200 - (width - halfWidth), vOffset + (20 - (height - halfHeight)), width - halfWidth, height - halfHeight, 256, 256);
 	}
 
 	/**
@@ -136,12 +190,13 @@ public final class GuiUtil {
 	 * @param width Width to shorten text to
 	 * @return a shortened text
 	 */
-	public static MutableComponent shortenText(FontRenderer font, MutableComponent text, int width) {
-		if (font.width(text) > width) {
-			return new TextComponent(font.plainSubstrByWidth(text.getString(), width - font.width(ELLIPSIS))).append(ELLIPSIS).setStyle(text.getStyle());
+	public static String shortenText(FontRenderer font, String text, int width) {
+		if (font.getStringWidth(text) > width) {
+			return font.trimStringToWidth(text, width - font.getStringWidth("...")) + "...";
 		}
 		return text;
 	}
+
 
 	/**
 	 * Creates a new translated text, if a translation
@@ -153,9 +208,9 @@ public final class GuiUtil {
 	 * @param format Formatting arguments for the translated text, if created
 	 * @return the translated text if found, otherwise the default provided
 	 */
-	public static MutableComponent translateOrDefault(MutableComponent defaultText, String translationDesc, Object ... format) {
-		if (I18n.exists(translationDesc)) {
-			return new TranslatableComponent(translationDesc, format);
+	public static ITextComponent translateOrDefault(ITextComponent defaultText, String translationDesc, Object ... format) {
+		if (I18n.hasKey(translationDesc)) {
+			return new TextComponentTranslation(translationDesc, format);
 		}
 		return defaultText;
 	}
@@ -186,8 +241,10 @@ public final class GuiUtil {
 
 		private final int u;
 		private final int v;
-		private final int width;
-		private final int height;
+		@Getter
+        private final int width;
+		@Getter
+        private final int height;
 
 		public Icon(int u, int v, int width, int height) {
 			this.u = u;
@@ -202,24 +259,22 @@ public final class GuiUtil {
 		 * @param x The x position to draw the icon at (left)
 		 * @param y The y position to draw the icon at (top)
 		 */
+		/**
+		 * Draws this icon to the screen at the specified coordinates.
+		 *
+		 * @param x The x position to draw the icon at (left)
+		 * @param y The y position to draw the icon at (top)
+		 */
 		public void draw(int x, int y) {
-			// Sets RenderSystem to use solid white as the tint color for blend mode, and enables blend mode
-			RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 1.0f);
+			// Sets OpenGL to use solid white as the tint color for blend mode, and enables blend mode
+			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
 			GlStateManager.enableBlend();
 
-			// Sets RenderSystem to be able to use textures when drawing
+			// Sets OpenGL to be able to use textures when drawing
 			GlStateManager.enableTexture2D();
 
 			// Draw the texture to the screen
-			GuiComponent.blit(x, y, u, v, width, height, 256, 256);
+			drawTexturedModalRect(x, y, u, v, width, height);
 		}
-
-		public int getWidth() {
-			return width;
-		}
-
-		public int getHeight() {
-			return height;
-		}
-	}
+    }
 }

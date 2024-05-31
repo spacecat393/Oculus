@@ -21,6 +21,8 @@ import net.coderbot.iris.shaderpack.option.menu.OptionMenuStringOptionElement;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuSubElementScreen;
 //import net.minecraft.ChatFormatting;
 //import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
 
 public final class OptionMenuConstructor {
 	private static final Map<Class<? extends OptionMenuElement>, WidgetProvider<OptionMenuElement>> WIDGET_CREATORS = new HashMap<>();
@@ -56,7 +58,8 @@ public final class OptionMenuConstructor {
 
 		ElementWidgetScreenData data = createScreenData(screen);
 
-		optionList.addHeader(data.heading, data.backButton);
+//		optionList.addHeader(data.heading, data.backButton);
+		optionList.addHeader(String.valueOf(data.heading), data.backButton);
 		optionList.addWidgets(screen.getColumnCount(), screen.elements.stream().map(element -> {
 			AbstractElementWidget<OptionMenuElement> widget = (AbstractElementWidget<OptionMenuElement>) createWidget(element);
 			widget.init(packScreen, navigation);
@@ -66,10 +69,24 @@ public final class OptionMenuConstructor {
 
 	static {
 		registerScreen(OptionMenuMainElementScreen.class, screen ->
-				new ElementWidgetScreenData(new TextComponent(Iris.getCurrentPackName()).append(Iris.isFallback() ? " (fallback)" : "").withStyle(ChatFormatting.BOLD), false));
+//				new ElementWidgetScreenData(new TextComponent(Iris.getCurrentPackName()).append(Iris.isFallback() ? " (fallback)" : "").withStyle(ChatFormatting.BOLD), false));
+				new ElementWidgetScreenData(
+						new TextComponentString(Iris.getCurrentPackName())
+								.appendSibling(Iris.isFallback() ? new TextComponentString(" (fallback)") : new TextComponentString(""))
+								.setStyle(new Style().setBold(true)),
+						false
+				)
+		);
+
+
 
 		registerScreen(OptionMenuSubElementScreen.class, screen ->
-				new ElementWidgetScreenData(GuiUtil.translateOrDefault(new TextComponent(screen.screenId), "screen." + screen.screenId), true));
+//				new ElementWidgetScreenData(GuiUtil.translateOrDefault(new TextComponent(screen.screenId), "screen." + screen.screenId), true));
+				new ElementWidgetScreenData(
+						GuiUtil.translateOrDefault(new TextComponentString(screen.screenId), "screen." + screen.screenId),
+						true
+				)
+		);
 
 		registerWidget(OptionMenuBooleanOptionElement.class, BooleanElementWidget::new);
 		registerWidget(OptionMenuProfileElement.class, ProfileElementWidget::new);

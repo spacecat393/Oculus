@@ -3,37 +3,43 @@ package net.coderbot.iris.gui.element.widget;
 import java.util.Optional;
 
 import net.minecraft.client.gui.FontRenderer;
-import org.lwjgl.glfw.GLFW;
+//import org.lwjgl.glfw.GLFW;
+import net.minecraft.util.text.TextComponentTranslation;
+import org.lwjgl.input.Mouse;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.gui.NavigationController;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuLinkElement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+//import net.minecraft.client.gui.Font;
+//import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.I18n;
+//import net.minecraft.network.chat.Component;
+//import net.minecraft.network.chat.MutableComponent;
+//import net.minecraft.network.chat.TextComponent;
+//import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElement> {
-	private static final Component ARROW = new TextComponent(">");
+	private static final ITextComponent ARROW = new TextComponentString(">");
 
 	private final String targetScreenId;
-	private final MutableComponent label;
+	private final TextComponentString label;
 
 	private NavigationController navigation;
-	private MutableComponent trimmedLabel = null;
+	private String trimmedLabel = null;
 	private boolean isLabelTrimmed = false;
 
 	public LinkElementWidget(OptionMenuLinkElement element) {
 		super(element);
 
 		this.targetScreenId = element.targetScreenId;
-		this.label = GuiUtil.translateOrDefault(new TextComponent(element.targetScreenId), "screen." + element.targetScreenId);
+//		this.label = GuiUtil.translateOrDefault(new TextComponent(element.targetScreenId), "screen." + element.targetScreenId);
+		this.label = (TextComponentString) GuiUtil.translateOrDefault(new TextComponentString(element.targetScreenId), "screen." + element.targetScreenId);
 	}
 
 	@Override
@@ -50,28 +56,29 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 
 		int maxLabelWidth = width - 9;
 
-		if (font.width(this.label) > maxLabelWidth) {
+		if (font.getStringWidth(this.label.getFormattedText()) > maxLabelWidth) {
 			this.isLabelTrimmed = true;
 		}
 
 		if (this.trimmedLabel == null) {
-			this.trimmedLabel = GuiUtil.shortenText(font, this.label, maxLabelWidth);
+			this.trimmedLabel = GuiUtil.shortenText(font, String.valueOf(this.label), maxLabelWidth);
 		}
 
-		int labelWidth = font.width(this.trimmedLabel);
+		int labelWidth = font.getStringWidth(trimmedLabel);
 
-		font.drawShadow(this.trimmedLabel, x + (int)(width * 0.5) - (int)(labelWidth * 0.5) - (int)(0.5 * Math.max(labelWidth - (width - 18), 0)), y + 7, 0xFFFFFF);
-		font.draw(ARROW, (x + width) - 9, y + 7, 0xFFFFFF);
+//		font.drawShadow(this.trimmedLabel, x + (int)(width * 0.5) - (int)(labelWidth * 0.5) - (int)(0.5 * Math.max(labelWidth - (width - 18), 0)), y + 7, 0xFFFFFF);
+		font.drawStringWithShadow(this.trimmedLabel, x + (int)(width * 0.5) - (int)(labelWidth * 0.5) - (int)(0.5 * Math.max(labelWidth - (width - 18), 0)), y + 7, 0xFFFFFF);
+		font.drawString(ARROW.getFormattedText(), (x + width) - 9, y + 7, 0xFFFFFF);
 
 		if (hovered && this.isLabelTrimmed) {
 			// To prevent other elements from being drawn on top of the tooltip
-			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(font, this.label, mouseX + 2, mouseY - 16));
+			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(font, String.valueOf(this.label), mouseX + 2, mouseY - 16));
 		}
 	}
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
-		if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+		if (button == Mouse.getEventButton()) {
 			this.navigation.open(targetScreenId);
 			GuiUtil.playButtonClickSound();
 
@@ -81,13 +88,13 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 	}
 
 	@Override
-	public Optional<Component> getCommentTitle() {
+	public Optional<ITextComponent> getCommentTitle() {
 		return Optional.of(this.label);
 	}
 
 	@Override
-	public Optional<Component> getCommentBody() {
+	public Optional<ITextComponent> getCommentBody() {
 		String translation = "screen." + this.targetScreenId + ".comment";
-		return Optional.ofNullable(I18n.exists(translation) ? new TranslatableComponent(translation) : null);
+		return Optional.ofNullable(I18n.hasKey(translation) ? new TextComponentTranslation(translation) : null);
 	}
 }

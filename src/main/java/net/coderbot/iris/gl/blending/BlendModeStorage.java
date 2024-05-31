@@ -1,6 +1,6 @@
 package net.coderbot.iris.gl.blending;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+//import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;

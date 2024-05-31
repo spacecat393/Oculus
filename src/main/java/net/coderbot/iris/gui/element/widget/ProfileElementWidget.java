@@ -14,6 +14,7 @@ import net.coderbot.iris.shaderpack.option.ProfileSet;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuProfileElement;
 import net.coderbot.iris.shaderpack.option.values.OptionValues;
 //import net.minecraft.ChatFormatting;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.client.Minecraft;
 //import net.minecraft.network.chat.Component;
@@ -28,7 +29,7 @@ public class ProfileElementWidget extends BaseOptionElementWidget<OptionMenuProf
 
 	private Profile next;
 	private Profile previous;
-	private Component profileLabel;
+	private ITextComponent profileLabel;
 
 	public ProfileElementWidget(OptionMenuProfileElement element) {
 		super(element);
@@ -60,12 +61,12 @@ public class ProfileElementWidget extends BaseOptionElementWidget<OptionMenuProf
 	}
 
 	@Override
-	protected Component createValueLabel() {
+	protected ITextComponent createValueLabel() {
 		return this.profileLabel;
 	}
 
 	@Override
-	public Optional<Component> getCommentTitle() {
+	public Optional<ITextComponent> getCommentTitle() {
 		return Optional.of(PROFILE_LABEL);
 	}
 
