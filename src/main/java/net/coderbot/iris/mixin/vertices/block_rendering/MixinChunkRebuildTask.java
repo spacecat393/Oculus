@@ -8,28 +8,29 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+//import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.client.renderer.BufferBuilder;
+//import com.mojang.blaze3d.vertex.PoseStack;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+//import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.vertices.BlockSensitiveBufferBuilder;
 import net.coderbot.iris.vertices.ExtendedDataHelper;
-import net.minecraft.client.renderer.ChunkBufferBuilderPack;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+//import net.minecraft.client.renderer.ChunkBufferBuilderPack;
+//import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
-import net.minecraft.client.renderer.chunk.RenderChunkRegion;
+//import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.client.renderer.chunk.VisGraph;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.client.model.data.IModelData;
+//import net.minecraft.core.BlockPos;
+//import net.minecraft.world.level.block.Block;
+//import net.minecraft.world.level.block.entity.BlockEntity;
+//import net.minecraft.world.level.block.state.BlockState;
+//import net.minecraft.world.level.material.FluidState;
+//import net.minecraftforge.client.model.data.IModelData;
 
 /**
  * Captures and tracks the current block being rendered.

@@ -1,8 +1,9 @@
 package net.coderbot.iris.compat.sodium.mixin.separate_ao;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultedVertexConsumer;
-import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.client.renderer.BufferBuilder;
+//import com.mojang.blaze3d.vertex.DefaultedVertexConsumer;
+//import com.mojang.blaze3d.vertex.PoseStack;
 //import com.mojang.math.Matrix3f;
 import net.coderbot.iris.vendored.joml.Matrix3f;
 //import com.mojang.math.Matrix4f;
@@ -17,7 +18,6 @@ import me.jellysquid.mods.sodium.client.util.color.ColorABGR;
 import me.jellysquid.mods.sodium.client.util.color.ColorU8;
 import me.jellysquid.mods.sodium.client.util.math.MatrixUtil;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

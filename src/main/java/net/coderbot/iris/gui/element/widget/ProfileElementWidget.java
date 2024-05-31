@@ -49,12 +49,12 @@ public class ProfileElementWidget extends BaseOptionElementWidget<OptionMenuProf
 		this.previous = result.previous;
 		Optional<String> profileName = result.current.map(p -> p.name);
 
-		this.profileLabel = profileName.map(name -> GuiUtil.translateOrDefault(new TextComponent(name), "profile." + name)).orElse(PROFILE_CUSTOM);
+		this.profileLabel = profileName.map(name -> GuiUtil.translateOrDefault(new TextComponentString(name), "profile." + name)).orElse(PROFILE_CUSTOM);
 	}
 
 	@Override
 	public void render(int x, int y, int width, int height, int mouseX, int mouseY, float tickDelta, boolean hovered) {
-		this.updateRenderParams(width, width - (Minecraft.getMinecraft().fontRenderer.width(PROFILE_LABEL) + 16));
+		this.updateRenderParams(width, width - (Minecraft.getMinecraft().fontRenderer.getStringWidth(PROFILE_LABEL.getFormattedText()) + 16));
 
 		this.renderOptionWithValue(x, y, width, height, hovered);
 	}

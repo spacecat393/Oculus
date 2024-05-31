@@ -5,17 +5,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+//import java.util.List;
+//import java.util.Map;
+//import java.util.Set;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+//import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.client.renderer.BufferBuilder;
+//import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+//import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.renderer.MultiBufferSource;
+//import net.minecraft.client.renderer.RenderType;
 
 public class OldFullyBufferedMultiBufferSource extends MultiBufferSource.BufferSource {
 	private final Map<RenderType, BufferBuilder> bufferBuilders;

@@ -326,7 +326,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 
 	@Override
 	public boolean keyPressed(int key, int j, int k) {
-		if (key == GLFW.GLFW_KEY_ESCAPE) {
+		if (key == 256) {
 			if (this.guiHidden) {
 				this.guiHidden = false;
 				this.initGui();

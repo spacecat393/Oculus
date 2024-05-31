@@ -3,8 +3,8 @@ package net.coderbot.iris.gui.element;
 import net.coderbot.iris.gui.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
+//import net.minecraft.network.chat.Component;
+//import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Function;
@@ -159,7 +159,7 @@ public class IrisElementRow {
 				return false;
 			}
 
-			if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+			if (button == 0) {
 				return this.onClick.apply((T) this);
 			}
 

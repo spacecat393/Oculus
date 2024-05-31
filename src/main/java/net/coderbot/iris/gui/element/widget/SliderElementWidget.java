@@ -3,16 +3,16 @@ package net.coderbot.iris.gui.element.widget;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.glfw.GLFW;
+//import org.lwjgl.glfw.GLFW;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuStringOptionElement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.util.Mth;
+//import net.minecraft.client.gui.Font;
+//import net.minecraft.client.gui.screens.Screen;
+//import net.minecraft.util.Mth;
 
 public class SliderElementWidget extends StringElementWidget {
 	private static final int PREVIEW_SLIDER_WIDTH = 4;
@@ -67,7 +67,7 @@ public class SliderElementWidget extends StringElementWidget {
 
 		// Draw value label
 		FontRenderer font = Minecraft.getMinecraft().fontRenderer;
-		font.drawShadow(poseStack, this.valueLabel, (int)(x + (width * 0.5)) - (int)(font.width(this.valueLabel) * 0.5), y + 7, 0xFFFFFF);
+		font.drawStringWithShadow(this.valueLabel.getFormattedText(), (int)(x + (width * 0.5)) - (int)(font.getStringWidth(this.valueLabel.getFormattedText()) * 0.5), y + 7, 0xFFFFFF);
 	}
 
 	private void whileDragging(int x, int width, int mouseX) {
@@ -93,7 +93,7 @@ public class SliderElementWidget extends StringElementWidget {
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
-		if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+		if (button == 0) {
 			if (GuiScreen.isShiftKeyDown()) {
 				if (this.applyOriginalValue()) {
 					this.navigation.refresh();
@@ -115,7 +115,7 @@ public class SliderElementWidget extends StringElementWidget {
 
 	@Override
 	public boolean mouseReleased(double mx, double my, int button) {
-		if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+		if (button == 0) {
 			this.onReleased();
 
 			return true;

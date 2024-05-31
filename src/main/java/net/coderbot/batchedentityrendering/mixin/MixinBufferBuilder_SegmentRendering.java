@@ -1,7 +1,7 @@
 package net.coderbot.batchedentityrendering.mixin;
 
 import java.nio.ByteBuffer;
-import java.util.List;
+//import java.util.List;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -13,8 +13,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.VertexFormat;
+//import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.client.renderer.BufferBuilder;
+//import com.mojang.blaze3d.vertex.VertexFormat;
 
 import net.coderbot.batchedentityrendering.impl.BufferBuilderExt;
 

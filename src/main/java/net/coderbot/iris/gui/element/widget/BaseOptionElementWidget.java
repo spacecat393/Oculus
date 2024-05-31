@@ -111,7 +111,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 		// Draw the label
 		font.drawStringWithShadow(this.trimmedLabel.getFormattedText(), x + 6, y + 7, 0xFFFFFF);
 		// Draw the value label
-		font.drawStringWithShadow(this.valueLabel.getFormattedText(), (x + (width - 2)) - (int)(this.valueSectionWidth * 0.5) - (int)(font.width(this.valueLabel) * 0.5), y + 7, 0xFFFFFF);
+		font.drawStringWithShadow(this.valueLabel.getFormattedText(), (x + (width - 2)) - (int)(this.valueSectionWidth * 0.5) - (int)(font.getStringWidth(this.valueLabel.getFormattedText()) * 0.5), y + 7, 0xFFFFFF);
 	}
 
 	protected final void renderOptionWithValue(int x, int y, int width, int height, boolean hovered) {
@@ -128,7 +128,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 
 	protected final void renderTooltip(ITextComponent text, int mouseX, int mouseY, boolean hovered) {
 		if (hovered) {
-			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(Minecraft.getMinecraft().fontRenderer, text, mouseX + 2, mouseY - 16));
+			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(Minecraft.getMinecraft().fontRenderer, text.getFormattedText(), mouseX + 2, mouseY - 16));
 		}
 	}
 
@@ -182,7 +182,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 				refresh = applyOriginalValue();
 			}
 			if (!refresh) {
-				if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+				if (button == 0) {
 					refresh = applyNextValue();
 				} else {
 					refresh = applyPreviousValue();
