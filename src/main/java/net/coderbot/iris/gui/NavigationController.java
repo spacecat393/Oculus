@@ -3,6 +3,7 @@ package net.coderbot.iris.gui;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import lombok.Getter;
 import net.coderbot.iris.gui.element.ShaderPackOptionList;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuContainer;
 
@@ -10,7 +11,8 @@ public class NavigationController {
 	private final OptionMenuContainer container;
 	private ShaderPackOptionList optionList;
 
-	private String currentScreen = null;
+	@Getter
+    private String currentScreen = null;
 	private final Deque<String> history = new ArrayDeque<>();
 
 	public NavigationController(OptionMenuContainer container) {
@@ -60,7 +62,4 @@ public class NavigationController {
 		this.optionList = optionList;
 	}
 
-	public String getCurrentScreen() {
-		return currentScreen;
-	}
 }

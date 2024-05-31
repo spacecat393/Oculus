@@ -5,29 +5,41 @@ import java.util.function.Function;
 
 //import com.mojang.blaze3d.vertex.PoseStack;
 
+import lombok.Getter;
+import lombok.Setter;
+import me.jellysquid.mods.sodium.client.util.math.MatrixStack;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 //import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiListExtended;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 //import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.FontRenderer;
 //import net.minecraft.client.gui.components.ObjectSelectionList;
 //import net.minecraft.network.chat.Component;
 //import net.minecraft.network.chat.MutableComponent;
 //import net.minecraft.network.chat.TextColor;
 //import net.minecraft.network.chat.TextComponent;
 //import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.util.text.*;
 
 public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackSelectionList.BaseEntry> {
 	private static final ITextComponent PACK_LIST_LABEL = new TextComponentTranslation("pack.iris.list.label").setStyle(new Style().setColor(TextFormatting.GRAY).setItalic(true));
 
 	private final ShaderPackScreen screen;
-	private final TopButtonRowEntry topButtonRow;
-	private ShaderPackEntry applied = null;
+	@Getter
+    private final TopButtonRowEntry topButtonRow;
+	@Setter
+    @Getter
+    private ShaderPackEntry applied = null;
 
 	public ShaderPackSelectionList(ShaderPackScreen screen, Minecraft client, int width, int height, int top, int bottom, int left, int right) {
-		super(client, width, height, top, bottom, left, right, 20);
+		super(client, width, height, top, bottom, left, right, 20, null);
 
 		this.screen = screen;
 		this.topButtonRow = new TopButtonRowEntry(this, Iris.getIrisConfig().areShadersEnabled());
@@ -36,14 +48,14 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 	}
 
 	@Override
-	public int getRowWidth() {
+	public int getListWidth() { // getRowWidth()
 		return Math.min(308, width - 50);
 	}
 
-	@Override
-	protected int getRowTop(int index) {
-		return super.getRowTop(index) + 2;
-	}
+//	@Override
+//	protected int getRowTop(int index) {
+//		return super.getRowTop(index) + 2;
+//	}
 
 	public void refresh() {
 		this.clearEntries();
@@ -59,10 +71,10 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			// We're just trying to get more information on a seemingly untraceable bug:
 			// - https://github.com/IrisShaders/Iris/issues/785
 			this.addLabelEntries(
-					TextComponentString.EMPTY,
+					new TextComponentString(""),
 					new TextComponentString("There was an error reading your shaderpacks directory")
 							.setStyle(new Style().setColor(TextFormatting.RED).setBold(true)),
-					TextComponentString.EMPTY,
+					new TextComponentString(""),
 					new TextComponentString("Check your logs for more information."),
 					new TextComponentString("Please file an issue report including a log file."),
 					new TextComponentString("If you are able to identify the file causing this, " +
@@ -78,7 +90,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 
 		// Only allow the enable/disable shaders button if the user has
 		// added a shader pack. Otherwise, the button will be disabled.
-		topButtonRow.allowEnableShadersButton = names.size() > 0;
+		topButtonRow.allowEnableShadersButton = !names.isEmpty();
 
 		int index = 0;
 
@@ -103,8 +115,8 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		this.addEntry(entry);
 	}
 
-	public void addLabelEntries(Component ... lines) {
-		for (Component text : lines) {
+	public void addLabelEntries(ITextComponent ... lines) {
+		for (ITextComponent text : lines) {
 			this.addEntry(new LabelEntry(text));
 		}
 	}
@@ -121,24 +133,23 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		}
 	}
 
-	public void setApplied(ShaderPackEntry entry) {
-		this.applied = entry;
+	private int getItemCount() {
+		return this.getSize();
 	}
 
-	public ShaderPackEntry getApplied() {
-		return this.applied;
-	}
+	public static abstract class BaseEntry implements GuiListExtended.IGuiListEntry {
+		protected FontRenderer fontRenderer;
 
-	public TopButtonRowEntry getTopButtonRow() {
-		return topButtonRow;
-	}
-
-	public static abstract class BaseEntry extends ObjectSelectionList.Entry<BaseEntry> {
 		protected BaseEntry() {}
+
+		public boolean isMouseOver(int mouseX, int mouseY) {
+			return false; // todo
+		}
 	}
 
 	public static class ShaderPackEntry extends BaseEntry {
-		private final String packName;
+		@Getter
+        private final String packName;
 		private final ShaderPackSelectionList list;
 		private final int index;
 
@@ -156,20 +167,36 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			return list.getSelected() == this;
 		}
 
-		public String getPackName() {
-			return packName;
-		}
-
-		@Override
-		public void render(PoseStack poseStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			Font font = Minecraft.getInstance().font;
+        //@Override
+		public void render(MatrixStack poseStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+//			Font font = Minecraft.getInstance().font;
+			FontRenderer font = this.fontRenderer;
 			int color = 0xFFFFFF;
 			String name = packName;
 
 			boolean shadersEnabled = list.getTopButtonRow().shadersEnabled;
 
-			if (font.width(new TextComponentString(name).setStyle(new Style().setBold(true))) > this.list.getRowWidth() - 3) {
-				name = font.plainSubstrByWidth(name, this.list.getRowWidth() - 8) + "...";
+//			if (font.getStringWidth(new TextComponentString(name).setStyle(new Style().setBold(true)).getFormattedText()) > this.list.getListWidth() - 3) {
+//				name = font.plainSubstrByWidth(name, this.list.getListWidth() - 8) + "...";
+//			}
+
+			String formattedName = new TextComponentString(name).setStyle(new Style().setBold(true)).getFormattedText();
+
+			if (font.getStringWidth(formattedName) > this.list.getListWidth() - 3) {
+				int ellipsisWidth = font.getStringWidth("...");
+				StringBuilder builder = new StringBuilder();
+				int width = 0;
+				for (int i = 0; i < formattedName.length(); i++) {
+					char c = formattedName.charAt(i);
+					int charWidth = font.getCharWidth(c);
+					if (width + charWidth + ellipsisWidth > this.list.getListWidth() - 8) {
+						builder.append("...");
+						break;
+					}
+					builder.append(c);
+					width += charWidth;
+				}
+				name = builder.toString();
 			}
 
 			ITextComponent text = new TextComponentString(name);
@@ -189,7 +216,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			drawCenteredString(poseStack, font, text, (x + entryWidth / 2) - 2, y + (entryHeight - 11) / 2, color);
 		}
 
-		@Override
+		//@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			// Only do anything on left-click
 			if (button != 0) {
@@ -218,9 +245,9 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 	}
 
 	public static class LabelEntry extends BaseEntry {
-		private final Component label;
+		private final ITextComponent label;
 
-		public LabelEntry(Component label) {
+		public LabelEntry(ITextComponent label) {
 			this.label = label;
 		}
 
@@ -273,7 +300,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 
 		public void setShadersEnabled(boolean shadersEnabled) {
 			this.shadersEnabled = shadersEnabled;
-			this.enableDisableButton.text = getEnableDisableLabel();
+			this.enableDisableButton.text = getEnableDisableLabel().getFormattedText();
 			this.list.screen.refreshScreenSwitchButton();
 		}
 
@@ -291,7 +318,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			}
 		}
 
-		private Component getEnableDisableLabel() {
+		private ITextComponent getEnableDisableLabel() {
 			return this.allowEnableShadersButton ? this.shadersEnabled ? SHADERS_ENABLED_LABEL : SHADERS_DISABLED_LABEL : NONE_PRESENT_LABEL;
 		}
 
@@ -304,7 +331,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		public static class EnableShadersButtonElement extends IrisElementRow.TextButtonElement {
 			private int centerX;
 
-			public EnableShadersButtonElement(Component text, Function<IrisElementRow.TextButtonElement, Boolean> onClick) {
+			public EnableShadersButtonElement(ITextComponent text, Function<IrisElementRow.TextButtonElement, Boolean> onClick) {
 				super(text, onClick);
 			}
 

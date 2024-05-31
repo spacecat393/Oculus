@@ -19,6 +19,8 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -323,6 +325,7 @@ public final class NativeImage implements AutoCloseable {
     }
 
     // @OnlyIn(Dist.CLIENT)
+    @SideOnly(Side.CLIENT)
     public static enum InternalGlFormat {
         RGBA(6408),
         RGB(6407),
@@ -342,6 +345,7 @@ public final class NativeImage implements AutoCloseable {
     }
 
     // @OnlyIn(Dist.CLIENT)
+    @SideOnly(Side.CLIENT)
     public static enum Format {
         RGBA(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
         RGB(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
