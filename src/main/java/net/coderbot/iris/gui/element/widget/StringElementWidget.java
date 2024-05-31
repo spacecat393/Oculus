@@ -14,6 +14,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 public class StringElementWidget extends BaseOptionElementWidget<OptionMenuStringOptionElement> {
 	protected final StringOption option;
@@ -64,7 +67,7 @@ public class StringElementWidget extends BaseOptionElementWidget<OptionMenuStrin
 	@Override
 	protected ITextComponent createValueLabel() {
 		return GuiUtil.translateOrDefault(
-				new TextComponent(getValue()).withStyle(style -> style.withColor(TextColor.fromRgb(0x6688ff))),
+				new TextComponentString(getValue()).setStyle(new Style().setColor(TextFormatting.BLUE)),
 				"value." + this.option.getName() + "." + getValue());
 	}
 

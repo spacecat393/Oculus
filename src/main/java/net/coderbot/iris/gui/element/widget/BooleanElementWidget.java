@@ -1,6 +1,6 @@
 package net.coderbot.iris.gui.element.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gui.GuiUtil;
@@ -8,17 +8,17 @@ import net.coderbot.iris.gui.NavigationController;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.coderbot.iris.shaderpack.option.BooleanOption;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuBooleanOptionElement;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.util.text.ITextComponent;
+//import net.minecraft.ChatFormatting;
+//import net.minecraft.network.chat.Component;
+//import net.minecraft.network.chat.TextComponent;
+//import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.text.*;
 
 public class BooleanElementWidget extends BaseOptionElementWidget<OptionMenuBooleanOptionElement> {
-	private static final Component TEXT_TRUE = new TranslatableComponent("label.iris.true").withStyle(ChatFormatting.GREEN);
-	private static final Component TEXT_FALSE = new TranslatableComponent("label.iris.false").withStyle(ChatFormatting.RED);
-	private static final Component TEXT_TRUE_DEFAULT = new TranslatableComponent("label.iris.true");
-	private static final Component TEXT_FALSE_DEFAULT = new TranslatableComponent("label.iris.false");
+	private static final ITextComponent TEXT_TRUE = new TextComponentTranslation("label.iris.true").setStyle(new Style().setColor(TextFormatting.GREEN));
+	private static final ITextComponent TEXT_FALSE = new TextComponentTranslation("label.iris.false").setStyle(new Style().setColor(TextFormatting.RED));
+	private static final ITextComponent TEXT_TRUE_DEFAULT = new TextComponentTranslation("label.iris.true");
+	private static final ITextComponent TEXT_FALSE_DEFAULT = new TextComponentTranslation("label.iris.false");
 
 	private final BooleanOption option;
 
@@ -46,7 +46,7 @@ public class BooleanElementWidget extends BaseOptionElementWidget<OptionMenuBool
 		this.defaultValue = this.element.getAppliedOptionValues().getOptionSet().getBooleanOptions()
 			.get(this.option.getName()).getOption().getDefaultValue();
 
-		this.setLabel(GuiUtil.translateOrDefault(new TextComponent(this.option.getName()), "option." + this.option.getName()));
+		this.setLabel(GuiUtil.translateOrDefault(new TextComponentString(this.option.getName()), "option." + this.option.getName()));
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package net.coderbot.iris;
 
 import com.google.common.base.Throwables;
 //import com.mojang.blaze3d.platform.GlDebug;
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.coderbot.iris.config.IrisConfig;
 import net.coderbot.iris.gl.GLDebug;
 import net.coderbot.iris.gl.shader.StandardMacros;
@@ -678,18 +677,18 @@ public class Iris {
 	}
 
 	public static String getFormattedVersion() {
-		ChatFormatting color;
+		TextFormatting color;
 		String version = getVersion();
 
 		if (version.endsWith("-development-environment")) {
-			color = ChatFormatting.GOLD;
+			color = TextFormatting.GOLD;
 			version = version.replace("-development-environment", " (Development Environment)");
 		} else if (version.endsWith("-dirty") || version.contains("unknown") || version.endsWith("-nogit")) {
-			color = ChatFormatting.RED;
+			color = TextFormatting.RED;
 		} else if (version.contains("+rev.")) {
-			color = ChatFormatting.LIGHT_PURPLE;
+			color = TextFormatting.LIGHT_PURPLE;
 		} else {
-			color = ChatFormatting.GREEN;
+			color = TextFormatting.GREEN;
 		}
 
 		return color + version;

@@ -14,18 +14,17 @@ import net.coderbot.iris.shaderpack.option.ProfileSet;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuProfileElement;
 import net.coderbot.iris.shaderpack.option.values.OptionValues;
 //import net.minecraft.ChatFormatting;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 import net.minecraft.client.Minecraft;
 //import net.minecraft.network.chat.Component;
 //import net.minecraft.network.chat.MutableComponent;
 //import net.minecraft.network.chat.TextComponent;
 //import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.util.text.TextComponentString;
+
 
 public class ProfileElementWidget extends BaseOptionElementWidget<OptionMenuProfileElement> {
-	private static final MutableComponent PROFILE_LABEL = new TranslatableComponent("options.iris.profile");
-	private static final MutableComponent PROFILE_CUSTOM = new TranslatableComponent("options.iris.profile.custom").withStyle(ChatFormatting.YELLOW);
+	private static final ITextComponent PROFILE_LABEL = new TextComponentTranslation("options.iris.profile");
+	private static final ITextComponent PROFILE_CUSTOM = new TextComponentTranslation("options.iris.profile.custom").setStyle(new Style().setColor(TextFormatting.YELLOW));
 
 	private Profile next;
 	private Profile previous;

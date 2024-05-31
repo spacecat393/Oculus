@@ -61,7 +61,7 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 		}
 
 		if (this.trimmedLabel == null) {
-			this.trimmedLabel = GuiUtil.shortenText(font, String.valueOf(this.label), maxLabelWidth);
+			this.trimmedLabel = GuiUtil.shortenText(font, this.label.getFormattedText(), maxLabelWidth);
 		}
 
 		int labelWidth = font.getStringWidth(trimmedLabel);
@@ -72,7 +72,7 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 
 		if (hovered && this.isLabelTrimmed) {
 			// To prevent other elements from being drawn on top of the tooltip
-			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(font, String.valueOf(this.label), mouseX + 2, mouseY - 16));
+			ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() -> GuiUtil.drawTextPanel(font, this.label.getFormattedText(), mouseX + 2, mouseY - 16));
 		}
 	}
 
