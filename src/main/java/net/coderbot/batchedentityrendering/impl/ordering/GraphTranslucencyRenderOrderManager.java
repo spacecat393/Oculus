@@ -2,19 +2,19 @@ package net.coderbot.batchedentityrendering.impl.ordering;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
+//import java.util.List;
 
-import de.odysseus.ithaka.digraph.Digraph;
+//import de.odysseus.ithaka.digraph.Digraph;
 import de.odysseus.ithaka.digraph.Digraphs;
 import de.odysseus.ithaka.digraph.MapDigraph;
-import de.odysseus.ithaka.digraph.util.fas.FeedbackArcSet;
+//import de.odysseus.ithaka.digraph.util.fas.FeedbackArcSet;
 import de.odysseus.ithaka.digraph.util.fas.FeedbackArcSetPolicy;
 import de.odysseus.ithaka.digraph.util.fas.FeedbackArcSetProvider;
 import de.odysseus.ithaka.digraph.util.fas.SimpleFeedbackArcSetProvider;
 import net.coderbot.batchedentityrendering.impl.BlendingStateHolder;
 import net.coderbot.batchedentityrendering.impl.TransparencyType;
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
-import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.renderer.RenderType;
 
 public class GraphTranslucencyRenderOrderManager implements RenderOrderManager {
     private final FeedbackArcSetProvider feedbackArcSetProvider;

@@ -1,6 +1,6 @@
 package net.coderbot.batchedentityrendering.impl;
 
-import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.renderer.RenderType;
 import org.lwjgl.opengl.GL11;
 
 public class RenderTypeUtil {

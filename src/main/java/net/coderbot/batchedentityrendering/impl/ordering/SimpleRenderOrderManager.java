@@ -2,7 +2,7 @@ package net.coderbot.batchedentityrendering.impl.ordering;
 
 import java.util.LinkedHashSet;
 
-import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.renderer.RenderType;
 
 public class SimpleRenderOrderManager implements RenderOrderManager {
     private final LinkedHashSet<RenderType> renderTypes;
