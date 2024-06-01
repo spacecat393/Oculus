@@ -153,8 +153,7 @@ public class ShaderPack {
 
 		if (!invalidFeatureFlags.isEmpty()) {
 			if (Minecraft.getMinecraft().currentScreen instanceof ShaderPackScreen) {
-				Minecraft.getMinecraft().displayGuiScreen(new FeatureMissingErrorScreen(Minecraft.getMinecraft().currentScreen, new TextComponentTranslation("iris.unsupported.pack"), new TextComponentTranslation("iris.unsupported.pack.description", FeatureFlags.getInvalidStatus(invalidFlagList), invalidFeatureFlags.stream()
-					.collect(Collectors.joining(", ", ": ", ".")))));
+				Minecraft.getMinecraft().displayGuiScreen(new FeatureMissingErrorScreen(Minecraft.getMinecraft().currentScreen, new TextComponentTranslation("iris.unsupported.pack").getFormattedText(), new TextComponentTranslation("iris.unsupported.pack.description").getFormattedText()));
 			}
 			IrisApi.getInstance().getConfig().setShadersEnabledAndApply(false);
 		}
