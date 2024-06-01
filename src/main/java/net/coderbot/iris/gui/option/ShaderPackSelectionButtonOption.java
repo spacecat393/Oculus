@@ -2,32 +2,27 @@ package net.coderbot.iris.gui.option;
 
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.minecraft.client.Minecraft;
-//import net.minecraft.client.Option;
-//import net.minecraft.client.Options;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.text.TextComponentTranslation;
-//import net.minecraft.client.gui.components.AbstractWidget;
-//import net.minecraft.client.gui.components.OptionButton;
-//import net.minecraft.client.gui.screens.Screen;
-//import net.minecraft.network.chat.TranslatableComponent;
 
-public class ShaderPackSelectionButtonOption extends Option {
+public class ShaderPackSelectionButtonOption extends GuiButton {
 	private final GuiScreen parent;
 	private final Minecraft client;
 
 	public ShaderPackSelectionButtonOption(GuiScreen parent, Minecraft client) {
-		super("options.iris.shaderPackSelection");
+		super(0, 0, 0, 150, 20, new TextComponentTranslation("options.iris.shaderPackSelection").getFormattedText());
 		this.parent = parent;
 		this.client = client;
 	}
 
-	@Override
-	public AbstractWidget createButton(Options options, int x, int y, int width) {
-		return new OptionButton(
-				x, y, width, 20,
-				this,
-				new TextComponentTranslation("options.iris.shaderPackSelection"),
-				button -> client.setScreen(new ShaderPackScreen(parent))
-		);
+	//@Override
+	public void onClick(double mouseX, double mouseY) {
+		this.client.displayGuiScreen(new ShaderPackScreen(this.parent));
+	}
+
+	public GuiButton createButton(GameSettings options, int x, int y, int width) {
+		return new ShaderPackSelectionButtonOption(this.parent, this.client);
 	}
 }
