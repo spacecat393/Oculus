@@ -32,43 +32,47 @@ public class IrisVideoSettings {
 				.orElse(true);
 	}
 
-	public static final ProgressOption RENDER_DISTANCE = new ShadowDistanceOption("options.iris.shadowDistance", 0.0D, 32.0D, 1.0F, (gameOptions) -> {
-		return (double) getOverriddenShadowDistance(shadowDistance);
-	}, (gameOptions, viewDistance) -> {
-		double outputShadowDistance = viewDistance;
-		shadowDistance = (int) outputShadowDistance;
-		try {
-			Iris.getIrisConfig().save();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}, (gameOptions, option) -> {
-		int d = (int) option.get(gameOptions);
+	public static final ShadowDistanceOption RENDER_DISTANCE = new ShadowDistanceOption(
+			"options.iris.shadowDistance", 0.0D, 32.0D, 1.0F,
+			(gameOptions) -> {
+				return (double) getOverriddenShadowDistance(shadowDistance);
+			},
+			(gameOptions, viewDistance) -> {
+				double outputShadowDistance = viewDistance;
+				shadowDistance = (int) outputShadowDistance;
+				try {
+					Iris.getIrisConfig().save();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			},
+			(gameOptions, option) -> {
+				int d = (int) option.get(gameOptions);
 
-		WorldRenderingPipeline pipeline = Iris.getPipelineManager().getPipelineNullable();
+				WorldRenderingPipeline pipeline = Iris.getPipelineManager().getPipelineNullable();
 
-		Component tooltip;
+				ITextComponent tooltip;
 
-		if (pipeline != null) {
-			d = pipeline.getForcedShadowRenderDistanceChunksForDisplay().orElse(d);
+				if (pipeline != null) {
+					d = pipeline.getForcedShadowRenderDistanceChunksForDisplay().orElse(d);
 
-			if (pipeline.getForcedShadowRenderDistanceChunksForDisplay().isPresent()) {
-				tooltip = DISABLED_TOOLTIP;
-			} else {
-				tooltip = ENABLED_TOOLTIP;
+					if (pipeline.getForcedShadowRenderDistanceChunksForDisplay().isPresent()) {
+						tooltip = new TextComponentTranslation("options.iris.shadowDistance.disabled");
+					} else {
+						tooltip = new TextComponentTranslation("options.iris.shadowDistance.enabled");
+					}
+				} else {
+					tooltip = new TextComponentTranslation("options.iris.shadowDistance.enabled");
+				}
+
+				// todo option.setTooltip(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(tooltip.getFormattedText(), 200));
+
+				if (d <= 0.0) {
+					return new TextComponentTranslation("options.generic_value", new TextComponentTranslation("options.iris.shadowDistance"), "0 (disabled)");
+				} else {
+					return new TextComponentTranslation("options.generic_value", new TextComponentTranslation("options.iris.shadowDistance"), new TextComponentTranslation("options.chunks", d));
+				}
 			}
-		} else {
-			tooltip = ENABLED_TOOLTIP;
-		}
+	);
 
-		option.setTooltip(Minecraft.getMinecraft().fontRenderer.split(tooltip, 200));
-
-		if (d <= 0.0) {
-			return new TextComponentTranslation("options.generic_value", new TextComponentTranslation("options.iris.shadowDistance"), "0 (disabled)");
-		} else {
-			return new TextComponentTranslation("options.generic_value",
-					new TextComponentTranslation("options.iris.shadowDistance"),
-					new TextComponentTranslation("options.chunks", d));
-		}
-	});
 }
