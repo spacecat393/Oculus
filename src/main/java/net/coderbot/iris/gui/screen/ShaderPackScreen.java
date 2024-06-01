@@ -126,12 +126,12 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 			drawCenteredString(this.fontRenderer, this.title, (int) (this.width * 0.5), 8, 0xFFFFFF);
 
 			if (notificationDialog != null && notificationDialogTimer > 0) {
-				drawCenteredString(this.fontRenderer, notificationDialog, (int) (this.width * 0.5), 21, 0xFFFFFF);
+				drawCenteredString(this.fontRenderer, notificationDialog.getFormattedText(), (int) (this.width * 0.5), 21, 0xFFFFFF);
 			} else {
 				if (optionMenuOpen) {
-					drawCenteredString(this.fontRenderer, CONFIGURE_TITLE, (int) (this.width * 0.5), 21, 0xFFFFFF);
+					drawCenteredString(this.fontRenderer, CONFIGURE_TITLE.getFormattedText(), (int) (this.width * 0.5), 21, 0xFFFFFF);
 				} else {
-					drawCenteredString(this.fontRenderer, SELECT_TITLE, (int) (this.width * 0.5), 21, 0xFFFFFF);
+					drawCenteredString(this.fontRenderer, SELECT_TITLE.getFormattedText(), (int) (this.width * 0.5), 21, 0xFFFFFF);
 				}
 			}
 
@@ -144,9 +144,9 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 				// Draw panel
 				GuiUtil.drawPanel(x, y, COMMENT_PANEL_WIDTH, panelHeight);
 				// Draw text
-				this.fontRenderer.drawShadow(this.hoveredElementCommentTitle.orElse(TextComponentString.EMPTY), x + 4, y + 4, 0xFFFFFF);
+				this.fontRenderer.drawStringWithShadow(this.hoveredElementCommentTitle.toString(), x + 4, y + 4, 0xFFFFFF);
 				for (int i = 0; i < this.hoveredElementCommentBody.size(); i++) {
-					this.fontRenderer.drawShadow(this.hoveredElementCommentBody.get(i), x + 4, (y + 16) + (i * 10), 0xFFFFFF);
+					this.fontRenderer.drawStringWithShadow(String.valueOf(this.hoveredElementCommentBody.toString().charAt(i)), x + 4, (y + 16) + (i * 10), 0xFFFFFF);
 				}
 			}
 		}
@@ -158,13 +158,13 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		TOP_LAYER_RENDER_QUEUE.clear();
 
 		if (this.developmentComponent != null) {
-			this.fontRenderer.drawShadow(developmentComponent, 2, this.height - 10, 0xFFFFFF);
-			this.fontRenderer.drawShadow(irisTextComponent, 2, this.height - 20, 0xFFFFFF);
+			this.fontRenderer.drawStringWithShadow(developmentComponent.getFormattedText(), 2, this.height - 10, 0xFFFFFF);
+			this.fontRenderer.drawStringWithShadow(irisTextComponent.getFormattedText(), 2, this.height - 20, 0xFFFFFF);
 		} else if (this.updateComponent != null) {
-			this.fontRenderer.drawShadow(updateComponent, 2, this.height - 10, 0xFFFFFF);
-			this.fontRenderer.drawShadow(irisTextComponent, 2, this.height - 20, 0xFFFFFF);
+			this.fontRenderer.drawStringWithShadow(updateComponent.getFormattedText(), 2, this.height - 10, 0xFFFFFF);
+			this.fontRenderer.drawStringWithShadow(irisTextComponent.getFormattedText(), 2, this.height - 20, 0xFFFFFF);
 		} else {
-			this.fontRenderer.drawShadow(irisTextComponent, 2, this.height - 10, 0xFFFFFF);
+			this.fontRenderer.drawStringWithShadow(irisTextComponent.getFormattedText(), 2, this.height - 10, 0xFFFFFF);
 		}
 	}
 
@@ -240,7 +240,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		}
 
 		if (inWorld) {
-			Component showOrHide = this.guiHidden
+			ITextComponent showOrHide = this.guiHidden
 				? new TextComponentTranslation("options.iris.gui.show")
 				: new TextComponentTranslation("options.iris.gui.hide");
 
@@ -437,7 +437,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		this.notificationDialogTimer = 100;
 	}
 
-	public void displayNotification(Component component) {
+	public void displayNotification(ITextComponent component) {
 		this.notificationDialog = component;
 		this.notificationDialogTimer = 100;
 	}
@@ -539,7 +539,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 	}
 
 	private void openShaderPackFolder() {
-		CompletableFuture.runAsync(() -> open(Iris.getShaderpacksDirectoryManager().getDirectoryUri()));
+		CompletableFuture.runAsync(() -> open(Iris.getShaderpacksDirectoryManager().getDirectoryUri().toString()));
 	}
 
 	private static String[] getURLOpenCommand(String url) {
@@ -573,7 +573,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 			if (widget instanceof CommentedElementWidget) {
 				this.hoveredElementCommentTitle = ((CommentedElementWidget<?>) widget).getCommentTitle();
 
-				Optional<Component> commentBody = ((CommentedElementWidget<?>) widget).getCommentBody();
+				Optional<ITextComponent> commentBody = ((CommentedElementWidget<?>) widget).getCommentBody();
 				if (!commentBody.isPresent()) {
 					this.hoveredElementCommentBody.clear();
 				} else {
@@ -584,10 +584,10 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 						rawCommentBody = rawCommentBody.substring(0, rawCommentBody.length() - 1);
 					}
 					// Split comment body into lines by separator ". "
-					List<MutableComponent> splitByPeriods = Arrays.stream(rawCommentBody.split("\\. [ ]*")).map(TextComponent::new).collect(Collectors.toList());
+					List<ITextComponent> splitByPeriods = Arrays.stream(rawCommentBody.split("\\. [ ]*")).map(TextComponentString::new).collect(Collectors.toList());
 					// Line wrap
 					this.hoveredElementCommentBody = new ArrayList<>();
-					for (MutableComponent text : splitByPeriods) {
+					for (ITextComponent text : splitByPeriods) {
 						this.hoveredElementCommentBody.addAll(this.fontRenderer.split(text, COMMENT_PANEL_WIDTH - 8));
 					}
 				}
