@@ -17,6 +17,7 @@ import java.util.function.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import lombok.Getter;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.shaderpack.error.RusticError;
 import net.coderbot.iris.shaderpack.transform.line.LineTransform;
@@ -56,6 +57,7 @@ import net.coderbot.iris.shaderpack.transform.line.LineTransform;
  *         </li>
  * </ul>
  */
+@Getter
 public class IncludeGraph {
 	private final ImmutableMap<AbsolutePackPath, FileNode> nodes;
 	private final ImmutableMap<AbsolutePackPath, RusticError> failures;
@@ -224,11 +226,7 @@ public class IncludeGraph {
 		return false;
 	}
 
-	public ImmutableMap<AbsolutePackPath, FileNode> getNodes() {
-		return nodes;
-	}
-
-	public List<IncludeGraph> computeWeaklyConnectedComponents() {
+    public List<IncludeGraph> computeWeaklyConnectedComponents() {
 		//List<IncludeGraph> components = new ArrayList<>();
 
 		// TODO: WCC
@@ -251,11 +249,7 @@ public class IncludeGraph {
 		return new IncludeGraph(mappedNodes.build(), failures);
 	}
 
-	public ImmutableMap<AbsolutePackPath, RusticError> getFailures() {
-		return failures;
-	}
-
-	private static String readFile(Path path) throws IOException {
+    private static String readFile(Path path) throws IOException {
 		return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 	}
 }

@@ -101,7 +101,7 @@ public interface DepthCopyStrategy {
 		//
 		// Perhaps calling GL43.isAvailable would be a different option, but we only need one
 		// function, so we just check for that function.
-		if (GL.getCapabilities().glCopyImageSubData != MemoryUtil.NULL) {
+		if (GL.getCapabilities().glCopyImageSubData != 0L) {
 			return new Gl43CopyImage();
 		}
 

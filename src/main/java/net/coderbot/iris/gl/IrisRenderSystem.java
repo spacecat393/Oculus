@@ -8,12 +8,15 @@ import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.minecraft.client.renderer.GlStateManager;
 //import net.minecraft.client.renderer.OpenGlHelper;
 //import org.jetbrains.annotations.Nullable;
-import org.lwjgl.opengl.*;
-//import org.lwjgl.opengl.GL;
-//import org.lwjgl.opengl.GL30C;
-//import org.lwjgl.opengl.GL40C;
-//import org.lwjgl.opengl.GL45C;
-//import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.ARBDirectStateAccess;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.BufferUtils;
+
 
 //import com.mojang.blaze3d.platform.GlStateManager;
 //import com.mojang.blaze3d.systems.RenderSystem;
@@ -51,11 +54,19 @@ public class IrisRenderSystem {
 	}
 
 	public static void getIntegerv(int pname, int[] params) {
-		GL30C.glGetIntegerv(pname, params);
+		if (params.length == 1) {
+			params[0] = GL11.glGetInteger(pname);
+		} else {
+			IntBuffer buffer = BufferUtils.createIntBuffer(params.length);
+			GL11.glGetInteger(pname, buffer);
+			buffer.get(params);
+		}
 	}
 
 	public static void getFloatv(int pname, float[] params) {
-		GL30C.glGetFloatv(pname, params);
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(params.length);
+		GL11.glGetFloat(pname, buffer);
+		buffer.get(params);
 	}
 
 	public static void generateMipmaps(int texture, int mipmapTarget) {
@@ -63,60 +74,63 @@ public class IrisRenderSystem {
 	}
 
 	public static void bindAttributeLocation(int program, int index, CharSequence name) {
-		GL30C.glBindAttribLocation(program, index, name);
+		GL20.glBindAttribLocation(program, index, name);
 	}
 
-	public static void texImage2D(int texture, int target, int level, int internalformat, int width, int height, int border, int format, int type, @Nullable ByteBuffer pixels) {
+	public static void texImage2D(int texture, int target, int level, int internalFormat, int width, int height, int border, int format, int type, ByteBuffer pixels) {
 		GlStateManager.bindTexture(texture);
-		GL30C.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+		GL11.glTexImage2D(target, level, internalFormat, width, height, border, format, type, pixels);
 	}
 
 	public static void uniformMatrix4fv(int location, boolean transpose, FloatBuffer matrix) {
-		GL30C.glUniformMatrix4fv(location, transpose, matrix);
+		GL20.glUniformMatrix4(location, transpose, matrix);
 	}
 
 	public static void copyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) {
-		GL30C.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
+		GL11.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border);
 	}
 
 	public static void uniform1f(int location, float v0) {
-		GL30C.glUniform1f(location, v0);
+		GL20.glUniform1f(location, v0);
 	}
 
 	public static void uniform1i(int location, int v0) {
-		GL30C.glUniform1i(location, v0);
+		GL20.glUniform1i(location, v0);
 	}
 
 	public static void uniform2f(int location, float v0, float v1) {
-        GL30C.glUniform2f(location, v0, v1);
+		GL20.glUniform2f(location, v0, v1);
 	}
 
 	public static void uniform2i(int location, int v0, int v1) {
-        GL30C.glUniform2i(location, v0, v1);
+		GL20.glUniform2i(location, v0, v1);
 	}
 
 	public static void uniform3f(int location, float v0, float v1, float v2) {
-        GL30C.glUniform3f(location, v0, v1, v2);
+		GL20.glUniform3f(location, v0, v1, v2);
 	}
 
 	public static void uniform4f(int location, float v0, float v1, float v2, float v3) {
-        GL30C.glUniform4f(location, v0, v1, v2, v3);
+		GL20.glUniform4f(location, v0, v1, v2, v3);
 	}
 
 	public static void uniform4i(int location, int v0, int v1, int v2, int v3) {
-		GL30C.glUniform4i(location, v0, v1, v2, v3);
+		GL20.glUniform4i(location, v0, v1, v2, v3);
 	}
 
 	public static int getAttribLocation(int programId, String name) {
-		return GL30C.glGetAttribLocation(programId, name);
+		return GL20.glGetAttribLocation(programId, name);
 	}
 
 	public static int getUniformLocation(int programId, String name) {
-		return GL30C.glGetUniformLocation(programId, name);
+		return GL20.glGetUniformLocation(programId, name);
 	}
 
 	public static void texParameteriv(int texture, int target, int pname, int[] params) {
-		dsaState.texParameteriv(texture, target, pname, params);
+		GlStateManager.bindTexture(texture);
+		IntBuffer buffer = BufferUtils.createIntBuffer(params.length).put(params);
+		buffer.flip();
+		GL11.glTexParameter(target, pname, buffer);
 	}
 
 	public static void copyTexSubImage2D(int destTexture, int target, int i, int i1, int i2, int i3, int i4, int width, int height) {
@@ -152,11 +166,15 @@ public class IrisRenderSystem {
 	}
 
 	public static void readPixels(int x, int y, int width, int height, int format, int type, float[] pixels) {
-		GL30C.glReadPixels(x, y, width, height, format, type, pixels);
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(pixels.length);
+		GL11.glReadPixels(x, y, width, height, format, type, buffer);
+		buffer.get(pixels);
 	}
 
 	public static void bufferData(int target, float[] data, int usage) {
-		GL30C.glBufferData(target, data, usage);
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length).put(data);
+		buffer.flip();
+		GL15.glBufferData(target, buffer, usage);
 	}
 
 	public static int bufferStorage(int target, float[] data, int usage) {
@@ -229,8 +247,8 @@ public class IrisRenderSystem {
 
 	public static void blendFuncSeparatei(int buffer, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
 		GL40C.glBlendFuncSeparatei(buffer, srcRGB, dstRGB, srcAlpha, dstAlpha);
-  }
-  
+	}
+
 	public static void bindTextureToUnit(int unit, int texture) {
 		dsaState.bindTextureToUnit(unit, texture);
 	}
@@ -493,6 +511,6 @@ public class IrisRenderSystem {
 
 	// TODO: Proper notification of compute support
 	public static boolean supportsCompute() {
-		return GL.getCapabilities().glDispatchCompute != MemoryUtil.NULL;
+		return GL.getCapabilities().glDispatchCompute != 0L;
 	}
 }

@@ -3,6 +3,7 @@ package net.coderbot.iris.shaderpack.loading;
 import java.util.Objects;
 import java.util.Optional;
 
+import lombok.Getter;
 import net.coderbot.iris.gl.blending.BlendMode;
 import net.coderbot.iris.gl.blending.BlendModeFunction;
 import net.coderbot.iris.gl.blending.BlendModeOverride;
@@ -46,8 +47,10 @@ public enum ProgramId {
 	Final(ProgramGroup.Final, ""),
 	;
 
-	private final ProgramGroup group;
-	private final String sourceName;
+	@Getter
+    private final ProgramGroup group;
+	@Getter
+    private final String sourceName;
 	private final ProgramId fallback;
 	private final BlendModeOverride defaultBlendOverride;
 
@@ -72,15 +75,7 @@ public enum ProgramId {
 		this.defaultBlendOverride = defaultBlendOverride;
 	}
 
-	public ProgramGroup getGroup() {
-		return group;
-	}
-
-	public String getSourceName() {
-		return sourceName;
-	}
-
-	public Optional<ProgramId> getFallback() {
+    public Optional<ProgramId> getFallback() {
 		return Optional.ofNullable(fallback);
 	}
 

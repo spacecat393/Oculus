@@ -4,7 +4,8 @@ import nanolive.compat.CompatMemoryUtil;
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.irisshaders.iris.api.v0.IrisTextVertexSink;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import org.lwjgl.system.MemoryUtil;
+//import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.util.function.IntFunction;
@@ -22,7 +23,8 @@ public class IrisTextVertexSinkImpl implements IrisTextVertexSink {
 
 	public IrisTextVertexSinkImpl(int maxQuadCount, IntFunction<ByteBuffer> buffer) {
 		this.buffer = buffer.apply(format.getSize() * 4 * maxQuadCount);
-		this.elementOffset = MemoryUtil.memAddress(this.buffer);
+		//this.elementOffset = MemoryUtil.memAddress(this.buffer);
+		this.elementOffset = BufferUtils.getOffset(this.buffer);
 	}
 
 	@Override

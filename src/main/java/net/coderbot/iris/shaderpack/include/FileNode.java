@@ -5,8 +5,10 @@ import java.util.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import lombok.Getter;
 import net.coderbot.iris.shaderpack.transform.line.LineTransform;
 
+@Getter
 public class FileNode {
 	private final AbsolutePackPath path;
 	private final ImmutableList<String> lines;
@@ -31,19 +33,7 @@ public class FileNode {
 		this.includes = findIncludes(currentDirectory, lines);
 	}
 
-	public AbsolutePackPath getPath() {
-		return path;
-	}
-
-	public ImmutableList<String> getLines() {
-		return lines;
-	}
-
-	public ImmutableMap<Integer, AbsolutePackPath> getIncludes() {
-		return includes;
-	}
-
-	public FileNode map(LineTransform transform) {
+    public FileNode map(LineTransform transform) {
 		ImmutableList.Builder<String> newLines = ImmutableList.builder();
 		int index = 0;
 

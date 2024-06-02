@@ -1,7 +1,9 @@
 package net.coderbot.iris.shaderpack.error;
 
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+@Getter
 public class RusticError {
 	private final String severity;
 	private final String message;
@@ -19,31 +21,7 @@ public class RusticError {
 		this.badLine = badLine;
 	}
 
-	public String getSeverity() {
-		return severity;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public String getDetailMessage() {
-		return detailMessage;
-	}
-
-	public String getFile() {
-		return file;
-	}
-
-	public int getLineNumber() {
-		return lineNumber;
-	}
-
-	public String getBadLine() {
-		return badLine;
-	}
-
-	@Override
+    @Override
 	public String toString() {
 		return severity + ": " + message + "\n"
 			+ " --> " + file + ":" + lineNumber + "\n"

@@ -1,5 +1,8 @@
 package net.coderbot.iris.shaderpack.loading;
 
+import lombok.Getter;
+
+@Getter
 public enum ProgramArrayId {
 	ShadowComposite(ProgramGroup.ShadowComposite, 99),
 	Prepare(ProgramGroup.Prepare, 99),
@@ -15,15 +18,8 @@ public enum ProgramArrayId {
 		this.numPrograms = numPrograms;
 	}
 
-	public ProgramGroup getGroup() {
-		return group;
-	}
-
-	public String getSourcePrefix() {
+    public String getSourcePrefix() {
 		return group.getBaseName();
 	}
 
-	public int getNumPrograms() {
-		return numPrograms;
-	}
 }
