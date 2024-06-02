@@ -1,9 +1,6 @@
 package net.coderbot.iris.vertices;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 
@@ -22,32 +19,29 @@ public class IrisVertexFormats {
 		TANGENT_ELEMENT = new VertexFormatElement(13, VertexFormatElement.EnumType.BYTE, VertexFormatElement.EnumUsage.GENERIC, 4);
 		MID_BLOCK_ELEMENT = new VertexFormatElement(14, VertexFormatElement.EnumType.BYTE, VertexFormatElement.EnumUsage.GENERIC, 3);
 
-		ImmutableList.Builder<VertexFormatElement> terrainElements = ImmutableList.builder();
-		ImmutableList.Builder<VertexFormatElement> entityElements = ImmutableList.builder();
+		TERRAIN = new VertexFormat();
+		ENTITY = new VertexFormat();
 
-		terrainElements.add(DefaultVertexFormat.ELEMENT_POSITION); // 12
-		terrainElements.add(DefaultVertexFormat.ELEMENT_COLOR); // 16
-		terrainElements.add(DefaultVertexFormat.ELEMENT_UV0); // 24
-		terrainElements.add(DefaultVertexFormat.ELEMENT_UV2); // 28
-		terrainElements.add(DefaultVertexFormat.ELEMENT_NORMAL); // 31
-		terrainElements.add(DefaultVertexFormat.ELEMENT_PADDING); // 32
-		terrainElements.add(ENTITY_ELEMENT); // 36
-		terrainElements.add(MID_TEXTURE_ELEMENT); // 44
-		terrainElements.add(TANGENT_ELEMENT); // 48
-		terrainElements.add(MID_BLOCK_ELEMENT); // 51
-		terrainElements.add(DefaultVertexFormat.ELEMENT_PADDING); // 52
+		TERRAIN.addElement(DefaultVertexFormats.POSITION_3F); // 12
+		TERRAIN.addElement(DefaultVertexFormats.COLOR_4UB); // 16
+		TERRAIN.addElement(DefaultVertexFormats.TEX_2F); // 24
+		TERRAIN.addElement(DefaultVertexFormats.TEX_2S); // 28
+		TERRAIN.addElement(DefaultVertexFormats.NORMAL_3B); // 31
+		TERRAIN.addElement(DefaultVertexFormats.PADDING_1B); // 32
+		TERRAIN.addElement(ENTITY_ELEMENT); // 36
+		TERRAIN.addElement(MID_TEXTURE_ELEMENT); // 44
+		TERRAIN.addElement(TANGENT_ELEMENT); // 48
+		TERRAIN.addElement(MID_BLOCK_ELEMENT); // 51
+		TERRAIN.addElement(DefaultVertexFormats.PADDING_1B); // 52
 
-		entityElements.add(DefaultVertexFormat.ELEMENT_POSITION); // 12
-		entityElements.add(DefaultVertexFormat.ELEMENT_COLOR); // 16
-		entityElements.add(DefaultVertexFormat.ELEMENT_UV0); // 24
-		entityElements.add(DefaultVertexFormat.ELEMENT_UV1); // 28
-		entityElements.add(DefaultVertexFormat.ELEMENT_UV2); // 32
-		entityElements.add(DefaultVertexFormat.ELEMENT_NORMAL); // 35
-		entityElements.add(DefaultVertexFormat.ELEMENT_PADDING); // 36
-		entityElements.add(MID_TEXTURE_ELEMENT); // 44
-		entityElements.add(TANGENT_ELEMENT); // 48
-
-		TERRAIN = new VertexFormat(terrainElements.build());
-		ENTITY = new VertexFormat(entityElements.build());
+		ENTITY.addElement(DefaultVertexFormats.POSITION_3F); // 12
+		ENTITY.addElement(DefaultVertexFormats.COLOR_4UB); // 16
+		ENTITY.addElement(DefaultVertexFormats.TEX_2F); // 24
+		ENTITY.addElement(DefaultVertexFormats.TEX_2S); // 28
+		ENTITY.addElement(DefaultVertexFormats.TEX_2S); // 32
+		ENTITY.addElement(DefaultVertexFormats.NORMAL_3B); // 35
+		ENTITY.addElement(DefaultVertexFormats.PADDING_1B); // 36
+		ENTITY.addElement(MID_TEXTURE_ELEMENT); // 44
+		ENTITY.addElement(TANGENT_ELEMENT); // 48
 	}
 }
