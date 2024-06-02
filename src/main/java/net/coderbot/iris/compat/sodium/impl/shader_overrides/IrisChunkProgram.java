@@ -4,10 +4,10 @@ import java.nio.FloatBuffer;
 
 import me.jellysquid.mods.sodium.client.render.GameRendererContext;
 import net.minecraft.util.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.system.MemoryStack;
+//import org.jetbrains.annotations.Nullable;
+//import org.lwjgl.system.MemoryStack;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.vertex.PoseStack;
 //import com.mojang.math.Matrix4f;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
@@ -18,7 +18,7 @@ import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.program.ProgramImages;
 import net.coderbot.iris.gl.program.ProgramSamplers;
 import net.coderbot.iris.gl.program.ProgramUniforms;
-import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 

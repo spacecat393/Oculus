@@ -1,6 +1,6 @@
 package net.coderbot.iris.layer;
 
-import net.minecraft.client.renderer.RenderStateShard;
+//import net.minecraft.client.renderer.RenderStateShard;
 
 public class IsBlockEntityRenderStateShard extends RenderStateShard {
 	public static final IsBlockEntityRenderStateShard INSTANCE = new IsBlockEntityRenderStateShard();

@@ -1,6 +1,6 @@
 package net.coderbot.iris.layer;
 
-import net.minecraft.client.renderer.RenderStateShard;
+//import net.minecraft.client.renderer.RenderStateShard;
 
 public class IsOutlineRenderStateShard extends RenderStateShard {
 	public static final IsOutlineRenderStateShard INSTANCE = new IsOutlineRenderStateShard();

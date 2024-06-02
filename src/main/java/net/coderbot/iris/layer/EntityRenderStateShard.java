@@ -1,7 +1,7 @@
 package net.coderbot.iris.layer;
 
 import net.coderbot.iris.uniforms.CapturedRenderingState;
-import net.minecraft.client.renderer.RenderStateShard;
+//import net.minecraft.client.renderer.RenderStateShard;
 
 public final class EntityRenderStateShard extends RenderStateShard {
 	private static final EntityRenderStateShard UNIDENTIFIED = new EntityRenderStateShard(-1);

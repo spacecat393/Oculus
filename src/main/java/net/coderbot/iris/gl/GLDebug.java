@@ -9,13 +9,13 @@ import java.io.PrintStream;
 import java.util.function.Consumer;
 
 import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL43C;
-import org.lwjgl.opengl.GLCapabilities;
-import org.lwjgl.opengl.GLDebugMessageAMDCallback;
-import org.lwjgl.opengl.GLDebugMessageARBCallback;
-import org.lwjgl.opengl.GLDebugMessageCallback;
-import org.lwjgl.system.APIUtil;
+//import org.lwjgl.opengl.GL;
+//import org.lwjgl.opengl.GL43C;
+//import org.lwjgl.opengl.GLCapabilities;
+//import org.lwjgl.opengl.GLDebugMessageAMDCallback;
+//import org.lwjgl.opengl.GLDebugMessageARBCallback;
+//import org.lwjgl.opengl.GLDebugMessageCallback;
+//import org.lwjgl.system.APIUtil;
 
 import net.coderbot.iris.Iris;
 

@@ -1,15 +1,15 @@
 package net.coderbot.iris.mixin.entity_render_context;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+//import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.coderbot.batchedentityrendering.impl.Groupable;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.layer.BlockEntityRenderStateShard;
 import net.coderbot.iris.layer.OuterWrappedRenderType;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+//import net.minecraft.client.renderer.MultiBufferSource;
+//import net.minecraft.client.renderer.RenderStateShard;
+//import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+//import net.minecraft.world.level.block.entity.BlockEntity;
+//import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

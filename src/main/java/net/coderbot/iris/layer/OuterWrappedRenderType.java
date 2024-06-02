@@ -1,14 +1,14 @@
 package net.coderbot.iris.layer;
 
 import java.util.Objects;
-import java.util.Optional;
+//import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+//import org.jetbrains.annotations.Nullable;
 
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
 import net.coderbot.iris.mixin.rendertype.RenderTypeAccessor;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.renderer.RenderStateShard;
+//import net.minecraft.client.renderer.RenderType;
 
 import javax.annotation.Nullable;
 

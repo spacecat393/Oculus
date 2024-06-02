@@ -1,7 +1,7 @@
 package net.coderbot.iris.compat.sodium.impl.vertex_format.entity_xhfp;
 
 import me.jellysquid.mods.sodium.client.util.CompatMemoryUtil;
-import org.lwjgl.system.MemoryUtil;
+//import org.lwjgl.system.MemoryUtil;
 
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferView;
 import me.jellysquid.mods.sodium.client.model.vertex.buffer.VertexBufferWriterUnsafe;
@@ -11,7 +11,7 @@ import me.jellysquid.mods.sodium.client.util.Norm3b;
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.coderbot.iris.vertices.IrisVertexFormats;
 import net.coderbot.iris.vertices.NormalHelper;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+//import net.minecraft.client.renderer.texture.OverlayTexture;
 
 public class EntityVertexBufferWriterUnsafe extends VertexBufferWriterUnsafe implements QuadVertexSink, GlyphVertexSink {
 	private static final int STRIDE = IrisVertexFormats.ENTITY.getSize();

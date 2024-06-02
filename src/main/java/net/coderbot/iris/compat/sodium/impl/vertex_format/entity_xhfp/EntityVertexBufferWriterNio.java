@@ -10,7 +10,7 @@ import me.jellysquid.mods.sodium.client.util.Norm3b;
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.coderbot.iris.vertices.IrisVertexFormats;
 import net.coderbot.iris.vertices.NormalHelper;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+//import net.minecraft.client.renderer.texture.OverlayTexture;
 
 public class EntityVertexBufferWriterNio extends VertexBufferWriterNio implements QuadVertexSink, GlyphVertexSink {
 	private static final int STRIDE = IrisVertexFormats.ENTITY.getSize();

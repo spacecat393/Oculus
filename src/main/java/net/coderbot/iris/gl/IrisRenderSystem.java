@@ -6,17 +6,17 @@ import java.nio.IntBuffer;
 
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import org.jetbrains.annotations.Nullable;
+//import net.minecraft.client.renderer.OpenGlHelper;
+//import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL30C;
-import org.lwjgl.opengl.GL40C;
-import org.lwjgl.opengl.GL45C;
-import org.lwjgl.system.MemoryUtil;
+//import org.lwjgl.opengl.GL;
+//import org.lwjgl.opengl.GL30C;
+//import org.lwjgl.opengl.GL40C;
+//import org.lwjgl.opengl.GL45C;
+//import org.lwjgl.system.MemoryUtil;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
+//import com.mojang.blaze3d.platform.GlStateManager;
+//import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.vendored.joml.Vector3i;

@@ -2,10 +2,10 @@ package net.coderbot.iris.gl.texture;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
-import org.lwjgl.opengl.GL;
+//import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL43;
-import org.lwjgl.system.MemoryUtil;
+//import org.lwjgl.system.MemoryUtil;
 
 public interface DepthCopyStrategy {
 	// FB -> T
