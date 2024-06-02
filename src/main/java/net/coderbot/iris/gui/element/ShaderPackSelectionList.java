@@ -23,6 +23,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 	private static final ITextComponent PACK_LIST_LABEL = new TextComponentTranslation("pack.iris.list.label").setStyle(new Style().setColor(TextFormatting.GRAY).setItalic(true));
 
 	private final ShaderPackScreen screen;
+	@Getter
 	private final TopButtonRowEntry topButtonRow;
 	@Setter
     @Getter
@@ -139,6 +140,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 	}
 
 	public static class ShaderPackEntry extends BaseEntry {
+		@Getter
 		private final String packName;
 		private final ShaderPackSelectionList list;
 		private final int index;

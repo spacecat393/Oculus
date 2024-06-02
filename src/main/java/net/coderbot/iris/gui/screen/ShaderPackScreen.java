@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import net.coderbot.iris.gui.option.ImageButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Util;
 //import org.jetbrains.annotations.Nullable;
 //import org.lwjgl.glfw.GLFW;
@@ -56,6 +57,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 
 	private static final ITextComponent SELECT_TITLE = new TextComponentTranslation("pack.iris.select.title").setStyle(new Style().setColor(TextFormatting.GRAY).setItalic(true));
 	private static final ITextComponent CONFIGURE_TITLE = new TextComponentTranslation("pack.iris.configure.title").setStyle(new Style().setColor(TextFormatting.GRAY).setItalic(true));
+	private static final ITextComponent title = new TextComponentTranslation("options.iris.shaderPackSelection.title");
 	private static final int COMMENT_PANEL_WIDTH = 314;
 
 	private final GuiScreen parent;
@@ -131,7 +133,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		}
 
 		if (!this.guiHidden) {
-			drawCenteredString(this.fontRenderer, this.title, (int) (this.width * 0.5), 8, 0xFFFFFF);
+			drawCenteredString(this.fontRenderer, title.getFormattedText(), (int) (this.width * 0.5), 8, 0xFFFFFF);
 
 			if (notificationDialog != null && notificationDialogTimer > 0) {
 				drawCenteredString(this.fontRenderer, notificationDialog.getFormattedText(), (int) (this.width * 0.5), 21, 0xFFFFFF);
@@ -221,19 +223,19 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 					new TextComponentTranslation("options.iris.done").getFormattedText()));
 
 			this.buttonList.add(new GuiButton(APPLY_BUTTON_ID, bottomCenter, this.height - 27, 100, 20,
-				new TextComponentTranslation("options.iris.apply").getFormattedText()));
+					new TextComponentTranslation("options.iris.apply").getFormattedText()));
 
 			this.buttonList.add(new GuiButton(DROP_BUTTON_ID, bottomCenter - 104, this.height - 27, 100, 20,
 					new TextComponentTranslation("options.iris.cancel").getFormattedText()));
 
 			this.buttonList.add(new GuiButton(OPEN_BUTTON_ID, topCenter - 78, this.height - 51, 152, 20,
-				new TextComponentTranslation("options.iris.openShaderPackFolder").getFormattedText()));
+					new TextComponentTranslation("options.iris.openShaderPackFolder").getFormattedText()));
 
 			this.buttonList.add(new GuiButton(LIST_BUTTON_ID, topCenter + 78, this.height - 51, 152, 20,
-							new TextComponentTranslation("options.iris.shaderPackList").getFormattedText()));
+					new TextComponentTranslation("options.iris.shaderPackList").getFormattedText()));
 			this.screenSwitchButton = this.buttonList.get(LIST_BUTTON_ID);
 
-					refreshScreenSwitchButton();
+			refreshScreenSwitchButton();
 		}
 
 		if (inWorld) {
@@ -285,14 +287,13 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 
 	public void refreshScreenSwitchButton() {
 		if (this.screenSwitchButton != null) {
-			this.screenSwitchButton.setMessage(
-					optionMenuOpen ?
-							new TextComponentTranslation("options.iris.shaderPackList")
-							: new TextComponentTranslation("options.iris.shaderPackSettings")
-			);
-			this.screenSwitchButton.active = optionMenuOpen || shaderPackList.getTopButtonRow().shadersEnabled;
+			this.screenSwitchButton.displayString = optionMenuOpen
+					? I18n.format("options.iris.shaderPackList")
+					: I18n.format("options.iris.shaderPackSettings");
+			this.screenSwitchButton.enabled = optionMenuOpen || this.shaderPackList.getTopButtonRow().shadersEnabled;
 		}
 	}
+
 
 	//@Override
 	public void tick() {
@@ -309,28 +310,25 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		}
 	}
 
-	//@Override
-	public boolean keyPressed(int key, int j, int k) {
-		if (key == 256) {
-			if (this.guiHidden) {
-				this.guiHidden = false;
-				this.initGui();
+	@Override
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		super.keyTyped(typedChar, keyCode);
 
-				return true;
-			} else if (this.navigation != null && this.navigation.hasHistory()) {
-				this.navigation.back();
+        if (typedChar != 'a') {
+            if (keyCode == 1) {
+                if (this.guiHidden) {
+                    this.guiHidden = false;
+                    this.initGui();
+                } else if (this.navigation != null && this.navigation.hasHistory()) {
+                    this.navigation.back();
+                } else if (this.optionMenuOpen) {
+                    this.optionMenuOpen = false;
+                    this.initGui();
+                }
+            }
+        }
+    }
 
-				return true;
-			} else if (this.optionMenuOpen) {
-				this.optionMenuOpen = false;
-				this.initGui();
-
-				return true;
-			}
-		}
-
-		return this.guiHidden || super.keyPressed(key, j, k);
-	}
 
 	//@Override
 	public void onFilesDrop(List<Path> paths) {
@@ -573,7 +571,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 					// Line wrap
 					this.hoveredElementCommentBody = new ArrayList<>();
 					for (ITextComponent text : splitByPeriods) {
-						this.hoveredElementCommentBody.addAll(this.fontRenderer.split(text, COMMENT_PANEL_WIDTH - 8));
+						this.hoveredElementCommentBody.addAll(this.fontRenderer.listFormattedStringToWidth(text.getFormattedText(), COMMENT_PANEL_WIDTH - 8));
 					}
 				}
 			} else {
