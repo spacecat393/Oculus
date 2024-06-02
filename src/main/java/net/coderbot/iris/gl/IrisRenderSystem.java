@@ -209,7 +209,7 @@ public class IrisRenderSystem {
 	}
 
 	public static void getProgramiv(int program, int value, int[] storage) {
-		GL30C.glGetProgramiv(program, value, storage);
+		GL20.glGetProgram(program, value, IntBuffer.wrap(storage));
 	}
 
 	public static void dispatchCompute(int workX, int workY, int workZ) {
@@ -239,7 +239,7 @@ public class IrisRenderSystem {
 	}
 
 	public static void blendFuncSeparatei(int buffer, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
-		GL40C.glBlendFuncSeparatei(buffer, srcRGB, dstRGB, srcAlpha, dstAlpha);
+		GL40.glBlendFuncSeparatei(buffer, srcRGB, dstRGB, srcAlpha, dstAlpha);
 	}
 
 	public static void bindTextureToUnit(int unit, int texture) {
@@ -326,10 +326,10 @@ public class IrisRenderSystem {
 			ARBDirectStateAccess.glTextureParameterf(texture, pname, param);
 		}
 
-		@Override
-		public void texParameteriv(int texture, int target, int pname, int[] params) {
-			GL45.glTextureParameteriv(texture, pname, params);
-		}
+//		@Override
+//		public void texParameteriv(int texture, int target, int pname, int[] params) {
+//			GL45.glTextureParameteriv(texture, pname, params);
+//		}
 
 		@Override
 		public void readBuffer(int framebuffer, int buffer) {
