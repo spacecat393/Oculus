@@ -25,6 +25,8 @@
   "iris.unsupported.pack.description": "The shaderpack you are trying to load contains features unsupported by %s. Please try another pack. List %s",
   "options.iris.apply": "Apply",
   "options.iris.refresh": "Refresh",
+  "options.iris.done": "Done",
+  "options.iris.cancel": "Cancel",
   "options.iris.openShaderPackFolder": "Open Shader Pack Folder...",
   "options.iris.shaderPackSettings": "Shader Pack Settings...",
   "options.iris.shaderPackList": "Shader Pack List...",

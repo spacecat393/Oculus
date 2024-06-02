@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import net.coderbot.iris.gui.option.ImageButton;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.Util;
 //import org.jetbrains.annotations.Nullable;
@@ -63,14 +65,14 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 
 	private @Nullable ShaderPackOptionList shaderOptionList = null;
 	private @Nullable NavigationController navigation = null;
-	private Button screenSwitchButton;
+	private GuiButton screenSwitchButton;
 
 	private ITextComponent notificationDialog = null;
 	private int notificationDialogTimer = 0;
 
 	private @Nullable AbstractElementWidget<?> hoveredElement = null;
 	private Optional<ITextComponent> hoveredElementCommentTitle = Optional.empty();
-	private List<FormattedCharSequence> hoveredElementCommentBody = new ArrayList<>();
+	private List<String> hoveredElementCommentBody = new ArrayList<>();
 	private int hoveredElementCommentTimer = 0;
 
 	private boolean optionMenuOpen = false;
@@ -83,8 +85,14 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 	private boolean guiHidden = false;
 	private float guiButtonHoverTimer = 0.0f;
 
+	private static final int DONE_BUTTON_ID = 0;
+	private static final int APPLY_BUTTON_ID = 1;
+	private static final int DROP_BUTTON_ID = 2;
+	private static final int OPEN_BUTTON_ID = 3;
+	private static final int LIST_BUTTON_ID = 4;
+
 	public ShaderPackScreen(GuiScreen parent) {
-		super(new TextComponentTranslation("options.iris.shaderPackSelection.title"));
+		// todo super(new TextComponentTranslation("options.iris.shaderPackSelection.title"));
 
 		this.parent = parent;
 
@@ -100,24 +108,24 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		refreshForChangedPack();
 	}
 
-	@Override
+	//@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		if (this.mc.world == null) {
 			this.drawDefaultBackground();
 		} else if (!this.guiHidden) {
-			this.fillGradient(0, 0, width, height, 0x4F232323, 0x4F232323);
+			this.drawGradientRect(0, 0, width, height, 0x4F232323, 0x4F232323);
 		}
 
 		if (!this.guiHidden) {
 			if (optionMenuOpen && this.shaderOptionList != null) {
-				this.shaderOptionList.render(mouseX, mouseY, delta);
+				this.shaderOptionList.drawScreen(mouseX, mouseY, delta);
 			} else {
-				this.shaderPackList.render(mouseX, mouseY, delta);
+				this.shaderPackList.drawScreen(mouseX, mouseY, delta);
 			}
 		}
 
 		float previousHoverTimer = this.guiButtonHoverTimer;
-		super.render(mouseX, mouseY, delta);
+		super.drawScreen(mouseX, mouseY, delta);
 		if (previousHoverTimer == this.guiButtonHoverTimer) {
 			this.guiButtonHoverTimer = 0.0f;
 		}
@@ -175,8 +183,8 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		int topCenter = this.width / 2 - 76;
 		boolean inWorld = this.mc.world != null;
 
-		this.children.remove(this.shaderPackList);
-		this.children.remove(this.shaderOptionList);
+		// todo this.children.remove(this.shaderPackList);
+		// todo this.children.remove(this.shaderOptionList);
 
 		this.shaderPackList = new ShaderPackSelectionList(this, this.mc, this.width, this.height, 32, this.height - 58, 0, this.width);
 
@@ -193,50 +201,39 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		}
 
 		if (inWorld) {
-			this.shaderPackList.setRenderBackground(false);
+			// todo this.shaderPackList.setRenderBackground(false);
 			if (shaderOptionList != null) {
 				this.shaderOptionList.setRenderBackground(false);
 			}
 		}
 
-		this.buttons.clear();
-		this.children.clear();
+		// todo this.buttons.clear();
+		// todo this.children.clear();
 
 		if (!this.guiHidden) {
 			if (optionMenuOpen && shaderOptionList != null) {
-				this.children.add(shaderOptionList);
+				// todo this.children.add(shaderOptionList);
 			} else {
-				this.children.add(shaderPackList);
+				// todo this.children.add(shaderPackList);
 			}
 
-			this.addButton(new Button(bottomCenter + 104, this.height - 27, 100, 20,
-				CommonComponents.GUI_DONE, button -> onClose()));
+			this.buttonList.add(new GuiButton(DONE_BUTTON_ID, bottomCenter + 104, this.height - 27, 100, 20,
+					new TextComponentTranslation("options.iris.done").getFormattedText()));
 
-			this.addButton(new Button(bottomCenter, this.height - 27, 100, 20,
-				new TextComponentTranslation("options.iris.apply"), button -> this.applyChanges()));
+			this.buttonList.add(new GuiButton(APPLY_BUTTON_ID, bottomCenter, this.height - 27, 100, 20,
+				new TextComponentTranslation("options.iris.apply").getFormattedText()));
 
-			this.addButton(new Button(bottomCenter - 104, this.height - 27, 100, 20,
-				CommonComponents.GUI_CANCEL, button -> this.dropChangesAndClose()));
+			this.buttonList.add(new GuiButton(DROP_BUTTON_ID, bottomCenter - 104, this.height - 27, 100, 20,
+					new TextComponentTranslation("options.iris.cancel").getFormattedText()));
 
-			this.addButton(new Button(topCenter - 78, this.height - 51, 152, 20,
-				new TextComponentTranslation("options.iris.openShaderPackFolder"), button -> openShaderPackFolder()));
+			this.buttonList.add(new GuiButton(OPEN_BUTTON_ID, topCenter - 78, this.height - 51, 152, 20,
+				new TextComponentTranslation("options.iris.openShaderPackFolder").getFormattedText()));
 
-			this.screenSwitchButton = this.addButton(new Button(topCenter + 78, this.height - 51, 152, 20,
-				new TextComponentTranslation("options.iris.shaderPackList"), button -> {
-					this.optionMenuOpen = !this.optionMenuOpen;
+			this.buttonList.add(new GuiButton(LIST_BUTTON_ID, topCenter + 78, this.height - 51, 152, 20,
+							new TextComponentTranslation("options.iris.shaderPackList").getFormattedText()));
+			this.screenSwitchButton = this.buttonList.get(LIST_BUTTON_ID);
 
-					// UX: Apply changes before switching screens to avoid unintuitive behavior
-					//
-					// Not doing this leads to unintuitive behavior, since selecting a pack in the
-					// list (but not applying) would open the settings for the previous pack, rather
-					// than opening the settings for the selected (but not applied) pack.
-					this.applyChanges();
-
-					this.initGui();
-				}
-			));
-
-			refreshScreenSwitchButton();
+					refreshScreenSwitchButton();
 		}
 
 		if (inWorld) {
@@ -256,22 +253,10 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 			}
 
 			this.addButton(new ImageButton(
-				x, this.height - 39,
-				20, 20,
-				this.guiHidden ? 20 : 0, 146, 20,
-				GuiUtil.IRIS_WIDGETS_TEX,
-				256, 256,
-				button -> {
-					this.guiHidden = !this.guiHidden;
-					this.init();
-				},
-				(button, poseStack, i, j) -> {
-					this.guiButtonHoverTimer += this.mc.getTickLength();
-					if (this.guiButtonHoverTimer >= 10.0f) {
-						TOP_LAYER_RENDER_QUEUE.add(() -> this.renderTooltip(poseStack, showOrHide, i, j));
-					}
-				},
-				showOrHide
+					0, x, this.height - 39, 20, 20,
+					this.guiHidden ? 20 : 0, 146,
+					0, 146,
+					GuiUtil.IRIS_WIDGETS_TEX
 			));
 		}
 
@@ -309,9 +294,9 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		}
 	}
 
-	@Override
+	//@Override
 	public void tick() {
-		super.tick();
+		super.updateScreen();
 
 		if (this.notificationDialogTimer > 0) {
 			this.notificationDialogTimer--;
@@ -324,7 +309,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		}
 	}
 
-	@Override
+	//@Override
 	public boolean keyPressed(int key, int j, int k) {
 		if (key == 256) {
 			if (this.guiHidden) {
@@ -347,7 +332,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		return this.guiHidden || super.keyPressed(key, j, k);
 	}
 
-	@Override
+	//@Override
 	public void onFilesDrop(List<Path> paths) {
 		if (this.optionMenuOpen) {
 			onOptionMenuFilesDrop(paths);
@@ -577,7 +562,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 				if (!commentBody.isPresent()) {
 					this.hoveredElementCommentBody.clear();
 				} else {
-					String rawCommentBody = commentBody.get().getString();
+					String rawCommentBody = commentBody.get().getFormattedText();
 
 					// Strip any trailing "."s
 					if (rawCommentBody.endsWith(".")) {
