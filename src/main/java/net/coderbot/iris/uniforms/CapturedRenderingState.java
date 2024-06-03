@@ -1,6 +1,8 @@
 package net.coderbot.iris.uniforms;
 
 //import com.mojang.math.Matrix4f;
+import lombok.Getter;
+import lombok.Setter;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.coderbot.iris.gl.state.ValueUpdateNotifier;
@@ -12,32 +14,31 @@ public class CapturedRenderingState {
 
 	private static final Vector3d ZERO_VECTOR_3d = new Vector3d();
 
-	private Matrix4f gbufferModelView;
-	private Matrix4f gbufferProjection;
+	@Getter
+    private Matrix4f gbufferModelView;
+	@Getter
+    private Matrix4f gbufferProjection;
 	private Vector3d fogColor;
-	private float tickDelta;
-	private int currentRenderedBlockEntity;
+	@Getter
+    @Setter
+    private float tickDelta;
+	@Getter
+    private int currentRenderedBlockEntity;
 	private Runnable blockEntityIdListener = null;
 
-	private int currentRenderedEntity = -1;
+	@Getter
+    private int currentRenderedEntity = -1;
 	private Runnable entityIdListener = null;
 
 	private CapturedRenderingState() {
+
 	}
 
-	public Matrix4f getGbufferModelView() {
-		return gbufferModelView;
-	}
-
-	public void setGbufferModelView(Matrix4f gbufferModelView) {
+    public void setGbufferModelView(Matrix4f gbufferModelView) {
 		this.gbufferModelView = new Matrix4f(gbufferModelView);
 	}
 
-	public Matrix4f getGbufferProjection() {
-		return gbufferProjection;
-	}
-
-	public void setGbufferProjection(Matrix4f gbufferProjection) {
+    public void setGbufferProjection(Matrix4f gbufferProjection) {
 		this.gbufferProjection = new Matrix4f(gbufferProjection);
 	}
 
@@ -53,15 +54,7 @@ public class CapturedRenderingState {
 		fogColor = new Vector3d(red, green, blue);
 	}
 
-	public void setTickDelta(float tickDelta) {
-		this.tickDelta = tickDelta;
-	}
-
-	public float getTickDelta() {
-		return tickDelta;
-	}
-
-	public void setCurrentBlockEntity(int entity) {
+    public void setCurrentBlockEntity(int entity) {
 		this.currentRenderedBlockEntity = entity;
 
 		if (this.blockEntityIdListener != null) {
@@ -69,11 +62,7 @@ public class CapturedRenderingState {
 		}
 	}
 
-	public int getCurrentRenderedBlockEntity() {
-		return currentRenderedBlockEntity;
-	}
-
-	public void setCurrentEntity(int entity) {
+    public void setCurrentEntity(int entity) {
 		this.currentRenderedEntity = entity;
 
 		if (this.entityIdListener != null) {
@@ -87,9 +76,5 @@ public class CapturedRenderingState {
 
 	public ValueUpdateNotifier getBlockEntityIdNotifier() {
 		return listener -> this.blockEntityIdListener = listener;
-	}
-
-	public int getCurrentRenderedEntity() {
-		return currentRenderedEntity;
 	}
 }

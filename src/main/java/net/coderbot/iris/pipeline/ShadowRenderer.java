@@ -15,20 +15,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.*;
-//import org.lwjgl.opengl.GL20C;
-//import org.lwjgl.opengl.GL30C;
 
 import com.google.common.collect.ImmutableList;
-//import com.mojang.blaze3d.systems.RenderSystem;
-//import com.mojang.blaze3d.vertex.PoseStack;
-//import com.mojang.math.Matrix4f;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
-import net.coderbot.batchedentityrendering.impl.BatchingDebugMessageHelper;
-import net.coderbot.batchedentityrendering.impl.DrawCallTrackingRenderBuffers;
 import net.coderbot.batchedentityrendering.impl.RenderBuffersExt;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.IrisRenderSystem;
@@ -53,20 +44,13 @@ import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.coderbot.iris.uniforms.CelestialUniforms;
 import net.coderbot.iris.vendored.joml.Vector3d;
 import net.coderbot.iris.vendored.joml.Vector4f;
-//import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-/*import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;*/
 import net.minecraft.client.renderer.culling.Frustum;
-/*import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.entity.BlockEntity;*/
+import org.lwjgl.opengl.ARBTextureSwizzle;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL30;
 
 public class ShadowRenderer {
 	public static Matrix4f MODELVIEW;
@@ -153,7 +137,7 @@ public class ShadowRenderer {
 		this.packHasVoxelization = packHasVoxelization || usesImages;
 	}
 
-	public static PoseStack createShadowModelView(float sunPathRotation, float intervalSize) {
+	public static void createShadowModelView(float sunPathRotation, float intervalSize) {
 		// Determine the camera position
 		Vector3d cameraPos = CameraUniforms.getUnshiftedCameraPosition();
 
@@ -161,11 +145,8 @@ public class ShadowRenderer {
 		double cameraY = cameraPos.y;
 		double cameraZ = cameraPos.z;
 
-		// Set up our modelview matrix stack
-		PoseStack modelView = new PoseStack();
-		ShadowMatrices.createModelViewMatrix(modelView, getShadowAngle(), intervalSize, sunPathRotation, cameraX, cameraY, cameraZ);
-
-		return modelView;
+		// Set up our modelview matrix
+		ShadowMatrices.createModelViewMatrix(getShadowAngle(), intervalSize, sunPathRotation, cameraX, cameraY, cameraZ);
 	}
 
 	private static WorldClient getLevel() {
@@ -361,7 +342,7 @@ public class ShadowRenderer {
 		targets.copyPreTranslucentDepth();
 	}
 
-	private void renderEntities(LevelRendererAccessor levelRenderer, Frustum frustum, MultiBufferSource.BufferSource bufferSource, PoseStack modelView, double cameraX, double cameraY, double cameraZ, float tickDelta) {
+	private void renderEntities(LevelRendererAccessor levelRenderer, Frustum frustum, double cameraX, double cameraY, double cameraZ, float tickDelta) {
 		RenderManager dispatcher = levelRenderer.getEntityRenderDispatcher();
 
 		int shadowEntities = 0;
@@ -388,7 +369,7 @@ public class ShadowRenderer {
 		profiler.endStartSection("build geometry");
 
 		for (Entity entity : renderedEntities) {
-			levelRenderer.invokeRenderEntity(entity, cameraX, cameraY, cameraZ, tickDelta, modelView, bufferSource);
+			levelRenderer.invokeRenderEntity(entity, cameraX, cameraY, cameraZ, tickDelta);
 			shadowEntities++;
 		}
 
@@ -397,7 +378,7 @@ public class ShadowRenderer {
 		profiler.endSection();
 	}
 
-	private void renderPlayerEntity(LevelRendererAccessor levelRenderer, Frustum frustum, MultiBufferSource.BufferSource bufferSource, PoseStack modelView, double cameraX, double cameraY, double cameraZ, float tickDelta) {
+	private void renderPlayerEntity(LevelRendererAccessor levelRenderer, Frustum frustum, double cameraX, double cameraY, double cameraZ, float tickDelta) {
 		RenderManager dispatcher = levelRenderer.getEntityRenderDispatcher();
 
 		profiler.startSection("cull");
@@ -414,17 +395,17 @@ public class ShadowRenderer {
 
 		if (!player.getPassengers().isEmpty()) {
 			for (int i = 0; i < player.getPassengers().size(); i++) {
-				levelRenderer.invokeRenderEntity(player.getPassengers().get(i), cameraX, cameraY, cameraZ, tickDelta, modelView, bufferSource);
+				levelRenderer.invokeRenderEntity(player.getPassengers().get(i), cameraX, cameraY, cameraZ, tickDelta);
 				shadowEntities++;
 			}
 		}
 
 		if (player.getRidingEntity() != null) {
-			levelRenderer.invokeRenderEntity(player.getRidingEntity(), cameraX, cameraY, cameraZ, tickDelta, modelView, bufferSource);
+			levelRenderer.invokeRenderEntity(player.getRidingEntity(), cameraX, cameraY, cameraZ, tickDelta);
 			shadowEntities++;
 		}
 
-		levelRenderer.invokeRenderEntity(player, cameraX, cameraY, cameraZ, tickDelta, modelView, bufferSource);
+		levelRenderer.invokeRenderEntity(player, cameraX, cameraY, cameraZ, tickDelta);
 
 		shadowEntities++;
 
@@ -433,7 +414,7 @@ public class ShadowRenderer {
 		profiler.endSection();
 	}
 
-	private void renderBlockEntities(MultiBufferSource.BufferSource bufferSource, PoseStack modelView, double cameraX, double cameraY, double cameraZ, float tickDelta, boolean hasEntityFrustum) {
+	private void renderBlockEntities(double cameraX, double cameraY, double cameraZ, float tickDelta, boolean hasEntityFrustum) {
 		profiler.startSection("build blockentities");
 
 		int shadowBlockEntities = 0;
@@ -452,7 +433,7 @@ public class ShadowRenderer {
 			}
 			//modelView.pushPose();
 			//modelView.translate(pos.getX() - cameraX, pos.getY() - cameraY, pos.getZ() - cameraZ);
-			TileEntityRendererDispatcher.instance.render(entity, pos.getX() - cameraX, pos.getY() - cameraY, pos.getZ() - cameraZ, tickDelta, bufferSource);
+			TileEntityRendererDispatcher.instance.render(entity, pos.getX() - cameraX, pos.getY() - cameraY, pos.getZ() - cameraZ, tickDelta);
 			//modelView.popPose();
 
 			shadowBlockEntities++;
@@ -478,14 +459,14 @@ public class ShadowRenderer {
 		ACTIVE = true;
 
 		// NB: We store the previous player buffers in order to be able to allow mods rendering entities in the shadow pass (Flywheel) to use the shadow buffers instead.
-		RenderBuffers playerBuffers = levelRenderer.getRenderBuffers();
-		levelRenderer.setRenderBuffers(buffers);
+//		RenderBuffers playerBuffers = levelRenderer.getRenderBuffers();
+//		levelRenderer.setRenderBuffers(buffers);
 
 		visibleBlockEntities = new ArrayList<>();
 
 		// Create our camera
-		PoseStack modelView = createShadowModelView(this.sunPathRotation, this.intervalSize);
-		MODELVIEW = modelView.last().pose().copy();
+//		PoseStack modelView = createShadowModelView(this.sunPathRotation, this.intervalSize);
+//		MODELVIEW = modelView.last().pose().copy();
 		float[] projMatrix;
 		if (this.fov != null) {
 			// If FOV is not null, the pack wants a perspective based projection matrix. (This is to support legacy packs)

@@ -108,9 +108,8 @@ public class TransformPatcher {
 	// gbuffers_lines (what does this mean?)
 
 	static TokenFilter<Parameters> parseTokenFilter = new ChannelFilter<Parameters>(TokenChannel.PREPROCESSOR) {
-		@Override
 		public boolean isTokenAllowed(Token token) {
-			if (!super.isTokenAllowed(token)) {
+			if (!super.isTokenAllowed((org.antlr.v4.runtime.Token) token)) {
 				throw new SemanticException("Unparsed preprocessor directives such as '" + token.getText()
 						+ "' may not be present at this stage of shader processing!");
 			}

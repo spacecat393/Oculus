@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import net.coderbot.iris.Iris;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraft.client.Minecraft;
 
 /**
  * Static class that deals with printing the patched_shader folder.
@@ -16,7 +19,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 public class PatchedShaderPrinter {
 	private static boolean outputLocationCleared = false;
 	private static int programCounter = 0;
-	public static final boolean prettyPrintShaders = !FMLLoader.isProduction()
+	public static final boolean prettyPrintShaders = (!(Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment"))
 			|| System.getProperty("iris.prettyPrintShaders", "false").equals("true");
 
 	public static void resetPrintState() {
@@ -26,7 +29,7 @@ public class PatchedShaderPrinter {
 
 	public static void debugPatchedShaders(String name, String vertex, String geometry, String fragment) {
 		if (prettyPrintShaders) {
-			final Path debugOutDir = FMLPaths.GAMEDIR.get().resolve("patched_shaders");
+			final Path debugOutDir = Minecraft.getMinecraft().gameDir.toPath().resolve("patched_shaders");
 			if (!outputLocationCleared) {
 				try {
 					if (Files.exists(debugOutDir)) {

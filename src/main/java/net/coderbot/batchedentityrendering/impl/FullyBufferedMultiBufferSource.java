@@ -3,25 +3,21 @@ package net.coderbot.batchedentityrendering.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-//import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.function.Function;
+import java.util.function.Function;
 
-//import com.mojang.blaze3d.vertex.BufferBuilder;
+import lombok.Getter;
 import net.minecraft.client.renderer.BufferBuilder;
-//import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.coderbot.batchedentityrendering.impl.ordering.GraphTranslucencyRenderOrderManager;
 import net.coderbot.batchedentityrendering.impl.ordering.RenderOrderManager;
 import net.coderbot.iris.fantastic.WrappingMultiBufferSource;
 import net.minecraft.client.Minecraft;
-//import net.minecraft.client.renderer.MultiBufferSource;
-//import net.minecraft.client.renderer.RenderType;
-//import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.util.BlockRenderLayer;
 
-public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSource implements MemoryTrackingBuffer, Groupable, WrappingMultiBufferSource {
+public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Groupable, WrappingMultiBufferSource {
 	private static final int NUM_BUFFERS = 32;
 
 	private final RenderOrderManager renderOrderManager;
@@ -30,13 +26,15 @@ public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSour
 	 * An LRU cache mapping RenderType objects to a relevant buffer.
 	 */
 	private final LinkedHashMap<RenderType, Integer> affinities;
-	private int drawCalls;
-	private int renderTypes;
+	@Getter
+    private int drawCalls;
+	@Getter
+    private int renderTypes;
 
 	private final BufferSegmentRenderer segmentRenderer;
 	private final UnflushableWrapper unflushableWrapper;
-	private final List<Function<RenderType, RenderType>> wrappingFunctionStack;
-	private Function<RenderType, RenderType> wrappingFunction = null;
+	private final List<Function<BlockRenderLayer, BlockRenderLayer>> wrappingFunctionStack;
+	private Function<BlockRenderLayer, BlockRenderLayer> wrappingFunction = null;
 
 	public FullyBufferedMultiBufferSource() {
 		super(new BufferBuilder(0), Collections.emptyMap());
@@ -57,7 +55,6 @@ public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSour
 		this.wrappingFunctionStack = new ArrayList<>();
 	}
 
-	@Override
 	public VertexConsumer getBuffer(RenderType renderType) {
 		if (wrappingFunction != null) {
 			renderType = wrappingFunction.apply(renderType);
@@ -89,7 +86,6 @@ public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSour
 		return builders[affinity].getBuffer(renderType);
 	}
 
-	@Override
 	public void endBatch() {
 		ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
 
@@ -132,20 +128,11 @@ public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSour
 		profiler.pop();
 	}
 
-	public int getDrawCalls() {
-		return drawCalls;
-	}
-
-	public int getRenderTypes() {
-		return renderTypes;
-	}
-
-	public void resetDrawCalls() {
+    public void resetDrawCalls() {
 		drawCalls = 0;
 		renderTypes = 0;
 	}
 
-	@Override
 	public void endBatch(RenderType type) {
 		// Disable explicit flushing
 	}
@@ -192,7 +179,7 @@ public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSour
 	}
 
 	@Override
-	public void pushWrappingFunction(Function<RenderType, RenderType> wrappingFunction) {
+	public void pushWrappingFunction(Function<BlockRenderLayer, BlockRenderLayer> wrappingFunction) {
 		if (this.wrappingFunction != null) {
 			this.wrappingFunctionStack.add(this.wrappingFunction);
 		}
@@ -227,18 +214,15 @@ public class FullyBufferedMultiBufferSource extends MultiBufferSource.BufferSour
 
 			this.wrapped = wrapped;
 		}
-
-		@Override
+		
 		public VertexConsumer getBuffer(RenderType renderType) {
 			return wrapped.getBuffer(renderType);
 		}
 
-		@Override
 		public void endBatch() {
 			// Disable explicit flushing
 		}
 
-		@Override
 		public void endBatch(RenderType type) {
 			// Disable explicit flushing
 		}

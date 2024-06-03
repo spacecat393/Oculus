@@ -1,7 +1,6 @@
 package net.coderbot.iris.pipeline;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-//import com.mojang.math.Matrix4f;
+import lombok.Getter;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.coderbot.batchedentityrendering.impl.FullyBufferedMultiBufferSource;
@@ -9,29 +8,20 @@ import net.coderbot.iris.mixin.GameRendererAccessor;
 import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.irisshaders.iris.api.v0.IrisApi;
 import net.minecraft.block.Block;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumHand;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.GameType;
 
 public class HandRenderer {
 	public static final HandRenderer INSTANCE = new HandRenderer();
 
 	private boolean ACTIVE;
-	private boolean renderingSolid;
-	private final FullyBufferedMultiBufferSource bufferSource = new FullyBufferedMultiBufferSource();
+	@Getter
+    private boolean renderingSolid;
+	@Getter
+    private final FullyBufferedMultiBufferSource bufferSource = new FullyBufferedMultiBufferSource();
 
 	public static final float DEPTH = 0.125F;
 
@@ -144,13 +134,5 @@ public class HandRenderer {
 
 	public boolean isActive() {
 		return ACTIVE;
-	}
-
-	public boolean isRenderingSolid() {
-		return renderingSolid;
-	}
-
-	public FullyBufferedMultiBufferSource getBufferSource() {
-		return bufferSource;
 	}
 }

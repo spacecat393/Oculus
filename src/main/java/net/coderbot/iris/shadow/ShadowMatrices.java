@@ -2,11 +2,11 @@ package net.coderbot.iris.shadow;
 
 import java.nio.FloatBuffer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-//import com.mojang.math.Matrix4f;
 import net.coderbot.iris.vendored.joml.Matrix4f;
-//import com.mojang.math.Vector3f;
 import net.coderbot.iris.vendored.joml.Vector3f;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.math.Vec3d;
+import org.lwjgl.BufferUtils;
 
 public class ShadowMatrices {
 	private static final float NEAR = 0.05f;
@@ -42,7 +42,7 @@ public class ShadowMatrices {
 		};
 	}
 
-	public static void createBaselineModelViewMatrix(PoseStack target, float shadowAngle, float sunPathRotation) {
+	public static void createBaselineModelViewMatrix(float shadowAngle, float sunPathRotation) {
 		float skyAngle;
 
 		if (shadowAngle < 0.25f) {
@@ -51,16 +51,24 @@ public class ShadowMatrices {
 			skyAngle = shadowAngle - 0.25f;
 		}
 
-		target.last().normal().setIdentity();
-		target.last().pose().setIdentity();
+		Matrix4f matrix = new Matrix4f();
+		matrix.identity();
 
-		target.last().pose().multiply(Matrix4f.createTranslateMatrix(0.0f, 0.0f, -100.0f));
-		target.mulPose(Vector3f.XP.rotationDegrees(90.0F));
-		target.mulPose(Vector3f.ZP.rotationDegrees(skyAngle * -360.0f));
-		target.mulPose(Vector3f.XP.rotationDegrees(sunPathRotation));
+		matrix.translate(0.0f, 0.0f, -100.0f);
+		matrix.rotate(90.0F, 1.0f, 0.0f, 0.0f);
+		matrix.rotate(skyAngle * -360.0f, 0.0f, 0.0f, 1.0f);
+		matrix.rotate(sunPathRotation, 1.0f, 0.0f, 0.0f);
+
+		GlStateManager.loadIdentity();
+
+		FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+		matrix.get(matrixBuffer);
+
+		GlStateManager.multMatrix(matrixBuffer);
 	}
 
-	public static void snapModelViewToGrid(PoseStack target, float shadowIntervalSize, double cameraX, double cameraY, double cameraZ) {
+
+	public static void snapModelViewToGrid(float shadowIntervalSize, double cameraX, double cameraY, double cameraZ) {
 		if (Math.abs(shadowIntervalSize) == 0.0F) {
 			// Avoid a division by zero - semantically, this just means that the snapping does not take place,
 			// if the shadow interval (size of each grid "cell") is zero.
@@ -88,13 +96,22 @@ public class ShadowMatrices {
 		offsetY -= halfIntervalSize;
 		offsetZ -= halfIntervalSize;
 
-		target.last().pose().multiply(Matrix4f.createTranslateMatrix(offsetX, offsetY, offsetZ));
+		Matrix4f matrix = new Matrix4f();
+		matrix.identity();
+		matrix.translate(offsetX, offsetY, offsetZ);
+
+		GlStateManager.loadIdentity();
+
+		FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+		matrix.get(matrixBuffer);
+
+		GlStateManager.multMatrix(matrixBuffer);
 	}
 
-	public static void createModelViewMatrix(PoseStack target, float shadowAngle, float shadowIntervalSize,
+	public static void createModelViewMatrix(float shadowAngle, float shadowIntervalSize,
 											 float sunPathRotation, double cameraX, double cameraY, double cameraZ) {
-		createBaselineModelViewMatrix(target, shadowAngle, sunPathRotation);
-		snapModelViewToGrid(target, shadowIntervalSize, cameraX, cameraY, cameraZ);
+		createBaselineModelViewMatrix(shadowAngle, sunPathRotation);
+		snapModelViewToGrid(shadowIntervalSize, cameraX, cameraY, cameraZ);
 	}
 
 	private static final class Tests {
@@ -153,20 +170,21 @@ public class ShadowMatrices {
 					1
 			};
 
-			PoseStack modelView = new PoseStack();
+			Matrix4f modelView = new Matrix4f();
+			modelView.identity();
 
 			// NB: At dawn, the shadow angle is NOT zero.
 			// When DayTime=0, skyAngle = 282 degrees.
 			// Thus, sunAngle = shadowAngle = 0.03451777f
-			createModelViewMatrix(modelView, 0.03451777f, 2.0f,
+			createModelViewMatrix( 0.03451777f, 2.0f,
 					0.0f, 0.646045982837677f, 82.53274536132812f, -514.0264282226562f);
 
-			test("model view at dawn", expectedModelViewAtDawn, toFloatArray(modelView.last().pose()));
+			test("model view at dawn", expectedModelViewAtDawn, toFloatArray(modelView));
 		}
 
 		private static float[] toFloatArray(Matrix4f matrix4f) {
-			FloatBuffer buffer = FloatBuffer.allocate(16);
-			matrix4f.store(buffer);
+			FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+			matrix4f.get(buffer);
 
 			return buffer.array();
 		}

@@ -1,11 +1,10 @@
 package net.coderbot.iris.fantastic;
 
-//import java.util.function.Function;
-
-//import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.BlockRenderLayer;
+import java.util.function.Function;
 
 public interface WrappingMultiBufferSource {
-	void pushWrappingFunction(Function<RenderType, RenderType> wrappingFunction);
+	void pushWrappingFunction(Function<BlockRenderLayer, BlockRenderLayer> wrappingFunction);
 	void popWrappingFunction();
 	void assertWrapStackEmpty();
 }

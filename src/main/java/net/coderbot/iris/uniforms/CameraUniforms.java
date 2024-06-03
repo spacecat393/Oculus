@@ -7,6 +7,11 @@ import net.coderbot.iris.JomlConversions;
 import net.coderbot.iris.gl.uniform.UniformHolder;
 import net.coderbot.iris.vendored.joml.Vector3d;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * @see <a href="https://github.com/IrisShaders/ShaderDoc/blob/master/uniforms.md#camera">Uniforms: Camera</a>
@@ -34,7 +39,8 @@ public class CameraUniforms {
 	}
 
 	public static Vector3d getUnshiftedCameraPosition() {
-		return JomlConversions.fromVec3(client.gameRenderer.getMainCamera().getPosition());
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
+		return new Vector3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
 	}
 
 	static class CameraPositionTracker {

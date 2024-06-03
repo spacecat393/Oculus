@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
 import org.lwjgl.opengl.GL11;
 
-//import com.mojang.math.Matrix4f;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.minecraft.client.Minecraft;
@@ -66,7 +65,7 @@ public class HorizonRenderer {
 
 		this.buffer = new VertexBuffer(DefaultVertexFormats.POSITION);
 		this.buffer.bindBuffer();
-		this.buffer.upload(buffer);
+		// this.buffer.upload(buffer);
 		this.buffer.unbindBuffer();
 	}
 
@@ -174,7 +173,7 @@ public class HorizonRenderer {
 
 		buffer.bindBuffer();
 		VertexUtils.setupBufferState(DefaultVertexFormats.POSITION, 0L);
-		buffer.drawArrays(matrix, GL11.GL_QUADS);
+		buffer.drawArrays(GL11.GL_QUADS);
 		VertexUtils.clearBufferState(DefaultVertexFormats.POSITION);
 		buffer.unbindBuffer();
 	}

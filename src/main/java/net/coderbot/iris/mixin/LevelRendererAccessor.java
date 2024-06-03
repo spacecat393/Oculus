@@ -31,11 +31,9 @@ public interface LevelRendererAccessor {
 	@Invoker("renderBlockLayer")
 	void invokeRenderChunkLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn);
 
-	// replaced Camera with EntityRenderer
 	@Invoker("setupRender")
 	void invokeSetupRender(EntityRenderer camera, Frustum frustum, boolean hasForcedFrustum, int frame, boolean spectator);
 
-	// removed PoseStack and MultiBufferSource
 	@Invoker("renderEntity")
 	void invokeRenderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta);
 
@@ -47,12 +45,6 @@ public interface LevelRendererAccessor {
 
 	@Accessor("frameId")
 	void setFrameId(int frame);
-
-	//@Accessor("renderBuffers")
-	//RenderBuffers getRenderBuffers();
-
-	//@Accessor("renderBuffers")
-	//void setRenderBuffers(RenderBuffers buffers);
 
 	@Accessor("generateClouds")
 	boolean shouldRegenerateClouds();
