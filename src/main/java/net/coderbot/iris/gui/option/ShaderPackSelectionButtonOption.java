@@ -17,7 +17,6 @@ public class ShaderPackSelectionButtonOption extends GuiButton {
 		this.client = client;
 	}
 
-	//@Override
 	public void onClick(double mouseX, double mouseY) {
 		this.client.displayGuiScreen(new ShaderPackScreen(this.parent));
 	}

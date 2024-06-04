@@ -1,6 +1,5 @@
 package net.coderbot.iris.uniforms.builtin;
 
-//import com.mojang.math.Matrix4f;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.coderbot.iris.Iris;

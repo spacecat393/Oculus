@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-//import com.mojang.math.Matrix4f;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.coderbot.iris.Iris;

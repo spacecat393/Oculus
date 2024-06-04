@@ -5,10 +5,6 @@ import java.io.IOException;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.colorspace.ColorSpace;
 import net.coderbot.iris.pipeline.WorldRenderingPipeline;
-import net.minecraft.client.Minecraft;
-//import net.minecraft.client.ProgressOption;
-//import net.minecraft.network.chat.Component;
-//import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 

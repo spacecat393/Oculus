@@ -1,6 +1,5 @@
 package net.coderbot.batchedentityrendering.impl;
 
-//import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.BlockRenderLayer;
 import org.lwjgl.opengl.GL11;
 

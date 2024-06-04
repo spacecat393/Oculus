@@ -10,18 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-//import com.mojang.blaze3d.vertex.PoseStack;
-
-/*import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.minecraft.client.Camera;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.client.renderer.RenderType; */
 import net.minecraft.client.renderer.culling.Frustum;
-/*import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.world.entity.Entity;*/
 
 @Mixin(RenderGlobal.class)
 public interface LevelRendererAccessor {

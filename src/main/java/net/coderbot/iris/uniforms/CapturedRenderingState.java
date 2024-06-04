@@ -1,6 +1,5 @@
 package net.coderbot.iris.uniforms;
 
-//import com.mojang.math.Matrix4f;
 import lombok.Getter;
 import lombok.Setter;
 import net.coderbot.iris.vendored.joml.Matrix4f;

@@ -4,7 +4,6 @@ import nanolive.compat.CompatMemoryUtil;
 import net.coderbot.iris.vendored.joml.Vector3f;
 import net.irisshaders.iris.api.v0.IrisTextVertexSink;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-//import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;

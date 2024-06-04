@@ -3,24 +3,15 @@ package net.coderbot.iris.gui.element.widget;
 import java.util.Optional;
 
 import net.minecraft.client.gui.FontRenderer;
-//import org.lwjgl.glfw.GLFW;
 import net.minecraft.util.text.TextComponentTranslation;
 import org.lwjgl.input.Mouse;
-
-//import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.coderbot.iris.gui.GuiUtil;
 import net.coderbot.iris.gui.NavigationController;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.coderbot.iris.shaderpack.option.menu.OptionMenuLinkElement;
 import net.minecraft.client.Minecraft;
-//import net.minecraft.client.gui.Font;
-//import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.I18n;
-//import net.minecraft.network.chat.Component;
-//import net.minecraft.network.chat.MutableComponent;
-//import net.minecraft.network.chat.TextComponent;
-//import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
@@ -38,7 +29,6 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 		super(element);
 
 		this.targetScreenId = element.targetScreenId;
-//		this.label = GuiUtil.translateOrDefault(new TextComponent(element.targetScreenId), "screen." + element.targetScreenId);
 		this.label = (TextComponentString) GuiUtil.translateOrDefault(new TextComponentString(element.targetScreenId), "screen." + element.targetScreenId);
 	}
 
@@ -66,7 +56,6 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 
 		int labelWidth = font.getStringWidth(trimmedLabel);
 
-//		font.drawShadow(this.trimmedLabel, x + (int)(width * 0.5) - (int)(labelWidth * 0.5) - (int)(0.5 * Math.max(labelWidth - (width - 18), 0)), y + 7, 0xFFFFFF);
 		font.drawStringWithShadow(this.trimmedLabel, x + (int)(width * 0.5) - (int)(labelWidth * 0.5) - (int)(0.5 * Math.max(labelWidth - (width - 18), 0)), y + 7, 0xFFFFFF);
 		font.drawString(ARROW.getFormattedText(), (x + width) - 9, y + 7, 0xFFFFFF);
 
@@ -78,7 +67,7 @@ public class LinkElementWidget extends CommentedElementWidget<OptionMenuLinkElem
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
-		if (button == Mouse.getEventButton()) {
+		if (button == 0) {
 			this.navigation.open(targetScreenId);
 			GuiUtil.playButtonClickSound();
 
