@@ -6,97 +6,78 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-//import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.BufferBuilder;
-//import com.mojang.blaze3d.vertex.VertexConsumer;
-//import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.BlockRenderLayer;
 
-import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
-//import net.minecraft.client.renderer.MultiBufferSource;
-//import net.minecraft.client.renderer.RenderType;
+import static net.coderbot.batchedentityrendering.impl.RenderLayerUtil.*;
 
-public class SegmentedBufferBuilder implements MultiBufferSource, MemoryTrackingBuffer {
+public class SegmentedBufferBuilder implements MemoryTrackingBuffer {
     private final BufferBuilder buffer;
-    private final List<RenderType> usedTypes;
-    private RenderType currentType;
+    private final List<BlockRenderLayer> usedLayers;
+    private BlockRenderLayer currentLayer;
 
     public SegmentedBufferBuilder() {
         // 2 MB initial allocation
         this.buffer = new BufferBuilder(512 * 1024);
-        this.usedTypes = new ArrayList<>(256);
+        this.usedLayers = new ArrayList<>(256);
 
-        this.currentType = null;
+        this.currentLayer = null;
     }
 
-    @Override
-    public VertexConsumer getBuffer(RenderType renderType) {
-        if (!Objects.equals(currentType, renderType)) {
-            if (currentType != null) {
-                if (shouldSortOnUpload(currentType)) {
-                    buffer.sortQuads(0, 0, 0);
-                }
-
-                buffer.end();
-                usedTypes.add(currentType);
+    public BufferBuilder getBuffer(BlockRenderLayer renderLayer) {
+        if (!Objects.equals(currentLayer, renderLayer)) {
+            if (currentLayer != null) {
+                buffer.finishDrawing();
+                usedLayers.add(currentLayer);
             }
 
-            buffer.begin(renderType.mode(), renderType.format());
+            // Begin drawing with the specified render layer
+            buffer.begin(getGLMode(renderLayer), DefaultVertexFormats.BLOCK);
 
-            currentType = renderType;
+            currentLayer = renderLayer;
         }
 
         // Use duplicate vertices to break up triangle strips
         // https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Art/degenerate_triangle_strip_2x.png
         // This works by generating zero-area triangles that don't end up getting rendered.
         // TODO: How do we handle DEBUG_LINE_STRIP?
-        if (RenderTypeUtil.isTriangleStripDrawMode(currentType)) {
-            ((BufferBuilderExt) buffer).splitStrip();
+        if (isTriangleStripDrawMode(currentLayer)) {
+            buffer.putBulkData(buffer.getByteBuffer().duplicate());
         }
 
         return buffer;
     }
 
     public List<BufferSegment> getSegments() {
-        if (currentType == null) {
+        if (currentLayer == null) {
             return Collections.emptyList();
         }
 
-        usedTypes.add(currentType);
+        usedLayers.add(currentLayer);
 
-        if (shouldSortOnUpload(currentType)) {
-            buffer.sortQuads(0, 0, 0);
+        buffer.finishDrawing();
+        currentLayer = null;
+
+        List<BufferSegment> segments = new ArrayList<>(usedLayers.size());
+
+        for (BlockRenderLayer layer : usedLayers) {
+            ByteBuffer slice = buffer.getByteBuffer().slice();
+            BufferBuilder.State drawState = buffer.getVertexState();
+            segments.add(new BufferSegment(slice, drawState, layer));
         }
 
-        buffer.end();
-        currentType = null;
-
-        List<BufferSegment> segments = new ArrayList<>(usedTypes.size());
-
-        for (RenderType type : usedTypes) {
-            Pair<BufferBuilder.DrawState, ByteBuffer> pair = buffer.popNextBuffer();
-
-            BufferBuilder.DrawState drawState = pair.getFirst();
-            ByteBuffer slice = pair.getSecond();
-
-            segments.add(new BufferSegment(slice, drawState, type));
-        }
-
-        usedTypes.clear();
-
+        usedLayers.clear();
         return segments;
-    }
-
-    private static boolean shouldSortOnUpload(RenderType type) {
-        return ((RenderTypeAccessor) type).shouldSortOnUpload();
     }
 
     @Override
     public int getAllocatedSize() {
-        return ((MemoryTrackingBuffer) buffer).getAllocatedSize();
+        return buffer.getByteBuffer().capacity();
     }
 
     @Override
     public int getUsedSize() {
-        return ((MemoryTrackingBuffer) buffer).getUsedSize();
+        return buffer.getByteBuffer().limit();
     }
 }

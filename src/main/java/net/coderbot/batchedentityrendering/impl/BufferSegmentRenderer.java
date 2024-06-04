@@ -3,7 +3,7 @@ package net.coderbot.batchedentityrendering.impl;
 //import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.BufferBuilder;
 //import com.mojang.blaze3d.vertex.BufferUploader;
-import net.minecraft.client.renderer.BufferBuilder;
+
 
 public class BufferSegmentRenderer {
     private final BufferBuilder fakeBufferBuilder;
@@ -18,9 +18,9 @@ public class BufferSegmentRenderer {
      * Sets up the render type, draws the buffer, and then tears down the render type.
      */
     public void draw(BufferSegment segment) {
-        segment.getRenderType().setupRenderState();
+        segment.getRenderLayer().setupRenderState();
         drawInner(segment);
-        segment.getRenderType().clearRenderState();
+        segment.getRenderLayer().clearRenderState();
     }
 
     /**

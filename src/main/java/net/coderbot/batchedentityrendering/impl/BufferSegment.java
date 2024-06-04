@@ -2,31 +2,24 @@ package net.coderbot.batchedentityrendering.impl;
 
 import java.nio.ByteBuffer;
 
-//import com.mojang.blaze3d.vertex.BufferBuilder;
+import lombok.Getter;
 import net.minecraft.client.renderer.BufferBuilder;
-
-//import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.BlockRenderLayer;
 
 public class BufferSegment {
+    @Getter
     private final ByteBuffer slice;
-    private final BufferBuilder.DrawState drawState;
-    private final RenderType type;
+    @Getter
+    private final BufferBuilder.State drawState;
+    private final BlockRenderLayer layer;
 
-    public BufferSegment(ByteBuffer slice, BufferBuilder.DrawState drawState, RenderType type) {
+    public BufferSegment(ByteBuffer slice, BufferBuilder.State drawState, BlockRenderLayer layer) {
         this.slice = slice;
         this.drawState = drawState;
-        this.type = type;
+        this.layer = layer;
     }
 
-    public ByteBuffer getSlice() {
-        return slice;
-    }
-
-    public BufferBuilder.DrawState getDrawState() {
-        return drawState;
-    }
-
-    public RenderType getRenderType() {
-        return type;
+    public BlockRenderLayer getRenderLayer() {
+        return layer;
     }
 }
