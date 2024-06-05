@@ -2,26 +2,29 @@ package net.coderbot.batchedentityrendering.impl.ordering;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 //import java.util.List;
 
 //import de.odysseus.ithaka.digraph.Digraph;
 import de.odysseus.ithaka.digraph.Digraphs;
 import de.odysseus.ithaka.digraph.MapDigraph;
 //import de.odysseus.ithaka.digraph.util.fas.FeedbackArcSet;
+import de.odysseus.ithaka.digraph.util.fas.FeedbackArcSet;
 import de.odysseus.ithaka.digraph.util.fas.FeedbackArcSetPolicy;
 import de.odysseus.ithaka.digraph.util.fas.FeedbackArcSetProvider;
 import de.odysseus.ithaka.digraph.util.fas.SimpleFeedbackArcSetProvider;
 import net.coderbot.batchedentityrendering.impl.BlendingStateHolder;
 import net.coderbot.batchedentityrendering.impl.TransparencyType;
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
+import net.minecraft.util.BlockRenderLayer;
 //import net.minecraft.client.renderer.RenderType;
 
 public class GraphTranslucencyRenderOrderManager implements RenderOrderManager {
     private final FeedbackArcSetProvider feedbackArcSetProvider;
-    private final EnumMap<TransparencyType, Digraph<RenderType>> types;
+    private final EnumMap<TransparencyType, MapDigraph<BlockRenderLayer>> types;
 
     private boolean inGroup = false;
-    private final EnumMap<TransparencyType, RenderType> currentTypes;
+    private final EnumMap<TransparencyType, BlockRenderLayer> currentTypes;
 
     public GraphTranslucencyRenderOrderManager() {
         feedbackArcSetProvider = new SimpleFeedbackArcSetProvider();
@@ -33,26 +36,20 @@ public class GraphTranslucencyRenderOrderManager implements RenderOrderManager {
         }
     }
 
-    private static TransparencyType getTransparencyType(RenderType type) {
-        while (type instanceof WrappableRenderType) {
-            type = ((WrappableRenderType) type).unwrap();
-        }
-
-        if (type instanceof BlendingStateHolder) {
-            return ((BlendingStateHolder) type).getTransparencyType();
-        }
-
+    private static TransparencyType getTransparencyType(BlockRenderLayer type) {
+        // todo: double-check
         // Default to "generally transparent" if we can't figure it out.
         return TransparencyType.GENERAL_TRANSPARENT;
     }
 
-    public void begin(RenderType renderType) {
+    @Override
+    public void begin(BlockRenderLayer renderType) {
         TransparencyType transparencyType = getTransparencyType(renderType);
-        Digraph<RenderType> graph = types.get(transparencyType);
+        MapDigraph<BlockRenderLayer> graph = types.get(transparencyType);
         graph.add(renderType);
 
         if (inGroup) {
-			RenderType previous = currentTypes.put(transparencyType, renderType);
+            BlockRenderLayer previous = currentTypes.put(transparencyType, renderType);
 
             if (previous == null) {
                 return;
@@ -102,39 +99,24 @@ public class GraphTranslucencyRenderOrderManager implements RenderOrderManager {
         }
     }
 
-    public Iterable<RenderType> getRenderOrder() {
+    public Iterable<BlockRenderLayer> getRenderOrder() {
         int layerCount = 0;
-
-        for (Digraph<RenderType> graph : types.values()) {
+        for (MapDigraph<BlockRenderLayer> graph : types.values()) {
             layerCount += graph.getVertexCount();
         }
-
-        List<RenderType> allLayers = new ArrayList<>(layerCount);
-
-        for (Digraph<RenderType> graph : types.values()) {
-            // TODO: Make sure that FAS can't become a bottleneck!
-            // Running NP-hard algorithms in a real time rendering loop might not be an amazing idea.
-            // This shouldn't be necessary in sane scenes, though, and if there aren't cycles,
-            // then this *should* be relatively inexpensive, since it'll bail out and return an empty set.
-            FeedbackArcSet<RenderType> arcSet =
+        List<BlockRenderLayer> allLayers = new ArrayList<>(layerCount);
+        for (MapDigraph<BlockRenderLayer> graph : types.values()) {
+            FeedbackArcSet<BlockRenderLayer> arcSet =
                     feedbackArcSetProvider.getFeedbackArcSet(graph, graph, FeedbackArcSetPolicy.MIN_WEIGHT);
-
             if (arcSet.getEdgeCount() > 0) {
-                // This means that our dependency graph had cycles!!!
-                // This is very weird and isn't expected - but we try to handle it gracefully anyways.
-
-                // Our feedback arc set algorithm finds some dependency links that can be removed hopefully
-                // without disrupting the overall order too much. Hopefully it isn't too slow!
-                for (RenderType source : arcSet.vertices()) {
-                    for (RenderType target : arcSet.targets(source)) {
+                for (BlockRenderLayer source : arcSet.vertices()) {
+                    for (BlockRenderLayer target : arcSet.targets(source)) {
                         graph.remove(source, target);
                     }
                 }
             }
-
             allLayers.addAll(Digraphs.toposort(graph, false));
         }
-
         return allLayers;
     }
 }
