@@ -55,7 +55,7 @@ public class MixinTextureAtlasSprite {
 	 */
 	@Unique
 	private static void iris$fillInTransparentPixelColors(BufferedImage nativeImage) {
-		final long ppPixel = getPointerRGBA(nativeImage);
+		final long ppPixel = iris$getPointerRGBA(nativeImage);
 		final int pixelCount = nativeImage.getHeight() * nativeImage.getWidth();
 		// Calculate an average color from all pixels that are not completely transparent.
 		// This average is weighted based on the (non-zero) alpha value of the pixel.
@@ -110,12 +110,13 @@ public class MixinTextureAtlasSprite {
 		}
 	}
 
-	private static long getPointerRGBA(BufferedImage nativeImage) {
-		if (nativeImage.format() != NativeImage.Format.RGBA) {
+	@Unique
+	private static long iris$getPointerRGBA(BufferedImage bufferedImage) {
+		NativeImage nativeImage = NativeImage.toNativeImage(bufferedImage);
+		if (nativeImage.getFormat() != NativeImage.Format.RGBA) {
 			throw new IllegalArgumentException(String.format(Locale.ROOT,
-					"Tried to get pointer to RGBA pixel data on NativeImage of wrong format; have %s", nativeImage.format()));
+					"Tried to get pointer to RGBA pixel data on NativeImage of wrong format; have %s", nativeImage.getFormat()));
 		}
-
-		return nativeImage.pixels;
+		return nativeImage.getPixels();
 	}
 }

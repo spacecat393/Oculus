@@ -12,9 +12,11 @@ import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.shaderpack.texture.CustomTextureData;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
+import static nanolive.compat.NativeImage.toBufferedImage;
+
 public class NativeImageBackedCustomTexture extends DynamicTexture {
 	public NativeImageBackedCustomTexture(CustomTextureData.PngData textureData) throws IOException {
-		super(create(textureData.getContent()));
+		super(toBufferedImage(create(textureData.getContent())));
 
 		// By default, images are unblurred and not clamped.
 
@@ -37,11 +39,9 @@ public class NativeImageBackedCustomTexture extends DynamicTexture {
 		return NativeImage.read(buffer);
 	}
 
-	@Override
 	public void upload() {
-		NativeImage image = Objects.requireNonNull(getPixels());
-
-		bind();
-		image.upload(0, 0, 0, 0, 0, image.getWidth(), image.getHeight(), false, false, false, false);
+//		NativeImage image = Objects.requireNonNull(getPixels());
+//		bind();
+//		image.upload(0, 0, 0, 0, 0, image.getWidth(), image.getHeight(), false, false, false, false);
 	}
 }

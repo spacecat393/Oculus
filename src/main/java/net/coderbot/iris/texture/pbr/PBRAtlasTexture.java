@@ -1,5 +1,6 @@
 package net.coderbot.iris.texture.pbr;
 
+import lombok.Getter;
 import net.coderbot.iris.mixin.texture.TextureAtlasSpriteAccessor;
 import net.coderbot.iris.texture.util.TextureExporter;
 import net.coderbot.iris.texture.util.TextureManipulationUtil;
@@ -22,7 +23,8 @@ import java.util.Set;
 
 public class PBRAtlasTexture extends AbstractTexture {
 	protected final TextureMap atlasTexture;
-	protected final PBRType type;
+	@Getter
+    protected final PBRType type;
 	protected final ResourceLocation id;
 	protected final Map<ResourceLocation, TextureAtlasSprite> sprites = new HashMap<>();
 	protected final Set<TextureAtlasSprite> animatedSprites = new HashSet<>();
@@ -33,11 +35,7 @@ public class PBRAtlasTexture extends AbstractTexture {
 		id = type.appendToFileLocation(atlasTexture.location());
 	}
 
-	public PBRType getType() {
-		return type;
-	}
-
-	public ResourceLocation getAtlasId() {
+    public ResourceLocation getAtlasId() {
 		return id;
 	}
 
@@ -126,7 +124,6 @@ public class PBRAtlasTexture extends AbstractTexture {
 		}
 	}
 
-	@Override
 	public void close() {
 		PBRAtlasHolder pbrHolder = ((TextureAtlasExtension) atlasTexture).getPBRHolder();
 		if (pbrHolder != null) {

@@ -6,9 +6,11 @@ import java.util.Random;
 import nanolive.compat.NativeImage;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
+import static nanolive.compat.NativeImage.toBufferedImage;
+
 public class NativeImageBackedNoiseTexture extends DynamicTexture {
 	public NativeImageBackedNoiseTexture(int size) {
-		super(create(size));
+		super(toBufferedImage(create(size)));
 	}
 
 	private static NativeImage create(int size) {
@@ -26,11 +28,9 @@ public class NativeImageBackedNoiseTexture extends DynamicTexture {
 		return image;
 	}
 
-	@Override
 	public void upload() {
-		NativeImage image = Objects.requireNonNull(getPixels());
-
-		bind();
-		image.upload(0, 0, 0, 0, 0, image.getWidth(), image.getHeight(), true, false, false, false);
+//		NativeImage image = Objects.requireNonNull(this.getPixels());
+//		bind();
+//		image.upload(0, 0, 0, 0, 0, image.getWidth(), image.getHeight(), true, false, false, false);
 	}
 }

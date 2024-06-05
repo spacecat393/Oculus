@@ -1,38 +1,41 @@
 package nanolive.compat;
 
-import com.google.common.base.Charsets;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
 
+import lombok.Getter;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.MemoryUtil;
+import org.lwjgl.opengl.GL11;
 
 public final class NativeImage implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Set<StandardOpenOption> OPEN_OPTIONS;
+    @Getter
     private final Format format;
+    @Getter
     private final int width;
+    @Getter
     private final int height;
     private final boolean useStbFree;
-    public long pixels;
+    @Getter
+    private long pixels;
     private final long size;
 
     public NativeImage(int i, int j, boolean bl) {
@@ -45,12 +48,7 @@ public final class NativeImage implements AutoCloseable {
         this.height = j;
         this.size = (long)i * (long)j * (long)arg.components();
         this.useStbFree = false;
-        if (bl) {
-            this.pixels = MemoryUtil.nmemCalloc(1L, this.size);
-        } else {
-            this.pixels = MemoryUtil.nmemAlloc(this.size);
-        }
-
+        this.pixels = MemoryUtil.getAddress(BufferUtils.createByteBuffer((int) this.size));
     }
 
     private NativeImage(Format arg, int i, int j, boolean bl, long l) {
@@ -67,23 +65,48 @@ public final class NativeImage implements AutoCloseable {
         return "NativeImage[" + this.format + " " + this.width + "x" + this.height + "@" + this.pixels + (this.useStbFree ? "S" : "N") + "]";
     }
 
+    public static BufferedImage toBufferedImage(NativeImage nativeImage) {
+        int width = nativeImage.getWidth();
+        int height = nativeImage.getHeight();
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                bufferedImage.setRGB(x, y, nativeImage.getPixelRGBA(x, y));
+            }
+        }
+
+        return bufferedImage;
+    }
+
+    public static NativeImage toNativeImage(BufferedImage bufferedImage) {
+        int width = bufferedImage.getWidth();
+        int height = bufferedImage.getHeight();
+        NativeImage nativeImage = new NativeImage(NativeImage.Format.RGBA, width, height, false);
+        int[] pixelData = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int rgba = pixelData[y * width + x];
+                nativeImage.setPixelRGBA(x, y, rgba);
+            }
+        }
+        return nativeImage;
+    }
+
     public static NativeImage read(InputStream inputStream) throws IOException {
         return read(NativeImage.Format.RGBA, inputStream);
     }
 
     public static NativeImage read(@Nullable Format arg, InputStream inputStream) throws IOException {
-        ByteBuffer bytebuffer = null;
-
+        ByteBuffer bytebuffer;
         NativeImage nativeimage;
         try {
-            bytebuffer = TextureUtil.readResource(inputStream);
+            bytebuffer = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
             bytebuffer.rewind();
             nativeimage = read(arg, bytebuffer);
         } finally {
-            MemoryUtil.memFree(bytebuffer);
             IOUtils.closeQuietly(inputStream);
         }
-
         return nativeimage;
     }
 
@@ -94,42 +117,20 @@ public final class NativeImage implements AutoCloseable {
     public static NativeImage read(@Nullable Format arg, ByteBuffer byteBuffer) throws IOException {
         if (arg != null && !arg.supportedByStb()) {
             throw new UnsupportedOperationException("Don't know how to read format " + arg);
-        } else if (MemoryUtil.memAddress(byteBuffer) == 0L) {
+        } else if (byteBuffer == null || byteBuffer.remaining() == 0) {
             throw new IllegalArgumentException("Invalid buffer");
         } else {
-            MemoryStack memorystack = MemoryStack.stackPush();
-            Throwable var4 = null;
-
-            NativeImage nativeimage;
-            try {
-                IntBuffer intbuffer = memorystack.mallocInt(1);
-                IntBuffer intbuffer1 = memorystack.mallocInt(1);
-                IntBuffer intbuffer2 = memorystack.mallocInt(1);
-                ByteBuffer bytebuffer = STBImage.stbi_load_from_memory(byteBuffer, intbuffer, intbuffer1, intbuffer2, arg == null ? 0 : arg.components);
-                if (bytebuffer == null) {
-                    throw new IOException("Could not load image: " + STBImage.stbi_failure_reason());
-                }
-
-                nativeimage = new NativeImage(arg == null ? NativeImage.Format.getStbFormat(intbuffer2.get(0)) : arg, intbuffer.get(0), intbuffer1.get(0), true, MemoryUtil.memAddress(bytebuffer));
-            } catch (Throwable var16) {
-                var4 = var16;
-                throw var16;
-            } finally {
-                if (memorystack != null) {
-                    if (var4 != null) {
-                        try {
-                            memorystack.close();
-                        } catch (Throwable var15) {
-                            var4.addSuppressed(var15);
-                        }
-                    } else {
-                        memorystack.close();
-                    }
-                }
-
+            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(byteBuffer.array()));
+            if (bufferedImage == null) {
+                throw new IOException("Could not load image");
             }
-
-            return nativeimage;
+            NativeImage nativeImage = new NativeImage(arg == null ? Format.RGBA : arg, bufferedImage.getWidth(), bufferedImage.getHeight(), false);
+            for (int y = 0; y < bufferedImage.getHeight(); y++) {
+                for (int x = 0; x < bufferedImage.getWidth(); x++) {
+                    nativeImage.setPixelRGBA(x, y, bufferedImage.getRGB(x, y));
+                }
+            }
+            return nativeImage;
         }
     }
 
@@ -163,26 +164,9 @@ public final class NativeImage implements AutoCloseable {
 
     public void close() {
         if (this.pixels != 0L) {
-            if (this.useStbFree) {
-                STBImage.nstbi_image_free(this.pixels);
-            } else {
-                MemoryUtil.nmemFree(this.pixels);
-            }
+            //BufferUtils.createByteBuffer((int) this.size).free();
         }
-
         this.pixels = 0L;
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public Format format() {
-        return this.format;
     }
 
     public int getPixelRGBA(int j, int k) {
@@ -254,12 +238,10 @@ public final class NativeImage implements AutoCloseable {
         } else {
             GlStateManager.glPixelStorei(3314, this.getWidth());
         }
-
         GlStateManager.glPixelStorei(3316, l);
         GlStateManager.glPixelStorei(3315, m);
         this.format.setUnpackPixelStoreState();
-        GlStateManager.glTexSubImage2D(3553, i, j, k, n, o, this.format.glFormat(), 5121, this.pixels);
-        if (bl4) {
+        GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, i, j, k, l, m, this.format.glFormat(), GL11.GL_UNSIGNED_BYTE, (long) this.pixels);        if (bl4) {
             this.close();
         }
 
@@ -268,7 +250,7 @@ public final class NativeImage implements AutoCloseable {
     public void downloadTexture(int k, boolean bl) {
         this.checkAllocated();
         this.format.setPackPixelStoreState();
-        GlStateManager._getTexImage(3553, k, this.format.glFormat(), 5121, this.pixels);
+        GlStateManager.glGetTexImage(3553, k, this.format.glFormat(), 5121, IntBuffer.allocate((int) this.pixels));
         if (bl && this.format.hasAlpha()) {
             for(int i = 0; i < this.getHeight(); ++i) {
                 for(int j = 0; j < this.getWidth(); ++j) {
@@ -285,7 +267,6 @@ public final class NativeImage implements AutoCloseable {
                 this.setPixelRGBA(j, i, o);
             }
         }
-
     }
 
     public void copyRect(int m, int n, int o, int p, int q, int r, boolean bl, boolean bl2) {
@@ -426,7 +407,6 @@ public final class NativeImage implements AutoCloseable {
                     return LUMINANCE_ALPHA;
                 case 3:
                     return RGB;
-                case 4:
                 default:
                     return RGBA;
             }
