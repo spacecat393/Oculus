@@ -5,7 +5,6 @@ import java.util.Map;
 
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureMap;
 
 import javax.annotation.Nullable;

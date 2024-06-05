@@ -2,6 +2,7 @@ package net.coderbot.batchedentityrendering.impl;
 
 //import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
 //import com.mojang.blaze3d.vertex.BufferUploader;
 
 
@@ -18,9 +19,9 @@ public class BufferSegmentRenderer {
      * Sets up the render type, draws the buffer, and then tears down the render type.
      */
     public void draw(BufferSegment segment) {
-        segment.getRenderLayer().setupRenderState();
+        //segment.getRenderLayer().setupRenderState();
         drawInner(segment);
-        segment.getRenderLayer().clearRenderState();
+        //segment.getRenderLayer().clearRenderState();
     }
 
     /**
@@ -28,7 +29,7 @@ public class BufferSegmentRenderer {
      */
     public void drawInner(BufferSegment segment) {
         fakeBufferBuilderExt.setupBufferSlice(segment.getSlice(), segment.getDrawState());
-        BufferUploader.end(fakeBufferBuilder);
+        Tessellator.getInstance().draw();
         fakeBufferBuilderExt.teardownBufferSlice();
     }
 }

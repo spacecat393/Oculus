@@ -2,7 +2,6 @@ package net.coderbot.iris.rendertarget;
 
 import nanolive.compat.NativeImage;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import java.awt.image.BufferedImage;
 
 import static nanolive.compat.NativeImage.toBufferedImage;
 

@@ -113,8 +113,8 @@ public class PBRTextureManager {
 
 	public void close() {
 		clear();
-		defaultNormalTexture.close();
-		defaultSpecularTexture.close();
+		defaultNormalTexture.deleteGlTexture();
+		defaultSpecularTexture.deleteGlTexture();
 	}
 
 	private void closeHolder(PBRTextureHolder holder) {
@@ -130,7 +130,7 @@ public class PBRTextureManager {
 
 	private static void closeTexture(AbstractTexture texture) {
 		try {
-			texture.close();
+			texture.deleteGlTexture();
 		} catch (Exception e) {
 			//
 		}

@@ -1,7 +1,10 @@
 package net.coderbot.iris.shaderpack.materialmap;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
+@Getter
 public class NamespacedId {
 	private final String namespace;
 	private final String name;
@@ -23,15 +26,7 @@ public class NamespacedId {
 		this.name = Objects.requireNonNull(name);
 	}
 
-	public String getNamespace() {
-		return namespace;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	@Override
+    @Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
