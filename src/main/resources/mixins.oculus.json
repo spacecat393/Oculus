@@ -46,7 +46,6 @@
     "rendertype.MixinRenderStateShard_Tagging",
     "rendertype.MixinRenderType_FixTerrainAlpha",
     "rendertype.RenderStateShardAccessor",
-    "rendertype.RenderTypeAccessor",
     "shadows.ChunkInfoAccessor",
     "shadows.MixinBeaconRenderer",
     "shadows.MixinLevelRenderer",

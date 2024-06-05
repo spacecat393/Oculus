@@ -15,7 +15,6 @@
     "MixinLevelRenderer",
     "MixinLevelRenderer_EntityListSorting",
     "CompositeStateAccessor",
-    "RenderTypeAccessor",
     "RenderStateShardAccessor"
   ],
   "injectors": {
