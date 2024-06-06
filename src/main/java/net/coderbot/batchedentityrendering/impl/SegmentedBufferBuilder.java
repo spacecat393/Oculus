@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
 
 public class SegmentedBufferBuilder implements MemoryTrackingBuffer {
     private final BufferBuilder buffer;
@@ -18,33 +18,22 @@ public class SegmentedBufferBuilder implements MemoryTrackingBuffer {
         // 2 MB initial allocation
         this.buffer = new BufferBuilder(512 * 1024);
         this.usedTypes = new ArrayList<>(256);
-
         this.currentType = null;
     }
 
-    @Override
-    public VertexConsumer getBuffer(CustomRenderType renderType) {
+    public BufferBuilder getBuffer(CustomRenderType renderType) {
         if (!Objects.equals(currentType, renderType)) {
             if (currentType != null) {
                 if (shouldSortOnUpload(currentType)) {
-                    buffer.sortQuads(0, 0, 0);
+                    buffer.sortVertexData(0, 0, 0);
                 }
 
-                buffer.end();
+                buffer.finishDrawing();
                 usedTypes.add(currentType);
             }
 
-            buffer.begin(renderType.mode(), renderType.format());
-
+            buffer.begin(renderType.getMode(), renderType.getFormat());
             currentType = renderType;
-        }
-
-        // Use duplicate vertices to break up triangle strips
-        // https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Art/degenerate_triangle_strip_2x.png
-        // This works by generating zero-area triangles that don't end up getting rendered.
-        // TODO: How do we handle DEBUG_LINE_STRIP?
-        if (RenderTypeUtil.isTriangleStripDrawMode(currentType)) {
-            ((BufferBuilderExt) buffer).splitStrip();
         }
 
         return buffer;
@@ -58,19 +47,17 @@ public class SegmentedBufferBuilder implements MemoryTrackingBuffer {
         usedTypes.add(currentType);
 
         if (shouldSortOnUpload(currentType)) {
-            buffer.sortQuads(0, 0, 0);
+            buffer.sortVertexData(0, 0, 0);
         }
 
-        buffer.end();
+        buffer.finishDrawing();
         currentType = null;
 
         List<BufferSegment> segments = new ArrayList<>(usedTypes.size());
 
         for (CustomRenderType type : usedTypes) {
-            Pair<BufferBuilder.State, ByteBuffer> pair = buffer.popNextBuffer();
-
-            BufferBuilder.State drawState = pair.getFirst();
-            ByteBuffer slice = pair.getSecond();
+            BufferBuilder.State drawState = buffer.getVertexState();
+            ByteBuffer slice = buffer.getByteBuffer();
 
             segments.add(new BufferSegment(slice, drawState, type));
         }
@@ -81,16 +68,18 @@ public class SegmentedBufferBuilder implements MemoryTrackingBuffer {
     }
 
     private static boolean shouldSortOnUpload(CustomRenderType type) {
-        return ((RenderTypeAccessor) type).shouldSortOnUpload();
+        // todo: fix
+        // return ((RenderTypeAccessor) type).shouldSortOnUpload();
+        return false;
     }
 
     @Override
     public int getAllocatedSize() {
-        return ((MemoryTrackingBuffer) buffer).getAllocatedSize();
+        return buffer.getByteBuffer().capacity();
     }
 
     @Override
     public int getUsedSize() {
-        return ((MemoryTrackingBuffer) buffer).getUsedSize();
+        return buffer.getByteBuffer().position();
     }
 }

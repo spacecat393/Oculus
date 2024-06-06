@@ -14,6 +14,7 @@ import net.coderbot.batchedentityrendering.impl.ordering.GraphTranslucencyRender
 import net.coderbot.batchedentityrendering.impl.ordering.RenderOrderManager;
 import net.coderbot.iris.fantastic.WrappingMultiBufferSource;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.profiler.Profiler;
 
@@ -55,7 +56,7 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 		this.wrappingFunctionStack = new ArrayList<>();
 	}
 
-	public VertexBuffer getBuffer(CustomRenderType renderType) {
+	public BufferBuilder getBuffer(CustomRenderType renderType) {
 		if (wrappingFunction != null) {
 			renderType = wrappingFunction.apply(renderType);
 		}
@@ -216,7 +217,7 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 		}
 
 		@Override
-		public VertexBuffer getBuffer(CustomRenderType renderType) {
+		public BufferBuilder getBuffer(CustomRenderType renderType) {
 			return wrapped.getBuffer(renderType);
 		}
 

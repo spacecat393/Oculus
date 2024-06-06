@@ -12,16 +12,18 @@ public abstract class CustomRenderType {
     @Getter
     private final VertexFormat format;
     @Getter
+    private final int mode;
     private final int bufferSize;
     private final boolean affectsCrumbling;
     private final boolean sortOnUpload;
 
-    public CustomRenderType(String name, VertexFormat format, int bufferSize, boolean affectsCrumbling, boolean sortOnUpload) {
+    public CustomRenderType(String name, VertexFormat format, int bufferSize, boolean affectsCrumbling, boolean sortOnUpload, int mode) {
         this.name = name;
         this.format = format;
         this.bufferSize = bufferSize;
         this.affectsCrumbling = affectsCrumbling;
         this.sortOnUpload = sortOnUpload;
+        this.mode = mode;
     }
 
     public abstract void setupRenderState();
@@ -42,9 +44,5 @@ public abstract class CustomRenderType {
 
     public boolean sortOnUpload() {
         return sortOnUpload;
-    }
-
-    public int mode() {
-        return 0;
     }
 }
