@@ -4,32 +4,32 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-//import java.util.List;
-
 import net.coderbot.batchedentityrendering.impl.BlendingStateHolder;
+import net.coderbot.batchedentityrendering.impl.CustomRenderType;
 import net.coderbot.batchedentityrendering.impl.TransparencyType;
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
-import net.minecraft.util.BlockRenderLayer;
-//import net.minecraft.client.renderer.RenderType;
 
 public class TranslucencyRenderOrderManager implements RenderOrderManager {
-    private final EnumMap<TransparencyType, LinkedHashSet<BlockRenderLayer>> renderTypes;
+    private final EnumMap<TransparencyType, LinkedHashSet<CustomRenderType>> renderTypes;
 
     public TranslucencyRenderOrderManager() {
         renderTypes = new EnumMap<>(TransparencyType.class);
-
         for (TransparencyType type : TransparencyType.values()) {
             renderTypes.put(type, new LinkedHashSet<>());
         }
     }
 
-    private static TransparencyType getTransparencyType(BlockRenderLayer type) {
-        // todo: double-check
-        // Default to "generally transparent" if we can't figure it out.
+    private static TransparencyType getTransparencyType(CustomRenderType type) {
+        while (type instanceof WrappableRenderType) {
+            type = ((WrappableRenderType) type).unwrap();
+        }
+        if (type instanceof BlendingStateHolder) {
+            return ((BlendingStateHolder) type).getTransparencyType();
+        }
         return TransparencyType.GENERAL_TRANSPARENT;
     }
 
-    public void begin(BlockRenderLayer type) {
+    public void begin(CustomRenderType type) {
         renderTypes.get(getTransparencyType(type)).add(type);
     }
 
@@ -53,19 +53,15 @@ public class TranslucencyRenderOrderManager implements RenderOrderManager {
         });
     }
 
-    public Iterable<BlockRenderLayer> getRenderOrder() {
+    public Iterable<CustomRenderType> getRenderOrder() {
         int layerCount = 0;
-
-        for (LinkedHashSet<BlockRenderLayer> set : renderTypes.values()) {
+        for (LinkedHashSet<CustomRenderType> set : renderTypes.values()) {
             layerCount += set.size();
         }
-
-        List<BlockRenderLayer> allRenderTypes = new ArrayList<>(layerCount);
-
-        for (LinkedHashSet<BlockRenderLayer> set : renderTypes.values()) {
+        List<CustomRenderType> allRenderTypes = new ArrayList<>(layerCount);
+        for (LinkedHashSet<CustomRenderType> set : renderTypes.values()) {
             allRenderTypes.addAll(set);
         }
-
         return allRenderTypes;
     }
 }

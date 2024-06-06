@@ -1,58 +1,50 @@
 package net.coderbot.iris.layer;
 
 import java.util.Objects;
-//import java.util.Optional;
-
-//import org.jetbrains.annotations.Nullable;
-
-import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
-import net.coderbot.iris.mixin.rendertype.RenderTypeAccessor;
-//import net.minecraft.client.renderer.RenderStateShard;
-//import net.minecraft.client.renderer.RenderType;
-
+import java.util.Optional;
 import javax.annotation.Nullable;
+import net.coderbot.batchedentityrendering.impl.CustomRenderType;
+import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 
-public class OuterWrappedRenderType extends RenderType implements WrappableRenderType {
-	private final RenderStateShard extra;
-	private final RenderType wrapped;
+public class OuterWrappedRenderType extends CustomRenderType implements WrappableRenderType {
+	private final CustomRenderType wrapped;
+	private final Runnable extraSetup;
+	private final Runnable extraClear;
 
-	private OuterWrappedRenderType(String name, RenderType wrapped, RenderStateShard extra) {
-		super(name, wrapped.format(), wrapped.mode(), wrapped.bufferSize(),
-			wrapped.affectsCrumbling(), shouldSortOnUpload(wrapped), wrapped::setupRenderState, wrapped::clearRenderState);
-
-		this.extra = extra;
+	public OuterWrappedRenderType(String name, CustomRenderType wrapped, Runnable extraSetup, Runnable extraClear) {
+		super(name, wrapped.getFormat(), wrapped.getBufferSize(), wrapped.affectsCrumbling(), wrapped.sortOnUpload());
 		this.wrapped = wrapped;
+		this.extraSetup = extraSetup;
+		this.extraClear = extraClear;
 	}
 
-	public static OuterWrappedRenderType wrapExactlyOnce(String name, RenderType wrapped, RenderStateShard extra) {
+	public static OuterWrappedRenderType wrapExactlyOnce(String name, CustomRenderType wrapped, Runnable extraSetup, Runnable extraClear) {
 		if (wrapped instanceof OuterWrappedRenderType) {
 			wrapped = ((OuterWrappedRenderType) wrapped).unwrap();
 		}
-
-		return new OuterWrappedRenderType(name, wrapped, extra);
+		return new OuterWrappedRenderType(name, wrapped, extraSetup, extraClear);
 	}
 
 	@Override
 	public void setupRenderState() {
-		extra.setupRenderState();
-
-		super.setupRenderState();
+		extraSetup.run();
+		wrapped.setupRenderState();
 	}
 
 	@Override
 	public void clearRenderState() {
-		super.clearRenderState();
-
-		extra.clearRenderState();
+		wrapped.clearRenderState();
+		extraClear.run();
 	}
 
 	@Override
-	public RenderType unwrap() {
+	public CustomRenderType unwrap() {
 		return this.wrapped;
 	}
 
 	@Override
-	public Optional<RenderType> outline() {
+	public Optional<CustomRenderType> outline() {
 		return this.wrapped.outline();
 	}
 
@@ -66,29 +58,20 @@ public class OuterWrappedRenderType extends RenderType implements WrappableRende
 		if (object == null) {
 			return false;
 		}
-
 		if (object.getClass() != this.getClass()) {
 			return false;
 		}
-
 		OuterWrappedRenderType other = (OuterWrappedRenderType) object;
-
-		return Objects.equals(this.wrapped, other.wrapped) && Objects.equals(this.extra, other.extra);
+		return Objects.equals(this.wrapped, other.wrapped) && Objects.equals(this.extraSetup, other.extraSetup) && Objects.equals(this.extraClear, other.extraClear);
 	}
 
 	@Override
 	public int hashCode() {
-		// Add one so that we don't have the exact same hash as the wrapped object.
-		// This means that we won't have a guaranteed collision if we're inserted to a map alongside the unwrapped object.
 		return this.wrapped.hashCode() + 1;
 	}
 
 	@Override
 	public String toString() {
 		return "iris_wrapped:" + this.wrapped.toString();
-	}
-
-	private static boolean shouldSortOnUpload(RenderType type) {
-		return ((RenderTypeAccessor) type).shouldSortOnUpload();
 	}
 }

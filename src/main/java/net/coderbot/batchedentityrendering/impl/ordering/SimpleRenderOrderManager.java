@@ -1,17 +1,18 @@
 package net.coderbot.batchedentityrendering.impl.ordering;
 
+import net.coderbot.batchedentityrendering.impl.CustomRenderType;
 import net.minecraft.util.BlockRenderLayer;
 
 import java.util.LinkedHashSet;
 
 public class SimpleRenderOrderManager implements RenderOrderManager {
-    private final LinkedHashSet<BlockRenderLayer> renderTypes;
+    private final LinkedHashSet<CustomRenderType> renderTypes;
 
     public SimpleRenderOrderManager() {
         renderTypes = new LinkedHashSet<>();
     }
 
-    public void begin(BlockRenderLayer type) {
+    public void begin(CustomRenderType type) {
         renderTypes.add(type);
     }
 
@@ -33,7 +34,7 @@ public class SimpleRenderOrderManager implements RenderOrderManager {
         renderTypes.clear();
     }
 
-    public Iterable<BlockRenderLayer> getRenderOrder() {
+    public Iterable<CustomRenderType> getRenderOrder() {
         return renderTypes;
     }
 }

@@ -1,33 +1,28 @@
 package net.coderbot.batchedentityrendering.impl.wrappers;
 
 import java.util.Objects;
-//import java.util.Optional;
-
-//import org.jetbrains.annotations.Nullable;
-
+import java.util.Optional;
+import javax.annotation.Nullable;
+import net.coderbot.batchedentityrendering.impl.CustomRenderType;
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
-import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
-//import net.minecraft.client.renderer.RenderType;
 
-public class TaggingRenderTypeWrapper extends RenderType implements WrappableRenderType {
+public class TaggingRenderTypeWrapper extends CustomRenderType implements WrappableRenderType {
     private final int tag;
-    private final RenderType wrapped;
+    private final CustomRenderType wrapped;
 
-    public TaggingRenderTypeWrapper(String name, RenderType wrapped, int tag) {
-        super(name, wrapped.format(), wrapped.mode(), wrapped.bufferSize(),
-                wrapped.affectsCrumbling(), shouldSortOnUpload(wrapped), wrapped::setupRenderState, wrapped::clearRenderState);
-
+    public TaggingRenderTypeWrapper(String name, CustomRenderType wrapped, int tag) {
+        super(name, wrapped.getFormat(), wrapped.getBufferSize(), wrapped.affectsCrumbling(), wrapped.sortOnUpload());
         this.tag = tag;
         this.wrapped = wrapped;
     }
 
     @Override
-    public RenderType unwrap() {
+    public CustomRenderType unwrap() {
         return this.wrapped;
     }
 
     @Override
-    public Optional<RenderType> outline() {
+    public Optional<CustomRenderType> outline() {
         return this.wrapped.outline();
     }
 
@@ -41,29 +36,30 @@ public class TaggingRenderTypeWrapper extends RenderType implements WrappableRen
         if (object == null) {
             return false;
         }
-
         if (object.getClass() != this.getClass()) {
             return false;
         }
-
         TaggingRenderTypeWrapper other = (TaggingRenderTypeWrapper) object;
-
         return this.tag == other.tag && Objects.equals(this.wrapped, other.wrapped);
     }
 
     @Override
     public int hashCode() {
-        // Add one so that we don't have the exact same hash as the wrapped object.
-        // This means that we won't have a guaranteed collision if we're inserted to a map alongside the unwrapped object.
         return this.wrapped.hashCode() + 1;
     }
 
     @Override
     public String toString() {
-        return "tagged(" +tag+ "):" + this.wrapped.toString();
+        return "tagged(" + tag + "):" + this.wrapped.toString();
     }
 
-    private static boolean shouldSortOnUpload(RenderType type) {
-        return ((RenderTypeAccessor) type).shouldSortOnUpload();
+    @Override
+    public void setupRenderState() {
+        wrapped.setupRenderState();
+    }
+
+    @Override
+    public void clearRenderState() {
+        wrapped.clearRenderState();
     }
 }
