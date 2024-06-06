@@ -1,10 +1,10 @@
 package net.coderbot.iris.fantastic;
 
-import net.minecraft.util.BlockRenderLayer;
+import net.coderbot.batchedentityrendering.impl.CustomRenderType;
 import java.util.function.Function;
 
 public interface WrappingMultiBufferSource {
-	void pushWrappingFunction(Function<BlockRenderLayer, BlockRenderLayer> wrappingFunction);
+	void pushWrappingFunction(Function<CustomRenderType, CustomRenderType> wrappingFunction);
 	void popWrappingFunction();
 	void assertWrapStackEmpty();
 }

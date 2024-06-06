@@ -43,4 +43,8 @@ public abstract class CustomRenderType {
     public boolean sortOnUpload() {
         return sortOnUpload;
     }
+
+    public int mode() {
+        return 0;
+    }
 }

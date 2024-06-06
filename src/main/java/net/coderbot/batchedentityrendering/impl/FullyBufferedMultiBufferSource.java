@@ -10,13 +10,11 @@ import java.util.Map;
 import java.util.function.Function;
 
 import lombok.Getter;
-import net.minecraft.client.renderer.BufferBuilder;
-
 import net.coderbot.batchedentityrendering.impl.ordering.GraphTranslucencyRenderOrderManager;
 import net.coderbot.batchedentityrendering.impl.ordering.RenderOrderManager;
 import net.coderbot.iris.fantastic.WrappingMultiBufferSource;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.profiler.Profiler;
 
 public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Groupable, WrappingMultiBufferSource {
@@ -25,21 +23,22 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 	private final RenderOrderManager renderOrderManager;
 	private final SegmentedBufferBuilder[] builders;
 	/**
-	 * An LRU cache mapping RenderType objects to a relevant buffer.
+	 * An LRU cache mapping CustomRenderType objects to a relevant buffer.
 	 */
-	private final LinkedHashMap<BlockRenderLayer, Integer> affinities;
+	private final LinkedHashMap<CustomRenderType, Integer> affinities;
 	@Getter
     private int drawCalls;
 	@Getter
     private int renderTypes;
 
 	private final BufferSegmentRenderer segmentRenderer;
-	@Getter
-    private final UnflushableWrapper unflushableWrapper;
-	private final List<Function<BlockRenderLayer, BlockRenderLayer>> wrappingFunctionStack;
-	private Function<BlockRenderLayer, BlockRenderLayer> wrappingFunction = null;
+	private final UnflushableWrapper unflushableWrapper;
+	private final List<Function<CustomRenderType, CustomRenderType>> wrappingFunctionStack;
+	private Function<CustomRenderType, CustomRenderType> wrappingFunction = null;
 
 	public FullyBufferedMultiBufferSource() {
+		super();
+
 		this.renderOrderManager = new GraphTranslucencyRenderOrderManager();
 		this.builders = new SegmentedBufferBuilder[NUM_BUFFERS];
 
@@ -56,7 +55,7 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 		this.wrappingFunctionStack = new ArrayList<>();
 	}
 
-	public BufferBuilder getBuffer(BlockRenderLayer renderType) {
+	public VertexBuffer getBuffer(CustomRenderType renderType) {
 		if (wrappingFunction != null) {
 			renderType = wrappingFunction.apply(renderType);
 		}
@@ -70,8 +69,8 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 			} else {
 				// We remove the element from the map that is used least-frequently.
 				// With how we've configured our LinkedHashMap, that is the first element.
-				Iterator<Map.Entry<BlockRenderLayer, Integer>> iterator = affinities.entrySet().iterator();
-				Map.Entry<BlockRenderLayer, Integer> evicted = iterator.next();
+				Iterator<Map.Entry<CustomRenderType, Integer>> iterator = affinities.entrySet().iterator();
+				Map.Entry<CustomRenderType, Integer> evicted = iterator.next();
 				iterator.remove();
 
 				// The previous type is no longer associated with this buffer ...
@@ -92,28 +91,33 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 
 		profiler.startSection("collect");
 
-		Map<BlockRenderLayer, List<BufferSegment>> layerToSegment = new HashMap<>();
+		Map<CustomRenderType, List<BufferSegment>> typeToSegment = new HashMap<>();
 
 		for (SegmentedBufferBuilder builder : builders) {
 			List<BufferSegment> segments = builder.getSegments();
+
 			for (BufferSegment segment : segments) {
-				layerToSegment.computeIfAbsent(segment.getRenderLayer(), (type) -> new ArrayList<>()).add(segment);
+				typeToSegment.computeIfAbsent(segment.getRenderType(), (type) -> new ArrayList<>()).add(segment);
 			}
 		}
 
 		profiler.endStartSection("resolve ordering");
 
-		Iterable<BlockRenderLayer> renderOrder = renderOrderManager.getRenderOrder();
+		Iterable<CustomRenderType> renderOrder = renderOrderManager.getRenderOrder();
 
 		profiler.endStartSection("draw buffers");
 
-		for (BlockRenderLayer layer : renderOrder) {
+		for (CustomRenderType type : renderOrder) {
+			type.setupRenderState();
+
 			renderTypes += 1;
 
-			for (BufferSegment segment : layerToSegment.getOrDefault(layer, Collections.emptyList())) {
+			for (BufferSegment segment : typeToSegment.getOrDefault(type, Collections.emptyList())) {
 				segmentRenderer.drawInner(segment);
 				drawCalls += 1;
 			}
+
+			type.clearRenderState();
 		}
 
 		profiler.endStartSection("reset");
@@ -129,11 +133,15 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 		renderTypes = 0;
 	}
 
-	public void endBatch(BlockRenderLayer type) {
-		renderOrderManager.endGroup();
+	public void endBatch(CustomRenderType type) {
+		// Disable explicit flushing
 	}
 
-    @Override
+	public FullyBufferedMultiBufferSource getUnflushableWrapper() {
+		return unflushableWrapper;
+	}
+
+	@Override
 	public int getAllocatedSize() {
 		int size = 0;
 
@@ -170,7 +178,8 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 		renderOrderManager.endGroup();
 	}
 
-	public void pushWrappingFunction(Function<BlockRenderLayer, BlockRenderLayer> wrappingFunction) {
+	@Override
+	public void pushWrappingFunction(Function<CustomRenderType, CustomRenderType> wrappingFunction) {
 		if (this.wrappingFunction != null) {
 			this.wrappingFunctionStack.add(this.wrappingFunction);
 		}
@@ -178,6 +187,7 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 		this.wrappingFunction = wrappingFunction;
 	}
 
+	@Override
 	public void popWrappingFunction() {
 		if (this.wrappingFunctionStack.isEmpty()) {
 			this.wrappingFunction = null;
@@ -186,6 +196,7 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 		}
 	}
 
+	@Override
 	public void assertWrapStackEmpty() {
 		if (!this.wrappingFunctionStack.isEmpty() || this.wrappingFunction != null) {
 			throw new IllegalStateException("Wrapping function stack not empty!");
@@ -195,23 +206,27 @@ public class FullyBufferedMultiBufferSource implements MemoryTrackingBuffer, Gro
 	/**
 	 * A wrapper that prevents callers from explicitly flushing anything.
 	 */
-	private static class UnflushableWrapper extends BufferBuilder implements Groupable {
+	private static class UnflushableWrapper extends FullyBufferedMultiBufferSource implements Groupable {
 		private final FullyBufferedMultiBufferSource wrapped;
 
 		UnflushableWrapper(FullyBufferedMultiBufferSource wrapped) {
-			super(0);
+			super();
+
 			this.wrapped = wrapped;
 		}
 
-		public BufferBuilder getBuffer(BlockRenderLayer renderLayer) {
-			return wrapped.getBuffer(renderLayer);
+		@Override
+		public VertexBuffer getBuffer(CustomRenderType renderType) {
+			return wrapped.getBuffer(renderType);
 		}
 
+		@Override
 		public void endBatch() {
 			// Disable explicit flushing
 		}
 
-		public void endBatch(BlockRenderLayer type) {
+		@Override
+		public void endBatch(CustomRenderType type) {
 			// Disable explicit flushing
 		}
 
