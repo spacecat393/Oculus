@@ -4,23 +4,21 @@
   "package": "net.coderbot.batchedentityrendering.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "CompositeStateAccessor",
     "MixinBufferBuilder",
     "MixinBufferBuilder_SegmentRendering",
-    "MixinBufferSource",
-    "MixinCompositeRenderType",
-    "MixinDebugScreenOverlay",
-    "MixinLevelRenderer",
-    "MixinLevelRenderer_EntityListSorting",
     "MixinRenderBuffers",
     "MixinRenderType",
+    "MixinDebugScreenOverlay",
     "MixinTheEndPortalRenderer",
+    "MixinBufferSource",
+    "MixinCompositeRenderType",
+    "MixinLevelRenderer",
+    "MixinLevelRenderer_EntityListSorting",
+    "CompositeStateAccessor",
+    "RenderTypeAccessor",
     "RenderStateShardAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "RenderTypeAccessor"
-  ]
+  }
 }
