@@ -6,18 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.datafixers.util.Pair;
-
 import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.BufferBuilder;
 
-public class SegmentedBufferBuilder implements MultiBufferSource, MemoryTrackingBuffer {
+public class SegmentedBufferBuilder implements MemoryTrackingBuffer {
     private final BufferBuilder buffer;
-    private final List<RenderType> usedTypes;
-    private RenderType currentType;
+    private final List<CustomRenderType> usedTypes;
+    private CustomRenderType currentType;
 
     public SegmentedBufferBuilder() {
         // 2 MB initial allocation
@@ -28,7 +23,7 @@ public class SegmentedBufferBuilder implements MultiBufferSource, MemoryTracking
     }
 
     @Override
-    public VertexConsumer getBuffer(RenderType renderType) {
+    public VertexConsumer getBuffer(CustomRenderType renderType) {
         if (!Objects.equals(currentType, renderType)) {
             if (currentType != null) {
                 if (shouldSortOnUpload(currentType)) {
@@ -71,10 +66,10 @@ public class SegmentedBufferBuilder implements MultiBufferSource, MemoryTracking
 
         List<BufferSegment> segments = new ArrayList<>(usedTypes.size());
 
-        for (RenderType type : usedTypes) {
-            Pair<BufferBuilder.DrawState, ByteBuffer> pair = buffer.popNextBuffer();
+        for (CustomRenderType type : usedTypes) {
+            Pair<BufferBuilder.State, ByteBuffer> pair = buffer.popNextBuffer();
 
-            BufferBuilder.DrawState drawState = pair.getFirst();
+            BufferBuilder.State drawState = pair.getFirst();
             ByteBuffer slice = pair.getSecond();
 
             segments.add(new BufferSegment(slice, drawState, type));
@@ -85,7 +80,7 @@ public class SegmentedBufferBuilder implements MultiBufferSource, MemoryTracking
         return segments;
     }
 
-    private static boolean shouldSortOnUpload(RenderType type) {
+    private static boolean shouldSortOnUpload(CustomRenderType type) {
         return ((RenderTypeAccessor) type).shouldSortOnUpload();
     }
 

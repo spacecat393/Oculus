@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "DimensionTypeAccessor",
-    "GameRendererAccessor",
     "GlStateManagerAccessor",
     "LevelRendererAccessor",
     "LightTextureAccessor",
@@ -46,6 +45,7 @@
     "rendertype.MixinRenderStateShard_Tagging",
     "rendertype.MixinRenderType_FixTerrainAlpha",
     "rendertype.RenderStateShardAccessor",
+    "rendertype.RenderTypeAccessor",
     "shadows.ChunkInfoAccessor",
     "shadows.MixinBeaconRenderer",
     "shadows.MixinLevelRenderer",
