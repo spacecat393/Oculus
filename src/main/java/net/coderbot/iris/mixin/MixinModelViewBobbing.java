@@ -37,7 +37,7 @@ public class MixinModelViewBobbing {
 		areShadersOn = IrisApi.getInstance().isShaderPackInUse();
 	}
 
-	@ModifyArg(method = "renderLevel", index = 0,
+	@ModifyArg(method = "renderWorld", index = 0,
 			at = @At(value = "INVOKE",
 					target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"))
 	private PoseStack iris$separateViewBobbing(PoseStack stack) {
@@ -49,7 +49,7 @@ public class MixinModelViewBobbing {
 		return stack;
 	}
 
-	@Redirect(method = "renderLevel",
+	@Redirect(method = "renderWorld",
 			at = @At(value = "INVOKE",
 					target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;"),
 			slice = @Slice(from = @At(value = "INVOKE",
@@ -64,7 +64,7 @@ public class MixinModelViewBobbing {
 		return stack.last();
 	}
 
-	@Inject(method = "renderLevel",
+	@Inject(method = "renderWorld",
 			at = @At(value = "INVOKE",
 					target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lcom/mojang/math/Matrix4f;)V"))
 	private void iris$applyBobbingToModelView(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {

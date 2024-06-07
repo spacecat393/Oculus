@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.client.renderer.RenderGlobal;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
@@ -36,8 +36,8 @@ import net.minecraft.world.entity.EntityType;
  * use a priority of 999 to apply before most other mixins to this method, meaning that other mods adding entities to
  * the rendering list (like Twilight Forest) are more likely to have these added entities sorted.
  */
-@Mixin(value = LevelRenderer.class, priority = 999)
-public class MixinLevelRenderer_EntityListSorting {
+@Mixin(value = RenderGlobal.class, priority = 999)
+public class MixinRenderGlobal_EntityListSorting {
 	@Shadow
 	private ClientLevel level;
 

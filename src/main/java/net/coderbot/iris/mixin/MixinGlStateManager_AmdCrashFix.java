@@ -1,11 +1,10 @@
 package net.coderbot.iris.mixin;
 
+import net.coderbot.iris.gl.shader.ShaderWorkarounds;
 import net.minecraft.client.renderer.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import net.coderbot.iris.gl.shader.ShaderWorkarounds;
 
 /**
  * Works around a bug in AMD drivers that causes crashes with glShaderSource.

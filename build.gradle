@@ -51,7 +51,7 @@ repositories {
 }
 
 dependencies {
-	def mixinBooter = modUtils.enableMixins("zone.rong:mixinbooter:8.9", "oculus-mixins-refmap.json")
+	def mixinBooter = modUtils.enableMixins("zone.rong:mixinbooter:9.1", "oculus-mixins-refmap.json")
     api (mixinBooter) {
         transitive = false
     }

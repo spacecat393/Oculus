@@ -6,17 +6,12 @@
   "client": [
     "MixinBufferBuilder",
     "MixinBufferBuilder_SegmentRendering",
-    "MixinRenderBuffers",
     "MixinRenderType",
     "MixinDebugScreenOverlay",
-    "MixinTheEndPortalRenderer",
-    "MixinBufferSource",
-    "MixinCompositeRenderType",
-    "MixinLevelRenderer",
-    "MixinLevelRenderer_EntityListSorting",
+    "MixinRenderGlobal",
+    "MixinRenderGlobal_EntityListSorting",
     "CompositeStateAccessor",
-    "RenderTypeAccessor",
-    "RenderStateShardAccessor"
+    "RenderTypeAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

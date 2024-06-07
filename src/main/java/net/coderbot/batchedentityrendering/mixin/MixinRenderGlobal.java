@@ -23,7 +23,7 @@ import net.minecraft.entity.Entity;
  */
 // Uses a priority of 999 to apply before the main Iris mixins to draw entities before deferred runs.
 @Mixin(value = RenderGlobal.class, priority = 999)
-public class MixinLevelRenderer {
+public class MixinRenderGlobal {
 	private static final String RENDER_ENTITY =
 			"renderEntity(Lnet/minecraft/entity/Entity;DDDFFZ)V";
 

@@ -18,10 +18,13 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.shaderpack.LanguageMap;
 import net.coderbot.iris.shaderpack.ShaderPack;
-import net.minecraft.client.resources.language.ClientLanguage;
-import net.minecraft.client.resources.language.LanguageInfo;
-import net.minecraft.locale.Language;
-import net.minecraft.server.packs.resources.ResourceManager;
+//import net.minecraft.client.resources.language.ClientLanguage;
+//import net.minecraft.client.resources.language.LanguageInfo;
+//import net.minecraft.locale.Language;
+//import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.client.resources.Language;
+// there already is a LanguageMap?
+// import net.minecraft.util.text.translation.LanguageMap;
 
 /**
  * Allows shader packs to provide extra usable language entries outside of resource packs.
@@ -32,8 +35,8 @@ import net.minecraft.server.packs.resources.ResourceManager;
  * Uses a lower priority to inject before Incubus-Core to prevent translations from breaking
  * @see <a href="https://github.com/devs-immortal/Incubus-Core/blob/4edfff0f088bc1b7ea77a1d475f76801a03179a4/src/main/java/net/id/incubus_core/mixin/devel/client/TranslationStorageMixin.java">Incubus-Core translation mixin</a>
  */
-@Mixin(value = ClientLanguage.class, priority = 990)
-public class MixinClientLanguage {
+@Mixin(value = LanguageMap.class, priority = 990)
+public class MixinLanguageMap {
 	private static final String LOAD = "Lnet/minecraft/client/resources/language/ClientLanguage;loadFrom(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/util/List;)Lnet/minecraft/client/resources/language/ClientLanguage;";
 
 	// This is needed to keep track of which language code we need to grab our lang files from
