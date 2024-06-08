@@ -1,11 +1,11 @@
 package net.coderbot.iris.layer;
 
-import java.util.Objects;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import net.coderbot.batchedentityrendering.impl.CustomRenderType;
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
-import net.minecraft.client.renderer.vertex.VertexFormat;
+
+import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 public class OuterWrappedRenderType extends CustomRenderType implements WrappableRenderType {
 	private final CustomRenderType wrapped;
@@ -13,7 +13,7 @@ public class OuterWrappedRenderType extends CustomRenderType implements Wrappabl
 	private final Runnable extraClear;
 
 	public OuterWrappedRenderType(String name, CustomRenderType wrapped, Runnable extraSetup, Runnable extraClear) {
-		super(name, wrapped.getFormat(), wrapped.getBufferSize(), wrapped.affectsCrumbling(), wrapped.sortOnUpload());
+		super(name, wrapped.getFormat(), wrapped.getBufferSize(), wrapped.affectsCrumbling(), wrapped.sortOnUpload(), wrapped.getMode());
 		this.wrapped = wrapped;
 		this.extraSetup = extraSetup;
 		this.extraClear = extraClear;

@@ -1,40 +1,16 @@
 package net.coderbot.iris.mixin;
 
 import nanolive.utils.RenderGlobalExtended;
+import net.coderbot.iris.pipeline.WorldRenderingPhase;
+import net.coderbot.iris.pipeline.WorldRenderingPipeline;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.coderbot.iris.vendored.joml.Matrix4f;
-import net.coderbot.iris.vendored.joml.Vector3f;
-
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.gl.program.Program;
-import net.coderbot.iris.layer.IsOutlineRenderStateShard;
-import net.coderbot.iris.layer.OuterWrappedRenderType;
-import net.coderbot.iris.pipeline.HandRenderer;
-import net.coderbot.iris.pipeline.WorldRenderingPhase;
-import net.coderbot.iris.pipeline.WorldRenderingPipeline;
-import net.coderbot.iris.uniforms.CapturedRenderingState;
-import net.coderbot.iris.uniforms.SystemTimeUniforms;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.client.renderer.RenderType;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RenderGlobal.class)
@@ -83,11 +59,11 @@ public class MixinLevelRenderer implements RenderGlobalExtended {
 		pipeline.setPhase(WorldRenderingPhase.VOID);
 	}
 
-	@Inject(method = "renderSky(FI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getTimeOfDay(F)F"),
-		slice = @Slice(from = @At(value = "FIELD", target = "com/mojang/math/Vector3f.YP : Lcom/mojang/math/Vector3f;")))
-	private void iris$renderSky$tiltSun(float partialTicks, int pass, CallbackInfo ci) {
-		poseStack.mulPose(Vector3f.ZP.rotationDegrees(pipeline.getSunPathRotation()));
-	}
+//	@Inject(method = "renderSky(FI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getTimeOfDay(F)F"),
+//		slice = @Slice(from = @At(value = "FIELD", target = "com/mojang/math/Vector3f.YP : Lcom/mojang/math/Vector3f;")))
+//	private void iris$renderSky$tiltSun(float partialTicks, int pass, CallbackInfo ci) {
+//		poseStack.mulPose(Vector3f.ZP.rotationDegrees(pipeline.getSunPathRotation()));
+//	}
 
 	@Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
 	private void iris$beginTerrainLayer(BlockRenderLayer renderLayer, double partialTicks, int pass, Entity entityIn, CallbackInfoReturnable<Integer> cir) {
@@ -99,35 +75,35 @@ public class MixinLevelRenderer implements RenderGlobalExtended {
 		pipeline.setPhase(WorldRenderingPhase.NONE);
 	}
 
-	@ModifyArg(method = RENDER_WEATHER, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;depthMask(Z)V", ordinal = 0))
-	private boolean iris$writeRainAndSnowToDepthBuffer(boolean depthMaskEnabled) {
-		if (pipeline.shouldWriteRainAndSnowToDepthBuffer()) {
-			return true;
-		}
+//	@ModifyArg(method = RENDER_WEATHER, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;depthMask(Z)V", ordinal = 0))
+//	private boolean iris$writeRainAndSnowToDepthBuffer(boolean depthMaskEnabled) {
+//		if (pipeline.shouldWriteRainAndSnowToDepthBuffer()) {
+//			return true;
+//		}
+//
+//		return depthMaskEnabled;
+//	}
 
-		return depthMaskEnabled;
-	}
+//	@ModifyArg(method = "renderLevel",
+//		at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/MultiBufferSource$BufferSource.getBuffer (Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;"),
+//		slice = @Slice(
+//			from = @At(value = "CONSTANT", args = "stringValue=outline"),
+//			to = @At(value = "INVOKE", target = "net/minecraft/client/renderer/LevelRenderer.renderHitOutline (Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V")
+//		))
+//	private RenderType iris$beginBlockOutline(RenderType type) {
+//		return OuterWrappedRenderType.wrapExactlyOnce("iris:is_outline", type, IsOutlineRenderStateShard.INSTANCE);
+//	}
 
-	@ModifyArg(method = "renderLevel",
-		at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/MultiBufferSource$BufferSource.getBuffer (Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;"),
-		slice = @Slice(
-			from = @At(value = "CONSTANT", args = "stringValue=outline"),
-			to = @At(value = "INVOKE", target = "net/minecraft/client/renderer/LevelRenderer.renderHitOutline (Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V")
-		))
-	private RenderType iris$beginBlockOutline(RenderType type) {
-		return OuterWrappedRenderType.wrapExactlyOnce("iris:is_outline", type, IsOutlineRenderStateShard.INSTANCE);
-	}
-
-	@Inject(method = "renderLevel", at = @At(value = "CONSTANT", args = "stringValue=translucent"))
-	private void iris$beginTranslucents(PoseStack poseStack, float tickDelta, long limitTime,
-										boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
-										LightTexture lightTexture, Matrix4f projection,
-										CallbackInfo ci) {
-		pipeline.beginHand();
-		HandRenderer.INSTANCE.renderSolid(tickDelta, gameRenderer);
-		Minecraft.getInstance().getProfiler().popPush("iris_pre_translucent");
-		pipeline.beginTranslucents();
-	}
+//	@Inject(method = "renderLevel", at = @At(value = "CONSTANT", args = "stringValue=translucent"))
+//	private void iris$beginTranslucents(PoseStack poseStack, float tickDelta, long limitTime,
+//										boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
+//										LightTexture lightTexture, Matrix4f projection,
+//										CallbackInfo ci) {
+//		pipeline.beginHand();
+//		HandRenderer.INSTANCE.renderSolid(tickDelta, gameRenderer);
+//		Minecraft.getInstance().getProfiler().popPush("iris_pre_translucent");
+//		pipeline.beginTranslucents();
+//	}
 
 	@Override
 	public WorldRenderingPipeline getPipeline() {

@@ -1,10 +1,9 @@
 package net.coderbot.batchedentityrendering.impl;
 
-import java.util.Optional;
-
 import lombok.Getter;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+
+import java.util.Optional;
 
 public abstract class CustomRenderType {
     @Getter
@@ -13,6 +12,7 @@ public abstract class CustomRenderType {
     private final VertexFormat format;
     @Getter
     private final int mode;
+    @Getter
     private final int bufferSize;
     private final boolean affectsCrumbling;
     private final boolean sortOnUpload;

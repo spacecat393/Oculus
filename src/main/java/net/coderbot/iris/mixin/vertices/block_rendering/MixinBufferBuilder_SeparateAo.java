@@ -1,19 +1,12 @@
 package net.coderbot.iris.mixin.vertices.block_rendering;
 
-import java.util.Arrays;
-
+import net.coderbot.iris.block_rendering.BlockRenderingSettings;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-//import com.mojang.blaze3d.vertex.BufferBuilder;
-import net.minecraft.client.renderer.BufferBuilder;
-//import com.mojang.blaze3d.vertex.DefaultedVertexConsumer;
-//import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.coderbot.iris.block_rendering.BlockRenderingSettings;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import java.util.Arrays;
 
 /**
  * Allows directional shading and ambient occlusion data to be stored separately in the vertex format.
@@ -27,15 +20,15 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
  * behavior, though conditionally controlled by the current shader pack of course.
  */
 @Mixin(value = BufferBuilder.class, priority = 999)
-public abstract class MixinBufferBuilder_SeparateAo extends DefaultedVertexConsumer {
+public abstract class MixinBufferBuilder_SeparateAo /*extends DefaultedVertexConsumer*/ {
 	@Unique
 	private float[] brightnesses;
 
 	@Unique
 	private int brightnessIndex;
 
-	@Override
-	public void putBulkData(PoseStack.Pose matrixEntry, BakedQuad quad, float[] brightnesses, float red, float green,
+//	@Override
+	public void putBulkData(BakedQuad quad, float[] brightnesses, float red, float green,
 					 float blue, int[] lights, int overlay, boolean useQuadColorData) {
 		if (BlockRenderingSettings.INSTANCE.shouldUseSeparateAo()) {
 			this.brightnesses = brightnesses;
@@ -45,10 +38,10 @@ public abstract class MixinBufferBuilder_SeparateAo extends DefaultedVertexConsu
 			Arrays.fill(brightnesses, 1.0f);
 		}
 
-		super.putBulkData(matrixEntry, quad, brightnesses, red, green, blue, lights, overlay, useQuadColorData);
+//		super.putBulkData(matrixEntry, quad, brightnesses, red, green, blue, lights, overlay, useQuadColorData);
 	}
 
-	@ModifyVariable(method = "vertex", at = @At("HEAD"), index = 7, argsOnly = true)
+//	@ModifyVariable(method = "vertex", at = @At("HEAD"), index = 7, argsOnly = true)
 	public float vertex(float alpha) {
 		if (brightnesses != null && BlockRenderingSettings.INSTANCE.shouldUseSeparateAo()) {
 			if (brightnessIndex < brightnesses.length) {
