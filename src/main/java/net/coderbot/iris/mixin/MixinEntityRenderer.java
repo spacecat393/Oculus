@@ -34,8 +34,8 @@ public class MixinEntityRenderer {
     // all pixels.
     @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;clear(I)V", ordinal = 0, shift = At.Shift.AFTER))
     private void iris$beginLevelRender(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
-        CapturedRenderingState.INSTANCE.setGbufferModelView(poseStack.last().pose());
-        CapturedRenderingState.INSTANCE.setGbufferProjection(projection);
+        //CapturedRenderingState.INSTANCE.setGbufferModelView(poseStack.last().pose());
+        //CapturedRenderingState.INSTANCE.setGbufferProjection(projection);
         CapturedRenderingState.INSTANCE.setTickDelta(partialTicks);
         SystemTimeUniforms.COUNTER.beginFrame();
         SystemTimeUniforms.TIMER.beginFrame(finishTimeNano);
@@ -52,7 +52,7 @@ public class MixinEntityRenderer {
     // render their waypoint beams.
     @Inject(method = "renderWorldPass", at = @At(value = "RETURN", shift = At.Shift.BEFORE))
     private void iris$endLevelRender(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
-        HandRenderer.INSTANCE.renderTranslucent(poseStack, tickDelta, camera, gameRenderer, pipeline);
+        //HandRenderer.INSTANCE.renderTranslucent(poseStack, tickDelta, camera, gameRenderer, pipeline);
         mc.profiler.endStartSection("iris_final");
 
         RenderGlobalExtended renderGlobalExtended = (RenderGlobalExtended) this.mc.renderGlobal;

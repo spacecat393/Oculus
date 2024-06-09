@@ -4,31 +4,35 @@ import net.coderbot.iris.gui.option.IrisVideoSettings;
 import net.coderbot.iris.gui.option.ShaderPackSelectionButtonOption;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptions;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiVideoSettings;
 import net.minecraft.client.settings.GameSettings;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(GuiVideoSettings.class)
-public abstract class MixinVideoSettingsScreen extends GuiOptions {
+public abstract class MixinVideoSettingsScreen extends GuiScreen {
+	@Unique
+	private final GameSettings settings;
+
 	public MixinVideoSettingsScreen(GameSettings settings) {
-		super(null, settings);
+		this.settings = settings;
 	}
 
-	@ModifyArg(
+	@Inject(
 			method = "initGui",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiButton;addButton(Lnet/minecraft/client/gui/GuiButton;)V"
-			),
-			index = 0
+			at = @At("RETURN")
 	)
-	private GuiButton[] iris$addShaderPackScreenButton(GuiButton[] old) {
-		GuiButton[] options = new GuiButton[old.length + 2];
-		System.arraycopy(old, 0, options, 0, old.length);
-		options[options.length - 2] = new ShaderPackSelectionButtonOption(this, this.mc);
-		options[options.length - 1] = IrisVideoSettings.RENDER_DISTANCE.createButton(this.mc.gameSettings, this.width / 2 - 155, this.height / 6 + 24 * (old.length / 2), 150);
-		return options;
+	private void iris$addShaderPackScreenButton(CallbackInfo ci) {
+		// Add our custom buttons after the original initGui has executed
+		this.buttonList.add(new ShaderPackSelectionButtonOption(this, this.mc));
+		this.buttonList.add(IrisVideoSettings.RENDER_DISTANCE.createButton(this.mc.gameSettings, this.width / 2 - 155, this.height / 6 + 24 * (this.buttonList.size() / 2), 150));
 	}
 }

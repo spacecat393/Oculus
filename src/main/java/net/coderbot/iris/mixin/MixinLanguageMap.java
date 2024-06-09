@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.client.resources.IResourceManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,8 +24,8 @@ import net.coderbot.iris.shaderpack.ShaderPack;
 //import net.minecraft.locale.Language;
 //import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.client.resources.Language;
-// there already is a LanguageMap?
-// import net.minecraft.util.text.translation.LanguageMap;
+// there already is a LanguageMap? with net.coderbot.iris.shaderpack.LanguageMap;
+//import net.minecraft.util.text.translation.LanguageMap;
 
 /**
  * Allows shader packs to provide extra usable language entries outside of resource packs.
@@ -49,30 +50,30 @@ public class MixinLanguageMap {
 	@Final
 	private Map<String, String> storage;
 
-	@Inject(method = "loadFrom", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/language/ClientLanguage;appendFrom(Ljava/util/List;Ljava/util/Map;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private static void injectFrom(ResourceManager arg, List<LanguageInfo> list, CallbackInfoReturnable<ClientLanguage> cir, Map<String, String> map, boolean bl, Iterator<LanguageInfo> infoIterator, LanguageInfo info, String json) {
-		if (Iris.class.getResource("/assets/iris/" + json) != null) {
-			Language.loadFromJson(Iris.class.getResourceAsStream("/assets/iris/" + json), map::put);
-		}
-	}
-
-	@Inject(method = "getOrDefault", at = @At("HEAD"), cancellable = true)
-	private void iris$addLanguageEntries(String key, CallbackInfoReturnable<String> cir) {
-		String override = iris$lookupOverriddenEntry(key);
-
-		if (override != null) {
-			cir.setReturnValue(override);
-		}
-	}
-
-	@Inject(method = "has", at = @At("HEAD"), cancellable = true)
-	private void iris$addLanguageEntriesToTranslationChecks(String key, CallbackInfoReturnable<Boolean> cir) {
-		String override = iris$lookupOverriddenEntry(key);
-
-		if (override != null) {
-			cir.setReturnValue(true);
-		}
-	}
+//	@Inject(method = "loadFrom", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/language/ClientLanguage;appendFrom(Ljava/util/List;Ljava/util/Map;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
+//	private static void injectFrom(IResourceManager arg, List<Language> list, CallbackInfoReturnable<ClientLanguage> cir, Map<String, String> map, boolean bl, Iterator<Language> infoIterator, Language info, String json) {
+//		if (Iris.class.getResource("/assets/iris/" + json) != null) {
+//			Language.loadFromJson(Iris.class.getResourceAsStream("/assets/iris/" + json), map::put);
+//		}
+//	}
+//
+//	@Inject(method = "getOrDefault", at = @At("HEAD"), cancellable = true)
+//	private void iris$addLanguageEntries(String key, CallbackInfoReturnable<String> cir) {
+//		String override = iris$lookupOverriddenEntry(key);
+//
+//		if (override != null) {
+//			cir.setReturnValue(override);
+//		}
+//	}
+//
+//	@Inject(method = "has", at = @At("HEAD"), cancellable = true)
+//	private void iris$addLanguageEntriesToTranslationChecks(String key, CallbackInfoReturnable<Boolean> cir) {
+//		String override = iris$lookupOverriddenEntry(key);
+//
+//		if (override != null) {
+//			cir.setReturnValue(true);
+//		}
+//	}
 
 	@Unique
 	private String iris$lookupOverriddenEntry(String key) {
@@ -111,14 +112,14 @@ public class MixinLanguageMap {
 		return null;
 	}
 
-	@Inject(method = LOAD, at = @At("HEAD"))
-	private static void check(ResourceManager resourceManager, List<LanguageInfo> definitions, CallbackInfoReturnable<ClientLanguage> cir) {
-		// Make sure the language codes dont carry over!
-		languageCodes.clear();
-
-		// Reverse order due to how minecraft has English and then the primary language in the language definitions list
-		new LinkedList<>(definitions).descendingIterator().forEachRemaining(languageDefinition -> {
-			languageCodes.add(languageDefinition.getCode());
-		});
-	}
+//	@Inject(method = LOAD, at = @At("HEAD"))
+//	private static void check(IResourceManager resourceManager, List<Language> definitions, CallbackInfoReturnable<ClientLanguage> cir) {
+//		// Make sure the language codes dont carry over!
+//		languageCodes.clear();
+//
+//		// Reverse order due to how minecraft has English and then the primary language in the language definitions list
+//		new LinkedList<>(definitions).descendingIterator().forEachRemaining(languageDefinition -> {
+//			languageCodes.add(languageDefinition.getCode());
+//		});
+//	}
 }

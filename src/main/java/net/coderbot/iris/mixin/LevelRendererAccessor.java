@@ -17,27 +17,27 @@ public interface LevelRendererAccessor {
 	@Accessor("renderManager")
 	RenderManager getEntityRenderDispatcher();
 
-	@Invoker("renderBlockLayer")
-	void invokeRenderChunkLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn);
-
-	@Invoker("setupRender")
-	void invokeSetupRender(EntityRenderer camera, Frustum frustum, boolean hasForcedFrustum, int frame, boolean spectator);
-
-	@Invoker("renderEntity")
-	void invokeRenderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta);
+//	@Invoker("renderBlockLayer")
+//	void invokeRenderChunkLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass, Entity entityIn);
+//
+//	@Invoker("setupRender")
+//	void invokeSetupRender(EntityRenderer camera, Frustum frustum, boolean hasForcedFrustum, int frame, boolean spectator);
+//
+//	@Invoker("renderEntity")
+//	void invokeRenderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta);
 
 	@Accessor("world")
-	WorldClient getLevel();
+	WorldClient getWorld();
 
-	@Accessor("frameId")
-	int getFrameId();
-
-	@Accessor("frameId")
-	void setFrameId(int frame);
-
-	@Accessor("generateClouds")
-	boolean shouldRegenerateClouds();
-
-	@Accessor("generateClouds")
-	void setShouldRegenerateClouds(boolean shouldRegenerate);
+//	@Accessor("frameId")
+//	int getFrameId();
+//
+//	@Accessor("frameId")
+//	void setFrameId(int frame);
+//
+//	@Accessor("generateClouds")
+//	boolean shouldRegenerateClouds();
+//
+//	@Accessor("generateClouds")
+//	void setShouldRegenerateClouds(boolean shouldRegenerate);
 }
