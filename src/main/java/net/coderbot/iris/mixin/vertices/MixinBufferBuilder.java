@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 //import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +32,7 @@ import javax.annotation.Nullable;
  * Dynamically and transparently extends the vanilla vertex formats with additional data
  */
 @Mixin(BufferBuilder.class)
-public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockSensitiveBufferBuilder, ExtendingBufferBuilder {
+public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder, ExtendingBufferBuilder {
 	@Unique
 	private boolean extending;
 
@@ -68,40 +69,31 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 	@Unique
 	private int currentLocalPosZ;
 
-	@Shadow
 	private boolean fastFormat;
 
-	@Shadow
 	private boolean fullFormat;
 
-	@Shadow
 	private ByteBuffer buffer;
 
-	@Shadow
 	private int mode;
 
-	@Shadow
 	private VertexFormat format;
 
-	@Shadow
 	private int nextElementByte;
 
-	@Shadow
 	private @Nullable VertexFormatElement currentElement;
 
 	@Shadow
 	public abstract void begin(int drawMode, VertexFormat vertexFormat);
 
-	@Shadow
+	@Shadow protected abstract void nextVertexFormatIndex();
+
 	public abstract void putShort(int i, short s);
 
-	@Shadow
 	protected abstract void switchFormat(VertexFormat format);
-	
-	@Shadow
+
 	protected abstract void ensureCapacity(int i);
 
-	@Override
 	public void iris$beginWithoutExtending(int drawMode, VertexFormat vertexFormat) {
 		iris$shouldNotExtend = true;
 		begin(drawMode, vertexFormat);
@@ -111,19 +103,22 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 	@Inject(method = "begin", at = @At("HEAD"))
 	private void iris$onBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		boolean shouldExtend = (!iris$shouldNotExtend) && BlockRenderingSettings.INSTANCE.shouldUseExtendedVertexFormat();
-		extending = shouldExtend && (format == DefaultVertexFormats.BLOCK || format == DefaultVertexFormats.NEW_ENTITY
-			|| format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
+//		extending = shouldExtend && (format == DefaultVertexFormats.BLOCK || format == DefaultVertexFormats.NEW_ENTITY
+//			|| format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
+		extending = shouldExtend && (format == DefaultVertexFormats.BLOCK || format == DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
 		vertexCount = 0;
 
 		if (extending) {
-			injectNormal = format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP;
+//			injectNormal = format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP;
+			injectNormal = format == DefaultVertexFormats.POSITION_TEX_LMAP_COLOR;
 		}
 	}
 
 	@Inject(method = "begin", at = @At("RETURN"))
 	private void iris$afterBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		if (extending) {
-			if (format == DefaultVertexFormats.NEW_ENTITY) {
+//			if (format == DefaultVertexFormats.NEW_ENTITY) {
+			if (false) {
 				this.switchFormat(IrisVertexFormats.ENTITY);
 				this.iris$isTerrain = false;
 			} else {
@@ -134,21 +129,21 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 		}
 	}
 
-	@Inject(method = "discard", at = @At("HEAD"))
-	private void iris$onReset(CallbackInfo ci) {
-		extending = false;
-		vertexCount = 0;
-	}
-
-	@Inject(method = "switchFormat", at = @At("RETURN"))
-	private void iris$preventHardcodedVertexWriting(VertexFormat format, CallbackInfo ci) {
-		if (!extending) {
-			return;
-		}
-
-		fastFormat = false;
-		fullFormat = false;
-	}
+//	@Inject(method = "discard", at = @At("HEAD"))
+//	private void iris$onReset(CallbackInfo ci) {
+//		extending = false;
+//		vertexCount = 0;
+//	}
+//
+//	@Inject(method = "switchFormat", at = @At("RETURN"))
+//	private void iris$preventHardcodedVertexWriting(VertexFormat format, CallbackInfo ci) {
+//		if (!extending) {
+//			return;
+//		}
+//
+//		fastFormat = false;
+//		fullFormat = false;
+//	}
 
 	@Inject(method = "endVertex", at = @At("HEAD"))
 	private void iris$beforeNext(CallbackInfo ci) {
@@ -156,9 +151,10 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 			return;
 		}
 
-		if (injectNormal && currentElement == DefaultVertexFormat.ELEMENT_NORMAL) {
+//		if (injectNormal && currentElement == DefaultVertexFormats.ELEMENT_NORMAL) {
+		if (injectNormal && currentElement == DefaultVertexFormats.NORMAL_3B) {
 			this.putInt(0, 0);
-			this.nextElement();
+//			this.nextElement();
 		}
 		
 		// For Create Contraptions
@@ -168,15 +164,15 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 			// ENTITY_ELEMENT
 			this.putShort(0, currentBlock);
 			this.putShort(2, currentRenderType);
-			this.nextElement();
+//			this.nextElement();
 		}
 		// MID_TEXTURE_ELEMENT
-		this.putFloat(0, 0);
-		this.putFloat(4, 0);
-		this.nextElement();
+//		this.putFloat(0, 0);
+//		this.putFloat(4, 0);
+//		this.nextElement();
 		// TANGENT_ELEMENT
 		this.putInt(0, 0);
-		this.nextElement();
+//		this.nextElement();
 		if (iris$isTerrain) {
 			// MID_BLOCK_ELEMENT
 			int posIndex = this.nextElementByte - 48;
@@ -184,7 +180,7 @@ public abstract class MixinBufferBuilder implements BufferVertexConsumer, BlockS
 			float y = buffer.getFloat(posIndex + 4);
 			float z = buffer.getFloat(posIndex + 8);
 			this.putInt(0, ExtendedDataHelper.computeMidBlock(x, y, z, currentLocalPosX, currentLocalPosY, currentLocalPosZ));
-			this.nextElement();
+//			this.nextElement();
 		}
 
 		vertexCount++;

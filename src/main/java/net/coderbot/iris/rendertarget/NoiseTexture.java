@@ -5,16 +5,12 @@ import java.util.Random;
 
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13C;
-import org.lwjgl.opengl.GL20C;
-
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.coderbot.iris.gl.GlResource;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.texture.TextureUploadHelper;
+import org.lwjgl.opengl.GL14;
 
 /**
  * An extremely simple noise texture. Each color channel contains a uniform random value from 0 to 255. Essentially just
@@ -36,7 +32,7 @@ public class NoiseTexture extends GlResource {
 		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0);
 		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MIN_LOD, 0);
 		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LOD,0);
-		IrisRenderSystem.texParameterf(texture, GL11.GL_TEXTURE_2D, GL20C.GL_TEXTURE_LOD_BIAS, 0.0F);
+		IrisRenderSystem.texParameterf(texture, GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0.0F);
 		resize(texture, width, height);
 
 		GlStateManager.bindTexture(0);

@@ -9,11 +9,15 @@ import java.util.concurrent.Executors;
 
 //import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
+
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 //import org.lwjgl.system.MemoryStack;
 //import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 /**
- * Class used to make interfacing with {@link TinyFileDialogs} easier and asynchronous.
+ * Class used to make interfacing with @link TinyFileDialogs easier and asynchronous.
  */
 public final class FileDialogUtil {
 	private static final ExecutorService FILE_DIALOG_EXECUTOR = Executors.newSingleThreadExecutor();
@@ -34,26 +38,30 @@ public final class FileDialogUtil {
 		CompletableFuture<Optional<Path>> future = new CompletableFuture<>();
 
 		FILE_DIALOG_EXECUTOR.submit(() -> {
-			String result = null;
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle(title);
 
-			try (MemoryStack stack = MemoryStack.stackPush()) {
-				PointerBuffer filterBuffer = stack.mallocPointer(filters.length);
-
-				for (String filter : filters) {
-					filterBuffer.put(stack.UTF8(filter));
-				}
-				filterBuffer.flip();
-
-				String path = origin != null ? origin.toAbsolutePath().toString() : null;
-
-				if (dialog == DialogType.SAVE) {
-					result = TinyFileDialogs.tinyfd_saveFileDialog(title, path, filterBuffer, filterLabel);
-				} else if (dialog == DialogType.OPEN) {
-					result = TinyFileDialogs.tinyfd_openFileDialog(title, path, filterBuffer, filterLabel, false);
-				}
+			if (origin != null) {
+				fileChooser.setCurrentDirectory(origin.toFile());
 			}
 
-			future.complete(Optional.ofNullable(result).map(Paths::get));
+			if (filterLabel != null && filters.length > 0) {
+				FileNameExtensionFilter filter = new FileNameExtensionFilter(filterLabel, filters);
+				fileChooser.setFileFilter(filter);
+			}
+
+			int result;
+			if (dialog == DialogType.SAVE) {
+				result = fileChooser.showSaveDialog(null);
+			} else {
+				result = fileChooser.showOpenDialog(null);
+			}
+
+			if (result == JFileChooser.APPROVE_OPTION) {
+				future.complete(Optional.of(fileChooser.getSelectedFile().toPath()));
+			} else {
+				future.complete(Optional.empty());
+			}
 		});
 
 		return future;

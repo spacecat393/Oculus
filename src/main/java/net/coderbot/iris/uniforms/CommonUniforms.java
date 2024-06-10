@@ -6,8 +6,6 @@ import static net.coderbot.iris.gl.uniform.UniformUpdateFrequency.PER_TICK;
 
 import java.util.Objects;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import net.coderbot.iris.JomlConversions;
 import net.coderbot.iris.gl.state.StateUpdateNotifiers;
 import net.coderbot.iris.gl.uniform.DynamicUniformHolder;
@@ -31,29 +29,16 @@ import net.coderbot.iris.vendored.joml.Vector4i;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.core.BlockPos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.Vec3;
 
 public final class CommonUniforms {
 	private static final Minecraft client = Minecraft.getMinecraft();
@@ -138,7 +123,7 @@ public final class CommonUniforms {
 			// not available) - suppresses warnings. See AttributeShaderTransformer for the actual entityColor code.
 			.uniform4f(ONCE, "entityColor", () -> new Vector4f(0, 0, 0, 0))
 			.uniform1f(ONCE, "pi", () -> Math.PI)
-			.uniform1f(PER_TICK, "playerMood", CommonUniforms::getPlayerMood)
+//			.uniform1f(PER_TICK, "playerMood", CommonUniforms::getPlayerMood)
 			.uniform2i(PER_FRAME, "eyeBrightness", CommonUniforms::getEyeBrightness)
 			.uniform2i(PER_FRAME, "eyeBrightnessSmooth", () -> {
 				Vector2f smoothed = eyeBrightnessSmooth.get();
@@ -219,14 +204,13 @@ public final class CommonUniforms {
 		return 0.0F;
 	}
 
-	private static float getPlayerMood() {
-		if (!(client.getRenderViewEntity() instanceof EntityPlayerSP)) {
-			return 0.0F;
-		}
-
-		// This should always be 0 to 1 anyways but just making sure
-		return Math.clamp(0.0F, 1.0F, ((EntityPlayerSP) client.getRenderViewEntity()).getCurrentMood());
-	}
+//	private static float getPlayerMood() {
+//		if (!(client.getRenderViewEntity() instanceof EntityPlayerSP)) {
+//			return 0.0F;
+//		}
+//
+//		return Math.clamp(getCurrentMood((EntityPlayerSP) client.getRenderViewEntity()), 0.0F, 1.0F);
+//	}
 
 	static float getRainStrength() {
 		if (client.world == null) {
@@ -278,20 +262,6 @@ public final class CommonUniforms {
 				// If our injection didn't get applied, a NullPointerException will occur from calling that method if
 				// the entity doesn't currently have night vision. This isn't pretty but it's functional.
 				return 0.0F;
-			}
-		}
-
-		// Conduit power gives the player a sort-of night vision effect when underwater.
-		// This lets existing shaderpacks be compatible with conduit power automatically.
-		//
-		// Yes, this should be the player entity, to match LightmapTextureManager.
-		// TODO took from mod Oceanic Expanse
-		if (client.player != null && client.player.hasEffect(MobEffects.CONDUIT_POWER)) {
-			float underwaterVisibility = client.player.getWaterVision();
-
-			if (underwaterVisibility > 0.0f) {
-				// Just protecting against potential weird mod behavior
-				return Math.clamp(0.0F, 1.0F, underwaterVisibility);
 			}
 		}
 

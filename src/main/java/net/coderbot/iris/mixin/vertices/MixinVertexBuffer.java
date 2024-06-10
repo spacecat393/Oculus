@@ -1,5 +1,8 @@
 package net.coderbot.iris.mixin.vertices;
 
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -7,10 +10,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexBuffer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.vertices.IrisVertexFormats;
@@ -20,7 +19,7 @@ public class MixinVertexBuffer {
 	@Shadow
 	@Final
 	@Mutable
-	private VertexFormat format;
+	private VertexFormat vertexFormat;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void iris$onInit(VertexFormat format, CallbackInfo ci) {
@@ -29,10 +28,11 @@ public class MixinVertexBuffer {
 			// vertices will be drawn.
 			//
 			// Needless to say, that is not good if you don't like access violation crashes!
-			if (format == DefaultVertexFormat.BLOCK) {
-				this.format = IrisVertexFormats.TERRAIN;
-			} else if (format == DefaultVertexFormat.NEW_ENTITY || format == DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP) {
-				this.format = IrisVertexFormats.ENTITY;
+			if (format == DefaultVertexFormats.BLOCK) {
+				this.vertexFormat = IrisVertexFormats.TERRAIN;
+//			} else if (format == DefaultVertexFormats.NEW_ENTITY || format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP) {
+			} else if (format == DefaultVertexFormats.POSITION_TEX_LMAP_COLOR) {
+				this.vertexFormat = IrisVertexFormats.ENTITY;
 			}
 		}
 	}

@@ -2,13 +2,10 @@ package net.coderbot.iris.rendertarget;
 
 import java.nio.ByteBuffer;
 
+import lombok.Getter;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13C;
-
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.texture.InternalTextureFormat;
@@ -17,11 +14,14 @@ import net.coderbot.iris.gl.texture.PixelType;
 import net.coderbot.iris.vendored.joml.Vector2i;
 
 public class RenderTarget {
-	private final InternalTextureFormat internalFormat;
+	@Getter
+    private final InternalTextureFormat internalFormat;
 	private final PixelFormat format;
 	private final PixelType type;
-	private int width;
-	private int height;
+	@Getter
+    private int width;
+	@Getter
+    private int height;
 
 	private boolean isValid;
 	private final int mainTexture;
@@ -40,7 +40,8 @@ public class RenderTarget {
 		this.height = builder.height;
 
 		int[] textures = new int[2];
-		GlStateManager._genTextures(textures);
+		textures[0] = GL11.glGenTextures();
+		textures[1] = GL11.glGenTextures();
 
 		this.mainTexture = textures[0];
 		this.altTexture = textures[1];
@@ -83,11 +84,7 @@ public class RenderTarget {
 		resizeTexture(altTexture, width, height);
 	}
 
-	public InternalTextureFormat getInternalFormat() {
-		return internalFormat;
-	}
-
-	public int getMainTexture() {
+    public int getMainTexture() {
 		requireValid();
 
 		return mainTexture;
@@ -99,15 +96,7 @@ public class RenderTarget {
 		return altTexture;
 	}
 
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void destroy() {
+    public void destroy() {
 		requireValid();
 		isValid = false;
 

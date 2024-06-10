@@ -27,47 +27,47 @@ public class MixinRenderGlobal {
 	private static final String RENDER_ENTITY =
 			"renderEntity(Lnet/minecraft/entity/Entity;DDDFFZ)V";
 
-	@Shadow
+//	@Shadow
 	private EntityRenderer entityRenderer;
 
 	@Unique
 	private Groupable groupable;
-
-	@Inject(method = "renderLevel", at = @At("HEAD"))
-	private void batchedentityrendering$beginLevelRender(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
-		if (entityRenderer instanceof DrawCallTrackingRenderBuffers) {
-			((DrawCallTrackingRenderBuffers) entityRenderer).resetDrawCounts();
-		}
-		((RenderBuffersExt) entityRenderer).beginLevelRendering();
-		if (entityRenderer instanceof Groupable) {
-			groupable = (Groupable) entityRenderer;
-		}
-	}
-
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_ENTITY))
-	private void batchedentityrendering$preRenderEntity(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
-		if (groupable != null) {
-			groupable.startGroup();
-		}
-	}
-
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_ENTITY, shift = At.Shift.AFTER))
-	private void batchedentityrendering$postRenderEntity(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
-		if (groupable != null) {
-			groupable.endGroup();
-		}
-	}
-
-	@Inject(method = "renderLevel", at = @At(value = "CONSTANT", args = "stringValue=translucent"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void batchedentityrendering$beginTranslucents(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
-		Minecraft.getMinecraft().profiler.endStartSection("entity_draws");
-		// todo: double-check
-		Minecraft.getMinecraft().getRenderManager().renderEngine.bindTexture(new ResourceLocation("textures/entity/default.png"));
-	}
-
-	@Inject(method = "renderLevel", at = @At("RETURN"))
-	private void batchedentityrendering$endLevelRender(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
-		((RenderBuffersExt) entityRenderer).endLevelRendering();
-		groupable = null;
-	}
+	// todo: i'll fix it later
+//	@Inject(method = "renderLevel", at = @At("HEAD"))
+//	private void batchedentityrendering$beginLevelRender(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
+//		if (entityRenderer instanceof DrawCallTrackingRenderBuffers) {
+//			((DrawCallTrackingRenderBuffers) entityRenderer).resetDrawCounts();
+//		}
+//		((RenderBuffersExt) entityRenderer).beginLevelRendering();
+//		if (entityRenderer instanceof Groupable) {
+//			groupable = (Groupable) entityRenderer;
+//		}
+//	}
+//
+//	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_ENTITY))
+//	private void batchedentityrendering$preRenderEntity(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
+//		if (groupable != null) {
+//			groupable.startGroup();
+//		}
+//	}
+//
+//	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = RENDER_ENTITY, shift = At.Shift.AFTER))
+//	private void batchedentityrendering$postRenderEntity(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
+//		if (groupable != null) {
+//			groupable.endGroup();
+//		}
+//	}
+//
+//	@Inject(method = "renderLevel", at = @At(value = "CONSTANT", args = "stringValue=translucent"), locals = LocalCapture.CAPTURE_FAILHARD)
+//	private void batchedentityrendering$beginTranslucents(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
+//		Minecraft.getMinecraft().profiler.endStartSection("entity_draws");
+//		// todo: double-check
+//		Minecraft.getMinecraft().getRenderManager().renderEngine.bindTexture(new ResourceLocation("textures/entity/default.png"));
+//	}
+//
+//	@Inject(method = "renderWorld", at = @At("RETURN"))
+//	private void batchedentityrendering$endLevelRender(Entity entity, double d0, double d1, double d2, float partialTicks, CallbackInfo ci) {
+//		((RenderBuffersExt) entityRenderer).endLevelRendering();
+//		groupable = null;
+//	}
 }
