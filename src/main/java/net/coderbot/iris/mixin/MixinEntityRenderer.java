@@ -32,7 +32,9 @@ public class MixinEntityRenderer {
     // At this point we've ensured that Minecraft's main framebuffer is cleared.
     // This is important or else very odd issues will happen with shaders that have a final pass that doesn't write to
     // all pixels.
-    @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;clear(I)V", ordinal = 0, shift = At.Shift.AFTER))
+    @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockModelRenderer;renderModel(" +
+			"Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;" +
+			"Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;Z)Z", ordinal = 0, shift = At.Shift.AFTER))
     private void iris$beginLevelRender(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
         //CapturedRenderingState.INSTANCE.setGbufferModelView(poseStack.last().pose());
         //CapturedRenderingState.INSTANCE.setGbufferProjection(projection);

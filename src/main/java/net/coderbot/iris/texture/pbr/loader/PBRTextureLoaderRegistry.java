@@ -14,7 +14,7 @@ public class PBRTextureLoaderRegistry {
 
 	static {
 		INSTANCE.register(SimpleTexture.class, new SimplePBRLoader());
-		INSTANCE.register(TextureMap.class, new AtlasPBRLoader());
+		//INSTANCE.register(TextureMap.class, new AtlasPBRLoader());
 	}
 
 	private final Map<Class<?>, PBRTextureLoader<?>> loaderMap = new HashMap<>();

@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 public class SimplePBRLoader implements PBRTextureLoader<SimpleTexture> {
 	@Override
 	public void load(SimpleTexture texture, IResourceManager resourceManager, PBRTextureConsumer pbrTextureConsumer) {
-		ResourceLocation location = ((SimpleTextureAccessor) texture).getLocation();
+		ResourceLocation location = ((SimpleTextureAccessor) texture).getTextureLocation();
 
 		AbstractTexture normalTexture = createPBRTexture(location, resourceManager, PBRType.NORMAL);
 		AbstractTexture specularTexture = createPBRTexture(location, resourceManager, PBRType.SPECULAR);
