@@ -17,13 +17,14 @@ class CompositeTransformer {
 
 		// if using a lod texture sampler and on version 120, patch in the extension
 		// #extension GL_ARB_shader_texture_lod : require
-		if (tree.getVersionStatement().version.number <= 120
-				&& Stream.concat(
-						root.identifierIndex.getStream("texture2DLod"),
-						root.identifierIndex.getStream("texture3DLod"))
-						.anyMatch(id -> id.getParent() instanceof FunctionCallExpression)) {
-			tree.parseAndInjectNode(t, ASTInjectionPoint.BEFORE_DECLARATIONS,
-					"#extension GL_ARB_shader_texture_lod : require\n");
-		}
+		// todo patricia
+//		if (tree.getVersionStatement().version.number <= 120
+//				&& Stream.concat(
+//						root.identifierIndex.getStream("texture2DLod"),
+//						root.identifierIndex.getStream("texture3DLod"))
+//						.anyMatch(id -> id.getParent() instanceof FunctionCallExpression)) {
+//			tree.parseAndInjectNode(t, ASTInjectionPoint.BEFORE_DECLARATIONS,
+//					"#extension GL_ARB_shader_texture_lod : require\n");
+//		}
 	}
 }

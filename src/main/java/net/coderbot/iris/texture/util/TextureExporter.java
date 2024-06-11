@@ -25,14 +25,15 @@ public class TextureExporter {
 		dir.mkdirs();
 		File file = new File(dir, filename);
 
-		Util.ioPool().execute(() -> {
-			try {
-				nativeImage.writeToFile(file);
-			} catch (Exception var7) {
-				//
-			} finally {
-				nativeImage.close();
-			}
-		});
+		// todo
+//		Util.ioPool().execute(() -> {
+//			try {
+//				nativeImage.writeToFile(file);
+//			} catch (Exception var7) {
+//				//
+//			} finally {
+//				nativeImage.close();
+//			}
+//		});
 	}
 }

@@ -2,25 +2,23 @@ package net.coderbot.iris.gl.blending;
 
 //import com.mojang.blaze3d.platform.GlStateManager;
 
+import lombok.Getter;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
 import net.minecraft.client.renderer.GlStateManager;
 
 public class DepthColorStorage {
 	private static boolean originalDepthEnable;
 	private static ColorMask originalColor;
-	private static boolean depthColorLocked;
+	@Getter
+    private static boolean depthColorLocked;
 
-	public static boolean isDepthColorLocked() {
-		return depthColorLocked;
-	}
-
-	public static void disableDepthColor() {
+    public static void disableDepthColor() {
 		if (!depthColorLocked) {
 			// Only save the previous state if the depth and color mask wasn't already locked
 			GlStateManager.ColorMask colorMask = GlStateManagerAccessor.getCOLOR_MASK();
 			GlStateManager.DepthState depthState = GlStateManagerAccessor.getDEPTH();
 
-			originalDepthEnable = depthState.mask;
+			originalDepthEnable = depthState.maskEnabled;
 			originalColor = new ColorMask(colorMask.red, colorMask.green, colorMask.blue, colorMask.alpha);
 		}
 

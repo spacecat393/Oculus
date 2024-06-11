@@ -15,7 +15,7 @@ public abstract class Uniform {
 		this.notifier = notifier;
 	}
 
-	public abstract void update();
+	public abstract void update() ;
 
 	public final int getLocation() {
 		return location;

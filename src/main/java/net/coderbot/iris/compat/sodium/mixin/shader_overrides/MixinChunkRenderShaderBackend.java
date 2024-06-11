@@ -68,21 +68,22 @@ public class MixinChunkRenderShaderBackend implements ChunkRenderBackendExt {
 		irisChunkProgramOverrides = new IrisChunkProgramOverrides();
 	}
 
-	@Redirect(method = "createShader", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/gl/shader/ShaderLoader;loadShader(Lme/jellysquid/mods/sodium/client/gl/device/RenderDevice;Lme/jellysquid/mods/sodium/client/gl/shader/ShaderType;Lnet/minecraft/util/ResourceLocation;Ljava/util/List;)Lme/jellysquid/mods/sodium/client/gl/shader/GlShader;", ordinal = 0))
-	private GlShader iris$redirectOriginalShader(RenderDevice device, ShaderType type, ResourceLocation name, List<String> constants) {
-		if (this.vertexType == IrisModelVertexFormats.MODEL_VERTEX_XHFP) {
-			String shader = getShaderSource(getShaderPath(name));
-			shader = shader.replace("v_LightCoord = a_LightCoord", "v_LightCoord = (iris_LightmapTextureMatrix * vec4(a_LightCoord, 0, 1)).xy");
-
-			StringTransformations transformations = new StringTransformations(shader);
-
-			transformations.injectLine(Transformations.InjectionPoint.BEFORE_CODE, "mat4 iris_LightmapTextureMatrix = mat4(vec4(0.00390625, 0.0, 0.0, 0.0), vec4(0.0, 0.00390625, 0.0, 0.0), vec4(0.0, 0.0, 0.00390625, 0.0), vec4(0.03125, 0.03125, 0.03125, 1.0));");
-
-			return new GlShader(device, type, name, transformations.toString(), ShaderConstants.fromStringList(constants));
-		} else {
-			return ShaderLoader.loadShader(device, type, name, constants);
-		}
-	}
+	// todo: unable to locate obfuscation mapping for ...
+//	@Redirect(method = "createShader", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/gl/shader/ShaderLoader;loadShader(Lme/jellysquid/mods/sodium/client/gl/device/RenderDevice;Lme/jellysquid/mods/sodium/client/gl/shader/ShaderType;Lnet/minecraft/util/ResourceLocation;Ljava/util/List;)Lme/jellysquid/mods/sodium/client/gl/shader/GlShader;", ordinal = 0))
+//	private GlShader iris$redirectOriginalShader(RenderDevice device, ShaderType type, ResourceLocation name, List<String> constants) {
+//		if (this.vertexType == IrisModelVertexFormats.MODEL_VERTEX_XHFP) {
+//			String shader = getShaderSource(getShaderPath(name));
+//			shader = shader.replace("v_LightCoord = a_LightCoord", "v_LightCoord = (iris_LightmapTextureMatrix * vec4(a_LightCoord, 0, 1)).xy");
+//
+//			StringTransformations transformations = new StringTransformations(shader);
+//
+//			transformations.injectLine(Transformations.InjectionPoint.BEFORE_CODE, "mat4 iris_LightmapTextureMatrix = mat4(vec4(0.00390625, 0.0, 0.0, 0.0), vec4(0.0, 0.00390625, 0.0, 0.0), vec4(0.0, 0.0, 0.00390625, 0.0), vec4(0.03125, 0.03125, 0.03125, 1.0));");
+//
+//			return new GlShader(device, type, name, transformations.toString(), ShaderConstants.fromStringList(constants));
+//		} else {
+//			return ShaderLoader.loadShader(device, type, name, constants);
+//		}
+//	}
 
 	private static String getShaderPath(ResourceLocation name) {
 		return String.format("/assets/%s/shaders/%s", name.getNamespace(), name.getPath());
@@ -152,25 +153,25 @@ public class MixinChunkRenderShaderBackend implements ChunkRenderBackendExt {
 		begin();
 	}
 
-	@Inject(method = "begin",
-			at = @At(value = "FIELD",
-					target = "me/jellysquid/mods/sodium/client/render/chunk/shader/ChunkRenderShaderBackend.activeProgram" +
-								": Lme/jellysquid/mods/sodium/client/render/chunk/shader/ChunkProgram;",
-					args = "opcode=PUTFIELD",
-					remap = false,
-					shift = At.Shift.AFTER))
-	private void iris$applyOverride(CallbackInfo ci) {
-		if (override != null) {
-			this.activeProgram = override;
-		}
-	}
+//	@Inject(method = "begin",
+//			at = @At(value = "FIELD",
+//					target = "me/jellysquid/mods/sodium/client/render/chunk/shader/ChunkRenderShaderBackend.activeProgram" +
+//								": Lme/jellysquid/mods/sodium/client/render/chunk/shader/ChunkProgram;",
+//					args = "opcode=PUTFIELD",
+//					remap = false,
+//					shift = At.Shift.AFTER))
+//	private void iris$applyOverride(CallbackInfo ci) {
+//		if (override != null) {
+//			this.activeProgram = override;
+//		}
+//	}
 
-	@Inject(method = "end", at = @At("RETURN"))
-	private void iris$onEnd(CallbackInfo ci) {
-		ProgramUniforms.clearActiveUniforms();
-		ProgramSamplers.clearActiveSamplers();
-		Iris.getPipelineManager().getPipeline().ifPresent(WorldRenderingPipeline::endSodiumTerrainRendering);
-	}
+//	@Inject(method = "end", at = @At("RETURN"))
+//	private void iris$onEnd(CallbackInfo ci) {
+//		ProgramUniforms.clearActiveUniforms();
+//		ProgramSamplers.clearActiveSamplers();
+//		Iris.getPipelineManager().getPipeline().ifPresent(WorldRenderingPipeline::endSodiumTerrainRendering);
+//	}
 
 	@Inject(method = "delete", at = @At("HEAD"), remap = false)
 	private void iris$onDelete(CallbackInfo ci) {

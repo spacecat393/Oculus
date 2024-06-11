@@ -53,7 +53,8 @@ public class EntityVertexBufferWriterUnsafe extends VertexBufferWriterUnsafe imp
 
 	@Override
 	public void writeGlyph(float x, float y, float z, int color, float u, float v, int light) {
-		writeQuad(x, y, z, color, u, v, light, OverlayTexture.NO_OVERLAY, 0);
+		// todo
+//		writeQuad(x, y, z, color, u, v, light, OverlayTexture.NO_OVERLAY, 0);
 	}
 
 	private void endQuad(int normal) {

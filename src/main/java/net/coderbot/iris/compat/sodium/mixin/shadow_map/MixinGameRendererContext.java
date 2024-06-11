@@ -16,14 +16,15 @@ import net.coderbot.iris.shadows.ShadowRenderingState;
  */
 @Mixin(GameRendererContext.class)
 public class MixinGameRendererContext {
-	@Redirect(method = "getModelViewProjectionMatrix",
-			at = @At(value = "INVOKE",
-					target = "com/mojang/math/Matrix4f.copy ()Lcom/mojang/math/Matrix4f;"))
-	private static Matrix4f iris$useShadowProjectionMatrix(Matrix4f matrix) {
-		if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
-			return ShadowRenderingState.getShadowOrthoMatrix();
-		} else {
-			return matrix.copy();
-		}
-	}
+	// todo: unable to locate obfuscation mapping
+//	@Redirect(method = "getModelViewProjectionMatrix",
+//			at = @At(value = "INVOKE",
+//					target = "com/mojang/math/Matrix4f.copy ()Lcom/mojang/math/Matrix4f;"))
+//	private static Matrix4f iris$useShadowProjectionMatrix(Matrix4f matrix) {
+//		if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+//			return ShadowRenderingState.getShadowOrthoMatrix();
+//		} else {
+//			return matrix.copy();
+//		}
+//	}
 }

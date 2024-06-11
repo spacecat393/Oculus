@@ -11,7 +11,7 @@ public class TaggingRenderTypeWrapper extends CustomRenderType implements Wrappa
     private final CustomRenderType wrapped;
 
     public TaggingRenderTypeWrapper(String name, CustomRenderType wrapped, int tag) {
-        super(name, wrapped.getFormat(), wrapped.getBufferSize(), wrapped.affectsCrumbling(), wrapped.sortOnUpload());
+        super(name, wrapped.getFormat(), wrapped.getBufferSize(), wrapped.affectsCrumbling(), wrapped.sortOnUpload(), wrapped.getMode());
         this.tag = tag;
         this.wrapped = wrapped;
     }

@@ -40,7 +40,8 @@ public class LegacyIdMap {
 		// Apparently this is what SEUS v11 expects? Maybe old shadersmod was buggy.
 		add(blockIdMap, -123, block("emerald_block"));
 
-		addMany(blockIdMap, 35, COLORS, color -> block(color + "_wool"));
+		// todo
+//		addMany(blockIdMap, 35, COLORS, color -> block(color + "_wool"));
 
 		// NB: Use the "still" IDs for water and lava, since some shader packs don't properly support the "flowing"
 		// versions: https://github.com/IrisShaders/Iris/issues/1462
@@ -48,10 +49,10 @@ public class LegacyIdMap {
 		add(blockIdMap, 11, block("lava"));
 		add(blockIdMap, 79, block("ice"));
 
-		addMany(blockIdMap, 18, WOOD_TYPES, woodType -> block(woodType + "_leaves"));
+//		addMany(blockIdMap, 18, WOOD_TYPES, woodType -> block(woodType + "_leaves"));
 
-		addMany(blockIdMap, 95, COLORS, color -> block(color + "_stained_glass"));
-		addMany(blockIdMap, 160, COLORS, color -> block(color + "_stained_glass_pane"));
+//		addMany(blockIdMap, 95, COLORS, color -> block(color + "_stained_glass"));
+//		addMany(blockIdMap, 160, COLORS, color -> block(color + "_stained_glass_pane"));
 
 		// Short grass / bush
 		add(blockIdMap, 31, block("grass"), block("seagrass"), block("sweet_berry_bush"));
@@ -87,7 +88,7 @@ public class LegacyIdMap {
 		List<BlockEntry> entries = new ArrayList<>();
 
 		for (String prefix : prefixes) {
-			entries.add(toId.apply(prefix));
+//			entries.add(toId.apply(prefix));
 		}
 
 		blockIdMap.put(id, entries);

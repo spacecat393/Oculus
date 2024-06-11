@@ -28,9 +28,10 @@ public class MixinLevelRenderer_SunMoonToggle {
 	private void iris$emptyBuilder() {
 		BufferBuilder builder = Tessellator.getInstance().getBuffer();
 
-		builder.discard();
+		// todo
+//		builder.discard();
 		builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		builder.end();
+//		builder.end();
 	}
 
 	@Inject(method = "renderSky(FI)V",

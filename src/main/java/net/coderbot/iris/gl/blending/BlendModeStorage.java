@@ -21,7 +21,8 @@ public class BlendModeStorage {
 			// Only save the previous state if the blend mode wasn't already locked
 			GlStateManager.BlendState blendState = GlStateManagerAccessor.getBLEND();
 
-			originalBlendEnable = ((BooleanStateAccessor) blendState.mode).isEnabled();
+			// todo
+//			originalBlendEnable = ((BooleanStateAccessor) blendState.mode).isEnabled();
 			originalBlend = new BlendMode(blendState.srcFactor, blendState.dstFactor, blendState.srcFactorAlpha, blendState.dstFactorAlpha);
 		}
 
@@ -42,7 +43,8 @@ public class BlendModeStorage {
 			// Only save the previous state if the blend mode wasn't already locked
 			GlStateManager.BlendState blendState = GlStateManagerAccessor.getBLEND();
 
-			originalBlendEnable = ((BooleanStateAccessor) blendState.mode).isEnabled();
+			// todo
+//			originalBlendEnable = ((BooleanStateAccessor) blendState.mode).isEnabled();
 			originalBlend = new BlendMode(blendState.srcFactor, blendState.dstFactor, blendState.srcFactorAlpha, blendState.dstFactorAlpha);
 		}
 

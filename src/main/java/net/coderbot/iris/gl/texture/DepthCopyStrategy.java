@@ -5,6 +5,7 @@ import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
 //import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GLContext;
 //import org.lwjgl.system.MemoryUtil;
 
 public interface DepthCopyStrategy {
@@ -101,9 +102,10 @@ public interface DepthCopyStrategy {
 		//
 		// Perhaps calling GL43.isAvailable would be a different option, but we only need one
 		// function, so we just check for that function.
-		if (GL.getCapabilities().glCopyImageSubData != 0L) {
-			return new Gl43CopyImage();
-		}
+		// todo: cannot access glCopyImageSubData
+//		if (GLContext.getCapabilities().glCopyImageSubData != 0L) {
+//			return new Gl43CopyImage();
+//		}
 
 		if (combinedStencilRequired) {
 			return new Gl30BlitFbCombinedDepthStencil();

@@ -63,12 +63,13 @@ public class IrisChunkProgram extends ChunkProgram {
 			irisProgramImages.update();
 		}
 
-		Matrix4f normalMatrix = poseStack.last().pose().copy();
-		normalMatrix.invert();
-		normalMatrix.transpose();
-
-		uniformMatrix(uModelViewMatrix, GameRendererContext.getModelViewProjectionMatrix());
-		uniformMatrix(uNormalMatrix, normalMatrix);
+		// todo
+//		Matrix4f normalMatrix = poseStack.last().pose().copy();
+//		normalMatrix.invert();
+//		normalMatrix.transpose();
+//
+//		uniformMatrix(uModelViewMatrix, GameRendererContext.getModelViewProjectionMatrix());
+//		uniformMatrix(uNormalMatrix, normalMatrix);
 	}
 
 	@Override

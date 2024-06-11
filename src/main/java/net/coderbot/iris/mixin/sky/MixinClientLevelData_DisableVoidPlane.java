@@ -24,16 +24,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(WorldType.class)
 public class MixinClientLevelData_DisableVoidPlane {
-	@Inject(method = "getHorizon", at = @At("HEAD"), cancellable = true)
-	private void iris$getHorizonHeight(World world, CallbackInfoReturnable<Double> cir) {
-		Minecraft mc = Minecraft.getMinecraft();
-		Entity cameraEntity = mc.getRenderViewEntity();
-		// TODO getBlockStateAtEntityViewpoint is not adapted to Forge's IFluidBlock, maybe it's better to use ForgeHooks.isInsideOfMaterial?
-		IBlockState submergedFluid = ActiveRenderInfo.getBlockStateAtEntityViewpoint(mc.world, cameraEntity, mc.timer.renderPartialTicks);
-		Block block = submergedFluid.getBlock();
-
-		if (block instanceof BlockLiquid || block instanceof IFluidBlock) {
-			cir.setReturnValue(Double.NEGATIVE_INFINITY);
-		}
-	}
+	// todo: unable to locate obfuscation mapping
+//	@Inject(method = "getHorizon", at = @At("HEAD"), cancellable = true)
+//	private void iris$getHorizonHeight(World world, CallbackInfoReturnable<Double> cir) {
+//		Minecraft mc = Minecraft.getMinecraft();
+//		Entity cameraEntity = mc.getRenderViewEntity();
+//		// TODO getBlockStateAtEntityViewpoint is not adapted to Forge's IFluidBlock, maybe it's better to use ForgeHooks.isInsideOfMaterial?
+//		IBlockState submergedFluid = ActiveRenderInfo.getBlockStateAtEntityViewpoint(mc.world, cameraEntity, mc.timer.renderPartialTicks);
+//		Block block = submergedFluid.getBlock();
+//
+//		if (block instanceof BlockLiquid || block instanceof IFluidBlock) {
+//			cir.setReturnValue(Double.NEGATIVE_INFINITY);
+//		}
+//	}
 }

@@ -11,14 +11,15 @@ import net.coderbot.iris.compat.sodium.impl.shader_overrides.ChunkRenderBackendE
 
 @Mixin(ChunkRenderManager.class)
 public class MixinChunkRenderManager {
-	@Redirect(method = "renderLayer",
-			at = @At(value = "INVOKE",
-					target = "me/jellysquid/mods/sodium/client/render/chunk/ChunkRenderBackend.begin ()V"))
-	private void iris$backendBeginExt(ChunkRenderBackend<?> backend, BlockRenderPass pass, double x, double y, double z) {
-		if (backend instanceof ChunkRenderBackendExt) {
-			((ChunkRenderBackendExt) backend).iris$begin(pass);
-		} else {
-			backend.begin();
-		}
-	}
+	// todo: unable to locate obfuscation mapping
+//	@Redirect(method = "renderLayer",
+//			at = @At(value = "INVOKE",
+//					target = "me/jellysquid/mods/sodium/client/render/chunk/ChunkRenderBackend.begin ()V"))
+//	private void iris$backendBeginExt(ChunkRenderBackend<?> backend, BlockRenderPass pass, double x, double y, double z) {
+//		if (backend instanceof ChunkRenderBackendExt) {
+//			((ChunkRenderBackendExt) backend).iris$begin(pass);
+//		} else {
+//			backend.begin();
+//		}
+//	}
 }

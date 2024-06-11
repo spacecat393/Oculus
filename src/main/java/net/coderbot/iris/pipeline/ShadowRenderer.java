@@ -369,7 +369,8 @@ public class ShadowRenderer {
 		profiler.endStartSection("build geometry");
 
 		for (Entity entity : renderedEntities) {
-			levelRenderer.invokeRenderEntity(entity, cameraX, cameraY, cameraZ, tickDelta);
+			// todo
+//			levelRenderer.invokeRenderEntity(entity, cameraX, cameraY, cameraZ, tickDelta);
 			shadowEntities++;
 		}
 
@@ -395,17 +396,17 @@ public class ShadowRenderer {
 
 		if (!player.getPassengers().isEmpty()) {
 			for (int i = 0; i < player.getPassengers().size(); i++) {
-				levelRenderer.invokeRenderEntity(player.getPassengers().get(i), cameraX, cameraY, cameraZ, tickDelta);
+//				levelRenderer.invokeRenderEntity(player.getPassengers().get(i), cameraX, cameraY, cameraZ, tickDelta);
 				shadowEntities++;
 			}
 		}
 
 		if (player.getRidingEntity() != null) {
-			levelRenderer.invokeRenderEntity(player.getRidingEntity(), cameraX, cameraY, cameraZ, tickDelta);
+//			levelRenderer.invokeRenderEntity(player.getRidingEntity(), cameraX, cameraY, cameraZ, tickDelta);
 			shadowEntities++;
 		}
 
-		levelRenderer.invokeRenderEntity(player, cameraX, cameraY, cameraZ, tickDelta);
+//		levelRenderer.invokeRenderEntity(player, cameraX, cameraY, cameraZ, tickDelta);
 
 		shadowEntities++;
 
@@ -511,9 +512,9 @@ public class ShadowRenderer {
 		// TODO: Only schedule a terrain update if the sun / moon is moving, or the shadow map camera moved.
 		// We have to ensure that we don't regenerate clouds every frame, since that's what needsUpdate ends up doing.
 		// This took up to 10% of the frame time before we applied this fix! That's really bad!
-		boolean regenerateClouds = levelRenderer.shouldRegenerateClouds();
+//		boolean regenerateClouds = levelRenderer.shouldRegenerateClouds();
 		((RenderGlobal) levelRenderer).setDisplayListEntitiesDirty();
-		levelRenderer.setShouldRegenerateClouds(regenerateClouds);
+//		levelRenderer.setShouldRegenerateClouds(regenerateClouds);
 
 		// Execute the vanilla terrain setup / culling routines using our shadow frustum.
 		// todo levelRenderer.invokeSetupRender(playerCamera, terrainFrustumHolder.getFrustum(), false, levelRenderer.getFrameId(), false);
@@ -521,7 +522,7 @@ public class ShadowRenderer {
 		// Don't forget to increment the frame counter! This variable is arbitrary and only used in terrain setup,
 		// and if it's not incremented, the vanilla culling code will get confused and think that it's already seen
 		// chunks during traversal, and break rendering in concerning ways.
-		levelRenderer.setFrameId(levelRenderer.getFrameId() + 1);
+//		levelRenderer.setFrameId(levelRenderer.getFrameId() + 1);
 
 		client.renderChunksMany = wasChunkCullingEnabled;
 

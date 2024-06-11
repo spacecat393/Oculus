@@ -31,19 +31,20 @@ import net.minecraft.client.renderer.chunk.VisGraph;
  */
 @Mixin(ChunkRenderRebuildTask.class)
 public class MixinChunkRenderRebuildTask {
-	@Inject(method = "performBuild", at = @At(value = "INVOKE",
-			target = "Lme/jellysquid/mods/sodium/common/util/WorldUtil;toFluidBlock(Lnet/minecraft/block/Block;)Lnet/minecraftforge/fluids/IFluidBlock;", ordinal = 0),
-			locals = LocalCapture.CAPTURE_FAILHARD)
-	private void iris$setLocalPos(ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers,
-								  CancellationSource cancellationSource, CallbackInfoReturnable<ChunkBuildResult<?>> cir,
-								  ChunkRenderData.Builder renderData, VisGraph occluder, ChunkRenderBounds.Builder bounds,
-								  WorldSlice slice, int baseX, int baseY, int baseZ,
-								  BlockPos.MutableBlockPos pos, BlockPos renderOffset,
-								  int relY, int relZ, int relX) {
-		if (buffers instanceof ChunkBuildBuffersExt) {
-			((ChunkBuildBuffersExt) buffers).iris$setLocalPos(relX, relY, relZ);
-		}
-	}
+	// todo: unable to locate obfuscation mapping for ... target performBuild
+//	@Inject(method = "performBuild", at = @At(value = "INVOKE",
+//			target = "Lme/jellysquid/mods/sodium/common/util/WorldUtil;toFluidBlock(Lnet/minecraft/block/Block;)Lnet/minecraftforge/fluids/IFluidBlock;", ordinal = 0),
+//			locals = LocalCapture.CAPTURE_FAILHARD)
+//	private void iris$setLocalPos(ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers,
+//								  CancellationSource cancellationSource, CallbackInfoReturnable<ChunkBuildResult<?>> cir,
+//								  ChunkRenderData.Builder renderData, VisGraph occluder, ChunkRenderBounds.Builder bounds,
+//								  WorldSlice slice, int baseX, int baseY, int baseZ,
+//								  BlockPos.MutableBlockPos pos, BlockPos renderOffset,
+//								  int relY, int relZ, int relX) {
+//		if (buffers instanceof ChunkBuildBuffersExt) {
+//			((ChunkBuildBuffersExt) buffers).iris$setLocalPos(relX, relY, relZ);
+//		}
+//	}
 
 	@Redirect(method = "performBuild", at = @At(value = "INVOKE",
 			target = "Lnet/minecraft/client/renderer/BlockModelShapes;getModelForState(Lnet/minecraft/block/state/IBlockState;)Lnet/minecraft/client/renderer/block/model/IBakedModel;"))
@@ -55,22 +56,22 @@ public class MixinChunkRenderRebuildTask {
 		return instance.getModelForState(blockState);
 	}
 
-	@Redirect(method = "performBuild", at = @At(value = "INVOKE",
-			target = "Lme/jellysquid/mods/sodium/client/render/pipeline/FluidRenderer;render(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lme/jellysquid/mods/sodium/client/render/chunk/compile/buffers/ChunkModelBuffers;)Z"))
-	private boolean iris$wrapGetFluidLayer(FluidRenderer renderer, IBlockAccess world, IBlockState fluidState, BlockPos pos, ChunkModelBuffers modelBuffers, ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers) {
-		if (buffers instanceof ChunkBuildBuffersExt) {
-			((ChunkBuildBuffersExt) buffers).iris$setMaterialId(fluidState, ExtendedDataHelper.FLUID_RENDER_TYPE);
-		}
+//	@Redirect(method = "performBuild", at = @At(value = "INVOKE",
+//			target = "Lme/jellysquid/mods/sodium/client/render/pipeline/FluidRenderer;render(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lme/jellysquid/mods/sodium/client/render/chunk/compile/buffers/ChunkModelBuffers;)Z"))
+//	private boolean iris$wrapGetFluidLayer(FluidRenderer renderer, IBlockAccess world, IBlockState fluidState, BlockPos pos, ChunkModelBuffers modelBuffers, ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers) {
+//		if (buffers instanceof ChunkBuildBuffersExt) {
+//			((ChunkBuildBuffersExt) buffers).iris$setMaterialId(fluidState, ExtendedDataHelper.FLUID_RENDER_TYPE);
+//		}
+//
+//		return renderer.render(world, fluidState, pos, modelBuffers);
+//	}
 
-		return renderer.render(world, fluidState, pos, modelBuffers);
-	}
-
-	@Inject(method = "performBuild",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;hasTileEntity(Lnet/minecraft/block/state/IBlockState;)Z"))
-	private void iris$resetContext(ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers,
-							  CancellationSource cancellationSource, CallbackInfoReturnable<ChunkBuildResult<?>> cir) {
-		if (buffers instanceof ChunkBuildBuffersExt) {
-			((ChunkBuildBuffersExt) buffers).iris$resetBlockContext();
-		}
-	}
+//	@Inject(method = "performBuild",
+//			at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;hasTileEntity(Lnet/minecraft/block/state/IBlockState;)Z"))
+//	private void iris$resetContext(ChunkRenderCacheLocal cache, ChunkBuildBuffers buffers,
+//							  CancellationSource cancellationSource, CallbackInfoReturnable<ChunkBuildResult<?>> cir) {
+//		if (buffers instanceof ChunkBuildBuffersExt) {
+//			((ChunkBuildBuffersExt) buffers).iris$resetBlockContext();
+//		}
+//	}
 }

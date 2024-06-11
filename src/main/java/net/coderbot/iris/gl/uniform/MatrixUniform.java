@@ -27,9 +27,14 @@ public class MatrixUniform extends Uniform {
 		Matrix4f newValue = value.get();
 
 		if (!newValue.equals(cachedValue)) {
-			cachedValue = newValue.copy();
+			try {
+				cachedValue = (Matrix4f) newValue.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new RuntimeException("Unexpected CloneNotSupportedException", e);
+			}
 
-			cachedValue.store(buffer);
+			// todo
+//			cachedValue.store(buffer);
 			buffer.rewind();
 
 			IrisRenderSystem.uniformMatrix4fv(location, false, buffer);

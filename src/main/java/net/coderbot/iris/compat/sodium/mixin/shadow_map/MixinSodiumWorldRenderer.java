@@ -81,12 +81,13 @@ public class MixinSodiumWorldRenderer {
 		}
 	}
 
-	@Inject(method = "updateChunks", at = @At("RETURN"))
-	private void iris$captureVisibleBlockEntities(Frustum frustum, float ticks, boolean hasForcedFrustum, int frame, boolean spectator, CallbackInfo ci) {
-		if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
-			ShadowRenderer.visibleBlockEntities.addAll(this.chunkRenderManager.getVisibleBlockEntities());
-		}
-	}
+	// todo: unable to locate obfuscation mapping
+//	@Inject(method = "updateChunks", at = @At("RETURN"))
+//	private void iris$captureVisibleBlockEntities(Frustum frustum, float ticks, boolean hasForcedFrustum, int frame, boolean spectator, CallbackInfo ci) {
+//		if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+//			ShadowRenderer.visibleBlockEntities.addAll(this.chunkRenderManager.getVisibleBlockEntities());
+//		}
+//	}
 
 	@Inject(method = "scheduleTerrainUpdate()V", remap = false,
 			at = @At(value = "INVOKE",
