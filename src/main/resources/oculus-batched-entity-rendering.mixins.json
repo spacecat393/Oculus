@@ -10,7 +10,6 @@
     "MixinDebugScreenOverlay",
     "MixinRenderGlobal",
     "MixinRenderGlobal_EntityListSorting",
-    "CompositeStateAccessor",
     "RenderTypeAccessor"
   ],
   "injectors": {

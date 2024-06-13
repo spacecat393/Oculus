@@ -80,16 +80,27 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
 }
 
+jar {
+	manifest {
+		attributes (
+				"FMLCorePlugin": "net.iris.client.SodiumMixinTweaker",
+				"FMLCorePluginContainsFMLMod": true,
+				"ForceLoadAsMod": true,
+				"FMLAT": "oculus_at.cfg"
+		)
+	}
+}
+
 processResources {
 	filesMatching("mcmod.info") { fcd ->
-        fcd.expand(
-                'mod_id': project.mod_id,
-                'mod_name': project.mod_name,
-                'mod_version': project.mod_version,
-                'mod_description': project.mod_description,
-                'minecraft_version': project.minecraft_version
-        )
-    }
+		fcd.expand(
+				'mod_id': project.mod_id,
+				'mod_name': project.mod_name,
+				'mod_version': project.mod_version,
+				'mod_description': project.mod_description,
+				'minecraft_version': project.minecraft_version
+		)
+	}
 }
 
 tasks.withType(JavaCompile).configureEach {

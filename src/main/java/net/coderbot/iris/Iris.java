@@ -1,6 +1,7 @@
 package net.coderbot.iris;
 
 import com.google.common.base.Throwables;
+import lombok.Getter;
 import net.coderbot.iris.config.IrisConfig;
 import net.coderbot.iris.gl.GLDebug;
 import net.coderbot.iris.gl.shader.StandardMacros;
@@ -50,7 +51,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipError;
 import java.util.zip.ZipException;
 
-@Mod(modid = Iris.MODID, name = Iris.MODNAME)
+@Mod(modid = Iris.MODID, name = Iris.MODNAME, useMetadata = true)
 public class Iris {
 	public static final String MODID = "oculus";
 
@@ -67,25 +68,30 @@ public class Iris {
 	private static ShaderpackDirectoryManager shaderpacksDirectoryManager;
 
 	private static ShaderPack currentPack;
-	private static String currentPackName;
-	private static final boolean sodiumInstalled = Loader.isModLoaded("vintagium");
+	@Getter
+    private static String currentPackName;
+	@Getter
+    private static final boolean sodiumInstalled = Loader.isModLoaded("vintagium");
 	private static boolean initialized;
 
 	private static PipelineManager pipelineManager;
-	private static IrisConfig irisConfig;
+	@Getter
+    private static IrisConfig irisConfig;
 	private static FileSystem zipFileSystem;
 	private static KeyBinding reloadKeybind;
 	private static KeyBinding toggleShadersKeybind;
 	private static KeyBinding shaderpackScreenKeybind;
 
-	private static final Map<String, String> shaderPackOptionQueue = new HashMap<>();
+	@Getter
+    private static final Map<String, String> shaderPackOptionQueue = new HashMap<>();
 	// Flag variable used when reloading
 	// Used in favor of queueDefaultShaderPackOptionValues() for resetting as the
 	// behavior is more concrete and therefore is more likely to repair a user's issues
 	private static boolean resetShaderPackOptions = false;
 
-	private static String IRIS_VERSION;
-	private static boolean fallback;
+	private static String MOD_VERSION = Loader.instance().getIndexedModList().get(MODID).getVersion();
+	@Getter
+    private static boolean fallback;
 
 	// Wrapped in try-catch due to early initializing class
 	public Iris() {
@@ -133,13 +139,12 @@ public class Iris {
 
 	@SubscribeEvent
 	public void onInitializeClient(FMLInitializationEvent event) {
-//		IRIS_VERSION = ModList.get().getModContainerById(MODID).get().getModInfo().getVersion().toString();
 		ModContainer modContainer = Loader.instance().getIndexedModList().get(MODID);
-		if (modContainer != null) {
-			IRIS_VERSION = modContainer.getVersion();
-		} else {
-			IRIS_VERSION = "N/A";
-		}
+//		if (modContainer != null) {
+//			IRIS_VERSION = modContainer.getVersion();
+//		} else {
+//			IRIS_VERSION = "N/A";
+//		}
 		ClientRegistry.registerKeyBinding(reloadKeybind);
 		ClientRegistry.registerKeyBinding(toggleShadersKeybind);
 		ClientRegistry.registerKeyBinding(shaderpackScreenKeybind);
@@ -509,11 +514,7 @@ public class Iris {
 		return false;
 	}
 
-	public static Map<String, String> getShaderPackOptionQueue() {
-		return shaderPackOptionQueue;
-	}
-
-	public static void queueShaderPackOptionsFromProfile(Profile profile) {
+    public static void queueShaderPackOptionsFromProfile(Profile profile) {
 		getShaderPackOptionQueue().putAll(profile.optionValues);
 	}
 
@@ -649,24 +650,8 @@ public class Iris {
 		return Optional.ofNullable(currentPack);
 	}
 
-	public static String getCurrentPackName() {
-		return currentPackName;
-	}
-
-	public static IrisConfig getIrisConfig() {
-		return irisConfig;
-	}
-
-	public static boolean isFallback() {
-		return fallback;
-	}
-
-	public static String getVersion() {
-		if (IRIS_VERSION == null) {
-			return "Version info unknown!";
-		}
-
-		return IRIS_VERSION;
+    public static String getVersion() {
+		return MOD_VERSION;
 	}
 
 	public static String getFormattedVersion() {
@@ -687,11 +672,7 @@ public class Iris {
 		return color + version;
 	}
 
-	public static boolean isSodiumInstalled() {
-		return sodiumInstalled;
-	}
-
-	public static Path getShaderpacksDirectory() {
+    public static Path getShaderpacksDirectory() {
 		if (shaderpacksDirectory == null) {
 			shaderpacksDirectory = Minecraft.getMinecraft().gameDir.toPath().resolve("shaderpacks");
 		}
