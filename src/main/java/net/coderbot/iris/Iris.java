@@ -71,7 +71,7 @@ public class Iris {
 	@Getter
     private static String currentPackName;
 	@Getter
-    private static final boolean sodiumInstalled = Loader.isModLoaded("vintagium");
+    private static boolean sodiumInstalled = false;
 	private static boolean initialized;
 
 	private static PipelineManager pipelineManager;
@@ -89,7 +89,7 @@ public class Iris {
 	// behavior is more concrete and therefore is more likely to repair a user's issues
 	private static boolean resetShaderPackOptions = false;
 
-	private static String MOD_VERSION = Loader.instance().getIndexedModList().get(MODID).getVersion();
+	private static String MOD_VERSION;
 	@Getter
     private static boolean fallback;
 
@@ -139,6 +139,8 @@ public class Iris {
 
 	@SubscribeEvent
 	public void init(FMLInitializationEvent event) {
+		sodiumInstalled = Loader.isModLoaded("vintagium");
+		MOD_VERSION = Loader.instance().getIndexedModList().get(MODID).getVersion();
 		ModContainer modContainer = Loader.instance().getIndexedModList().get(MODID);
 //		if (modContainer != null) {
 //			IRIS_VERSION = modContainer.getVersion();

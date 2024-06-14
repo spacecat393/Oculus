@@ -48,13 +48,13 @@ public class MixinPreventRebuildNearInShadowPass {
 	}
 
 	// todo
-//	@Group(name = "iris_MixinPreventRebuildNearInShadowPass", min = 1, max = 1)
-//	@Inject(method = "setupTerrain",
-//			at = @At(value = "INVOKE",
-//					target = "me/jellysquid/mods/sodium/client/gl/device/RenderDevice.enterManagedCode ()V",
-//					remap = false),
-//			require = 0)
-//	private void iris$cannotInject(Entity viewEntity, double partialTicks, ICamera camera, int frameCount, boolean playerSpectator, CallbackInfo ci) {
-//		// Dummy injection just to assert that either Sodium is present, or the vanilla injection passed.
-//	}
+	@Group(name = "iris_MixinPreventRebuildNearInShadowPass", min = 1, max = 1)
+	@Inject(method = "setupTerrain",
+			at = @At(value = "INVOKE",
+					target = "Lme/jellysquid/mods/sodium/client/gl/device/RenderDevice;enterManagedCode()V",
+					remap = false),
+			require = 0)
+	private void iris$cannotInject(Entity viewEntity, double partialTicks, ICamera camera, int frameCount, boolean playerSpectator, CallbackInfo ci) {
+		// Dummy injection just to assert that either Sodium is present, or the vanilla injection passed.
+	}
 }
