@@ -103,7 +103,7 @@ public class PipelineManager {
 		// issues elsewhere.
 		//
 		// Without this code, there will be weird issues when reloading certain shaderpacks.
-		for (int i = 0; i < 16; i++) {
+		for (int i = 0; i < 8; i++) {
 			GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + i);
 			GlStateManager.bindTexture(0);
 		}
