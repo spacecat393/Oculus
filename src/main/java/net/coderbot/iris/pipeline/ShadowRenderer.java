@@ -24,7 +24,7 @@ import net.coderbot.batchedentityrendering.impl.RenderBuffersExt;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gui.option.IrisVideoSettings;
-import net.coderbot.iris.mixin.LevelRendererAccessor;
+import net.coderbot.iris.mixin.RenderGlobalAccessor;
 import net.coderbot.iris.shaderpack.OptionalBoolean;
 import net.coderbot.iris.shaderpack.PackDirectives;
 import net.coderbot.iris.shaderpack.PackShadowDirectives;
@@ -342,8 +342,8 @@ public class ShadowRenderer {
 		targets.copyPreTranslucentDepth();
 	}
 
-	private void renderEntities(LevelRendererAccessor levelRenderer, Frustum frustum, double cameraX, double cameraY, double cameraZ, float tickDelta) {
-		RenderManager dispatcher = levelRenderer.getEntityRenderDispatcher();
+	private void renderEntities(RenderGlobalAccessor worldRenderer, Frustum frustum, double cameraX, double cameraY, double cameraZ, float tickDelta) {
+		RenderManager dispatcher = worldRenderer.getEntityRenderDispatcher();
 
 		int shadowEntities = 0;
 
@@ -370,7 +370,7 @@ public class ShadowRenderer {
 
 		for (Entity entity : renderedEntities) {
 			// todo
-//			levelRenderer.invokeRenderEntity(entity, cameraX, cameraY, cameraZ, tickDelta);
+//			worldRenderer.invokeRenderEntity(entity, cameraX, cameraY, cameraZ, tickDelta);
 			shadowEntities++;
 		}
 
@@ -379,8 +379,8 @@ public class ShadowRenderer {
 		profiler.endSection();
 	}
 
-	private void renderPlayerEntity(LevelRendererAccessor levelRenderer, Frustum frustum, double cameraX, double cameraY, double cameraZ, float tickDelta) {
-		RenderManager dispatcher = levelRenderer.getEntityRenderDispatcher();
+	private void renderPlayerEntity(RenderGlobalAccessor worldRenderer, Frustum frustum, double cameraX, double cameraY, double cameraZ, float tickDelta) {
+		RenderManager dispatcher = worldRenderer.getEntityRenderDispatcher();
 
 		profiler.startSection("cull");
 
@@ -396,17 +396,17 @@ public class ShadowRenderer {
 
 		if (!player.getPassengers().isEmpty()) {
 			for (int i = 0; i < player.getPassengers().size(); i++) {
-//				levelRenderer.invokeRenderEntity(player.getPassengers().get(i), cameraX, cameraY, cameraZ, tickDelta);
+//				worldRenderer.invokeRenderEntity(player.getPassengers().get(i), cameraX, cameraY, cameraZ, tickDelta);
 				shadowEntities++;
 			}
 		}
 
 		if (player.getRidingEntity() != null) {
-//			levelRenderer.invokeRenderEntity(player.getRidingEntity(), cameraX, cameraY, cameraZ, tickDelta);
+//			worldRenderer.invokeRenderEntity(player.getRidingEntity(), cameraX, cameraY, cameraZ, tickDelta);
 			shadowEntities++;
 		}
 
-//		levelRenderer.invokeRenderEntity(player, cameraX, cameraY, cameraZ, tickDelta);
+//		worldRenderer.invokeRenderEntity(player, cameraX, cameraY, cameraZ, tickDelta);
 
 		shadowEntities++;
 
@@ -445,7 +445,7 @@ public class ShadowRenderer {
 		profiler.endSection();
 	}
 
-	public void renderShadows(LevelRendererAccessor levelRenderer, ICamera playerCamera) {
+	public void renderShadows(RenderGlobalAccessor worldRenderer, ICamera playerCamera) {
 		if (IrisVideoSettings.getOverriddenShadowDistance(IrisVideoSettings.shadowDistance) == 0) {
 			return;
 		}
@@ -460,8 +460,8 @@ public class ShadowRenderer {
 		ACTIVE = true;
 
 		// NB: We store the previous player buffers in order to be able to allow mods rendering entities in the shadow pass (Flywheel) to use the shadow buffers instead.
-//		RenderBuffers playerBuffers = levelRenderer.getRenderBuffers();
-//		levelRenderer.setRenderBuffers(buffers);
+//		RenderBuffers playerBuffers = worldRenderer.getRenderBuffers();
+//		worldRenderer.setRenderBuffers(buffers);
 
 		visibleBlockEntities = new ArrayList<>();
 
@@ -481,8 +481,8 @@ public class ShadowRenderer {
 
 		profiler.endStartSection("terrain_setup");
 
-		if (levelRenderer instanceof CullingDataCache) {
-			((CullingDataCache) levelRenderer).saveState();
+		if (worldRenderer instanceof CullingDataCache) {
+			((CullingDataCache) worldRenderer).saveState();
 		}
 
 		profiler.endStartSection("initialize frustum");
@@ -512,17 +512,17 @@ public class ShadowRenderer {
 		// TODO: Only schedule a terrain update if the sun / moon is moving, or the shadow map camera moved.
 		// We have to ensure that we don't regenerate clouds every frame, since that's what needsUpdate ends up doing.
 		// This took up to 10% of the frame time before we applied this fix! That's really bad!
-//		boolean regenerateClouds = levelRenderer.shouldRegenerateClouds();
-		((RenderGlobal) levelRenderer).setDisplayListEntitiesDirty();
-//		levelRenderer.setShouldRegenerateClouds(regenerateClouds);
+//		boolean regenerateClouds = worldRenderer.shouldRegenerateClouds();
+		((RenderGlobal) worldRenderer).setDisplayListEntitiesDirty();
+//		worldRenderer.setShouldRegenerateClouds(regenerateClouds);
 
 		// Execute the vanilla terrain setup / culling routines using our shadow frustum.
-		// todo levelRenderer.invokeSetupRender(playerCamera, terrainFrustumHolder.getFrustum(), false, levelRenderer.getFrameId(), false);
+		// todo worldRenderer.invokeSetupRender(playerCamera, terrainFrustumHolder.getFrustum(), false, worldRenderer.getFrameId(), false);
 
 		// Don't forget to increment the frame counter! This variable is arbitrary and only used in terrain setup,
 		// and if it's not incremented, the vanilla culling code will get confused and think that it's already seen
 		// chunks during traversal, and break rendering in concerning ways.
-//		levelRenderer.setFrameId(levelRenderer.getFrameId() + 1);
+//		worldRenderer.setFrameId(worldRenderer.getFrameId() + 1);
 
 		client.renderChunksMany = wasChunkCullingEnabled;
 
@@ -532,9 +532,9 @@ public class ShadowRenderer {
 
 		// Render all opaque terrain unless pack requests not to
 		if (shouldRenderTerrain) {
-			//todo levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.SOLID, modelView, cameraX, cameraY, cameraZ);
-			//todo levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT, modelView, cameraX, cameraY, cameraZ);
-			//todo levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT_MIPPED, modelView, cameraX, cameraY, cameraZ);
+			//todo worldRenderer.invokeRenderChunkLayer(BlockRenderLayer.SOLID, modelView, cameraX, cameraY, cameraZ);
+			//todo worldRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT, modelView, cameraX, cameraY, cameraZ);
+			//todo worldRenderer.invokeRenderChunkLayer(BlockRenderLayer.CUTOUT_MIPPED, modelView, cameraX, cameraY, cameraZ);
 		}
 
 		profiler.endStartSection("entities");
@@ -572,9 +572,9 @@ public class ShadowRenderer {
 		//todo MultiBufferSource.BufferSource bufferSource = buffers.bufferSource();
 
 		if (shouldRenderEntities) {
-			// todo renderEntities(levelRenderer, entityShadowFrustum, bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta);
+			// todo renderEntities(worldRenderer, entityShadowFrustum, bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta);
 		} else if (shouldRenderPlayer) {
-			// todo renderPlayerEntity(levelRenderer, entityShadowFrustum, bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta);
+			// todo renderPlayerEntity(worldRenderer, entityShadowFrustum, bufferSource, modelView, cameraX, cameraY, cameraZ, tickDelta);
 		}
 
 		if (shouldRenderBlockEntities) {
@@ -596,7 +596,7 @@ public class ShadowRenderer {
 		// It doesn't matter a ton, since this just means that they won't be sorted in the normal rendering pass.
 		// Just something to watch out for, however...
 		if (shouldRenderTranslucent) {
-			// todo levelRenderer.invokeRenderChunkLayer(BlockRenderLayer.TRANSLUCENT, modelView, cameraX, cameraY, cameraZ);
+			// todo worldRenderer.invokeRenderChunkLayer(BlockRenderLayer.TRANSLUCENT, modelView, cameraX, cameraY, cameraZ);
 		}
 
 		// Note: Apparently tripwire isn't rendered in the shadow pass.
@@ -606,7 +606,7 @@ public class ShadowRenderer {
 			renderBuffersExt.endLevelRendering();
 		}
 
-		debugStringTerrain = ((RenderGlobal) levelRenderer).getDebugInfoRenders();
+		debugStringTerrain = ((RenderGlobal) worldRenderer).getDebugInfoRenders();
 
 		profiler.endStartSection("generate mipmaps");
 
@@ -616,11 +616,11 @@ public class ShadowRenderer {
 
 		restoreGlState();
 
-		if (levelRenderer instanceof CullingDataCache) {
-			((CullingDataCache) levelRenderer).restoreState();
+		if (worldRenderer instanceof CullingDataCache) {
+			((CullingDataCache) worldRenderer).restoreState();
 		}
 
-		// todo levelRenderer.setRenderBuffers(playerBuffers);
+		// todo worldRenderer.setRenderBuffers(playerBuffers);
 
 		ACTIVE = false;
 		profiler.endSection();

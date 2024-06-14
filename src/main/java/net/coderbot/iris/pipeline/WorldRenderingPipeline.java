@@ -6,14 +6,14 @@ import java.util.OptionalInt;
 import net.coderbot.iris.gbuffer_overrides.matching.InputAvailability;
 import net.coderbot.iris.gbuffer_overrides.matching.SpecialCondition;
 import net.coderbot.iris.gbuffer_overrides.state.RenderTargetStateListener;
-import net.coderbot.iris.mixin.LevelRendererAccessor;
+import net.coderbot.iris.mixin.RenderGlobalAccessor;
 import net.coderbot.iris.shaderpack.CloudSetting;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.minecraft.client.renderer.culling.ICamera;
 
 public interface WorldRenderingPipeline {
 	void beginLevelRendering();
-	void renderShadows(LevelRendererAccessor levelRenderer, ICamera camera);
+	void renderShadows(RenderGlobalAccessor worldRenderer, ICamera camera);
 	void addDebugText(List<String> messages);
 	OptionalInt getForcedShadowRenderDistanceChunksForDisplay();
 

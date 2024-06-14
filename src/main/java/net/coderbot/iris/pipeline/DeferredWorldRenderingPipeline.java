@@ -26,7 +26,7 @@ import net.coderbot.iris.gl.texture.DepthBufferFormat;
 import net.coderbot.iris.gui.option.IrisVideoSettings;
 import net.coderbot.iris.layer.GbufferPrograms;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
-import net.coderbot.iris.mixin.LevelRendererAccessor;
+import net.coderbot.iris.mixin.RenderGlobalAccessor;
 import net.coderbot.iris.pipeline.transform.PatchShaderType;
 import net.coderbot.iris.pipeline.transform.TransformPatcher;
 import net.coderbot.iris.postprocess.BufferFlipper;
@@ -1063,7 +1063,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 	}
 
 	@Override
-	public void renderShadows(LevelRendererAccessor levelRenderer, ICamera playerCamera) {
+	public void renderShadows(RenderGlobalAccessor worldRenderer, ICamera playerCamera) {
 		if (shouldRenderPrepareBeforeShadow) {
 			isRenderingFullScreenPass = true;
 
@@ -1075,7 +1075,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 		if (shadowRenderer != null) {
 			isRenderingShadow = true;
 
-			shadowRenderer.renderShadows(levelRenderer, playerCamera);
+			shadowRenderer.renderShadows(worldRenderer, playerCamera);
 
 			// needed to remove blend mode overrides and similar
 			beginPass(null);

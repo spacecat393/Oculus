@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import nanolive.utils.RenderGlobalExtended;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.program.Program;
-import net.coderbot.iris.pipeline.HandRenderer;
 import net.coderbot.iris.pipeline.WorldRenderingPhase;
 import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.coderbot.iris.uniforms.SystemTimeUniforms;
@@ -34,6 +33,7 @@ public class MixinEntityRenderer {
     // all pixels.
     @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;clear(I)V", ordinal = 0, shift = At.Shift.AFTER))
     private void iris$beginLevelRender(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
+        // todo
         //CapturedRenderingState.INSTANCE.setGbufferModelView(poseStack.last().pose());
         //CapturedRenderingState.INSTANCE.setGbufferProjection(projection);
         CapturedRenderingState.INSTANCE.setTickDelta(partialTicks);
@@ -52,6 +52,7 @@ public class MixinEntityRenderer {
     // render their waypoint beams.
     @Inject(method = "renderWorldPass", at = @At(value = "RETURN", shift = At.Shift.BEFORE))
     private void iris$endLevelRender(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
+        // todo
         //HandRenderer.INSTANCE.renderTranslucent(poseStack, tickDelta, camera, gameRenderer, pipeline);
         mc.profiler.endStartSection("iris_final");
 
@@ -66,7 +67,7 @@ public class MixinEntityRenderer {
     // avoid breaking other mods such as Light Overlay: https://github.com/IrisShaders/Iris/issues/1356
     @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;setupTerrain(Lnet/minecraft/entity/Entity;DLnet/minecraft/client/renderer/culling/ICamera;IZ)V"))
     private void iris$renderTerrainShadows(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci, @Local ICamera icamera) {
-        ((RenderGlobalExtended) this.mc.renderGlobal).getPipeline().renderShadows((LevelRendererAccessor) this, icamera);
+        ((RenderGlobalExtended) this.mc.renderGlobal).getPipeline().renderShadows((RenderGlobalAccessor) this.mc.renderGlobal, icamera);
     }
 
     @Redirect(method = "renderWorldPass", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;renderDistanceChunks:I"),

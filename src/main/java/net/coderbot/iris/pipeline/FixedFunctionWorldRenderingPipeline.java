@@ -7,7 +7,7 @@ import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.gbuffer_overrides.matching.InputAvailability;
 import net.coderbot.iris.gbuffer_overrides.matching.SpecialCondition;
 import net.coderbot.iris.gbuffer_overrides.state.RenderTargetStateListener;
-import net.coderbot.iris.mixin.LevelRendererAccessor;
+import net.coderbot.iris.mixin.RenderGlobalAccessor;
 import net.coderbot.iris.shaderpack.CloudSetting;
 import net.coderbot.iris.uniforms.FrameUpdateNotifier;
 import net.minecraft.client.Minecraft;
@@ -31,7 +31,7 @@ public class FixedFunctionWorldRenderingPipeline implements WorldRenderingPipeli
 	}
 
 	@Override
-	public void renderShadows(LevelRendererAccessor levelRenderer, ICamera camera) {
+	public void renderShadows(RenderGlobalAccessor worldRenderer, ICamera camera) {
 		// stub: nothing to do here
 	}
 

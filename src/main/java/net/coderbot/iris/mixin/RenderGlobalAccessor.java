@@ -1,19 +1,13 @@
 package net.coderbot.iris.mixin;
 
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockRenderLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
-
-import net.minecraft.client.renderer.culling.Frustum;
 
 @Mixin(RenderGlobal.class)
-public interface LevelRendererAccessor {
+public interface RenderGlobalAccessor {
 	@Accessor("renderManager")
 	RenderManager getEntityRenderDispatcher();
 

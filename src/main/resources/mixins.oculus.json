@@ -6,7 +6,7 @@
   "refmap": "mixins.oculus.refmap.json",
   "client": [
     "GlStateManagerAccessor",
-    "LevelRendererAccessor",
+    "RenderGlobalAccessor",
     "MixinBlockStateBehavior",
     "MixinCrashReport",
     "MixinDebugScreenOverlay",
