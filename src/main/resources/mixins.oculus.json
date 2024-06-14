@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "net.coderbot.iris.mixin",
   "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.oculus.refmap.json",
   "client": [
     "GlStateManagerAccessor",
     "LevelRendererAccessor",
@@ -34,9 +35,7 @@
     "MixinTweakFarPlane",
     "gui.MixinGui",
     "gui.MixinGuiIngameForge",
-    "gui.MixinGuiMainMenu",
     "gui.MixinVideoSettingsScreen",
-    "math.MixinMatrix4f",
     "rendertype.RenderTypeAccessor",
     "shadows.ChunkInfoAccessor",
     "shadows.MixinBeaconRenderer",

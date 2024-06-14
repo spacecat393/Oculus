@@ -51,7 +51,7 @@ repositories {
 }
 
 dependencies {
-	def mixinBooter = modUtils.enableMixins("zone.rong:mixinbooter:9.1", "oculus-mixins-refmap.json")
+	def mixinBooter = modUtils.enableMixins("zone.rong:mixinbooter:9.1", "mixins.oculus.refmap.json")
     api (mixinBooter) {
         transitive = false
     }
@@ -83,7 +83,7 @@ dependencies {
 jar {
 	manifest {
 		attributes (
-				"FMLCorePlugin": "net.iris.client.SodiumMixinTweaker",
+				"FMLCorePlugin": "net.coderbot.iris.IrisMixinTweaker",
 				"FMLCorePluginContainsFMLMod": true,
 				"ForceLoadAsMod": true,
 				"FMLAT": "oculus_at.cfg"

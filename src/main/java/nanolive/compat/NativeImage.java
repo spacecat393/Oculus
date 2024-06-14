@@ -83,6 +83,8 @@ public final class NativeImage implements AutoCloseable {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
         NativeImage nativeImage = new NativeImage(NativeImage.Format.RGBA, width, height, false);
+
+        // todo: java.awt.image.DataBufferByte cannot be cast to java.awt.image.DataBufferInt
         int[] pixelData = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {

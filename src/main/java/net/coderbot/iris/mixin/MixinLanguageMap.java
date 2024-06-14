@@ -46,7 +46,7 @@ public class MixinLanguageMap {
 	@Unique
 	private static final List<String> languageCodes = new ArrayList<>();
 
-	@Shadow
+//	@Shadow
 	@Final
 	private Map<String, String> storage;
 

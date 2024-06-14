@@ -138,7 +138,7 @@ public class Iris {
 	}
 
 	@SubscribeEvent
-	public void onInitializeClient(FMLInitializationEvent event) {
+	public void init(FMLInitializationEvent event) {
 		ModContainer modContainer = Loader.instance().getIndexedModList().get(MODID);
 //		if (modContainer != null) {
 //			IRIS_VERSION = modContainer.getVersion();
