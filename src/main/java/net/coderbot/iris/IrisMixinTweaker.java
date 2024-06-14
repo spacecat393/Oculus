@@ -15,14 +15,14 @@ public class IrisMixinTweaker implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public List<String> getMixinConfigs() {
         return ImmutableList.of(
-//                "mixins.oculus.bettermipmaps.json",
-                "mixins.oculus.compat.sodium.json"
-//                "mixins.oculus.fantastic.json",
-//                "mixins.oculus.fixes.maxfpscrash.json",
-//                "mixins.oculus.json"
-//                "mixins.oculus.optimized-stitching.json",
-//                "mixins.oculus.vertexformat.json",
-//                "oculus-batched-entity-rendering.mixins.json"
+                "mixins.oculus.bettermipmaps.json",
+                "mixins.oculus.compat.sodium.json",
+                "mixins.oculus.fantastic.json",
+                "mixins.oculus.fixes.maxfpscrash.json",
+                "mixins.oculus.json",
+                "mixins.oculus.optimized-stitching.json",
+                "mixins.oculus.vertexformat.json",
+                "oculus-batched-entity-rendering.mixins.json"
         );
     }
 

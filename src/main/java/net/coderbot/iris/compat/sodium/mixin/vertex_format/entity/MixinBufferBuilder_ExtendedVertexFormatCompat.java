@@ -23,20 +23,21 @@ public class MixinBufferBuilder_ExtendedVertexFormatCompat {
 	@Shadow
 	private VertexFormat vertexFormat;
 
-	@SuppressWarnings("target")
-	@ModifyVariable(method = "createSink(Lme/jellysquid/mods/sodium/client/model/vertex/type/VertexType;)Lme/jellysquid/mods/sodium/client/model/vertex/VertexSink;",
-		at = @At("HEAD"), remap = false)
-	private VertexType<?> iris$createSink(VertexType<?> type) {
-		if (vertexFormat == IrisVertexFormats.ENTITY) {
-			if (type == VanillaVertexTypes.QUADS) {
-				return ExtendedQuadVertexType.INSTANCE;
-			}
-		} else if (vertexFormat == IrisVertexFormats.TERRAIN) {
-			if (type == VanillaVertexTypes.GLYPHS) {
-				return ExtendedGlyphVertexType.INSTANCE;
-			}
-		}
-
-		return type;
-	}
+	// todo
+//	@SuppressWarnings("target")
+//	@ModifyVariable(method = "createSink(Lme/jellysquid/mods/sodium/client/model/vertex/type/VertexType;)Lme/jellysquid/mods/sodium/client/model/vertex/VertexSink;",
+//		at = @At("HEAD"), remap = false)
+//	private VertexType<?> iris$createSink(VertexType<?> type) {
+//		if (vertexFormat == IrisVertexFormats.ENTITY) {
+//			if (type == VanillaVertexTypes.QUADS) {
+//				return ExtendedQuadVertexType.INSTANCE;
+//			}
+//		} else if (vertexFormat == IrisVertexFormats.TERRAIN) {
+//			if (type == VanillaVertexTypes.GLYPHS) {
+//				return ExtendedGlyphVertexType.INSTANCE;
+//			}
+//		}
+//
+//		return type;
+//	}
 }
