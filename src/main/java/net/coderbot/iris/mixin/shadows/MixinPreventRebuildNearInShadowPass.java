@@ -47,7 +47,6 @@ public class MixinPreventRebuildNearInShadowPass {
 		}
 	}
 
-	// todo
 	@Group(name = "iris_MixinPreventRebuildNearInShadowPass", min = 1, max = 1)
 	@Inject(method = "setupTerrain",
 			at = @At(value = "INVOKE",
