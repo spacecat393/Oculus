@@ -32,6 +32,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -102,6 +104,11 @@ public class Iris {
 		} catch(Exception ignored) {}
 	}
 
+	@Mod.EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
+		this.onEarlyInitialize();
+	}
+
     /**
 	 * Called very early on in Minecraft initialization. At this point we *cannot* safely access OpenGL, but we can do
 	 * some very basic setup, config loading, and environment checks.
@@ -137,16 +144,16 @@ public class Iris {
 		initialized = true;
 	}
 
-	@SubscribeEvent
+	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		sodiumInstalled = Loader.isModLoaded("vintagium");
 		MOD_VERSION = Loader.instance().getIndexedModList().get(MODID).getVersion();
 		ModContainer modContainer = Loader.instance().getIndexedModList().get(MODID);
-//		if (modContainer != null) {
-//			IRIS_VERSION = modContainer.getVersion();
-//		} else {
-//			IRIS_VERSION = "N/A";
-//		}
+		if (modContainer != null) {
+			MOD_VERSION = modContainer.getVersion();
+		} else {
+			MOD_VERSION = "N/A";
+		}
 		ClientRegistry.registerKeyBinding(reloadKeybind);
 		ClientRegistry.registerKeyBinding(toggleShadersKeybind);
 		ClientRegistry.registerKeyBinding(shaderpackScreenKeybind);
@@ -155,6 +162,11 @@ public class Iris {
 	@SubscribeEvent
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		handleKeybinds(Minecraft.getMinecraft());
+	}
+
+	@Mod.EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		this.onLoadingComplete();
 	}
 
 	/**
@@ -178,7 +190,7 @@ public class Iris {
 	/**
 	 * Called when the title screen is initialized for the first time.
 	 */
-	public static void onLoadingComplete() {
+	public void onLoadingComplete() {
 		if (!initialized) {
 			Iris.logger.warn("Iris::onLoadingComplete was called, but Iris::onEarlyInitialize was not called." +
 				" Trying to avoid a crash but this is an odd state.");

@@ -324,7 +324,6 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 			GuiButton guibutton = this.buttonList.get(i);
 			if (guibutton.mousePressed(this.mc, mouseX, mouseY)) {
 				if (guibutton.id == DONE_BUTTON_ID) {
-//					this.onGuiClosed();
 					this.mc.displayGuiScreen(parent);
 				} else if (guibutton.id == APPLY_BUTTON_ID) {
 					this.applyChanges();
@@ -391,13 +390,10 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		} else {
 			discardChanges();
 		}
-
-//		this.mc.displayGuiScreen(parent);
 	}
 
 	private void dropChangesAndClose() {
 		dropChanges = true;
-//		onGuiClosed();
 		this.mc.displayGuiScreen(parent);
 	}
 
