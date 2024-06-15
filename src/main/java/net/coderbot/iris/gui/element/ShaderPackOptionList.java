@@ -107,7 +107,4 @@ public class ShaderPackOptionList extends IrisGuiSlot {
 		final boolean isMouseOver = this.getSlotIndexFromScreenCoords(mouseX, mouseY) == index;
 		entry.drawEntry(screen, index, x - 2, y + 4, this.getListWidth(), this.slotHeight, mouseX, mouseY, isMouseOver);
 	}
-
-
-
 }

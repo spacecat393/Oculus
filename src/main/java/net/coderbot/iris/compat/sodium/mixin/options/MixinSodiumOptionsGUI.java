@@ -27,6 +27,9 @@ public class MixinSodiumOptionsGUI extends GuiScreen {
 	@Final
 	private List<OptionPage> pages;
 
+	@Shadow(remap = false)
+	private OptionPage currentPage;
+
 	@Unique
 	private OptionPage shaderPacks;
 

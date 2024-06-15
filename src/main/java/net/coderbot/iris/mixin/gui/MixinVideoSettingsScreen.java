@@ -26,10 +26,7 @@ public abstract class MixinVideoSettingsScreen extends GuiScreen {
 		this.settings = settings;
 	}
 
-	@Inject(
-			method = "initGui",
-			at = @At("RETURN")
-	)
+	@Inject(method = "initGui", at = @At("RETURN"))
 	private void iris$addShaderPackScreenButton(CallbackInfo ci) {
 		// Add our custom buttons after the original initGui has executed
 		this.buttonList.add(new ShaderPackSelectionButtonOption(this, this.mc));
