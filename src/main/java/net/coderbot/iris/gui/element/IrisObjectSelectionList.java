@@ -2,12 +2,11 @@ package net.coderbot.iris.gui.element;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
-import net.minecraft.client.gui.GuiSlot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class IrisObjectSelectionList<E extends GuiListExtended.IGuiListEntry> extends GuiSlot {
+public abstract class IrisObjectSelectionList<E extends GuiListExtended.IGuiListEntry> extends IrisGuiSlot {
 	private final List<E> entries = new ArrayList<>();
 	private E selectedEntry;
 

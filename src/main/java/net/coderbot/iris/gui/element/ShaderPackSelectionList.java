@@ -1,6 +1,5 @@
 package net.coderbot.iris.gui.element;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
 import lombok.Getter;
 import lombok.Setter;
 import me.jellysquid.mods.sodium.client.util.math.MatrixStack;
@@ -30,6 +29,8 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 	@Setter
     @Getter
     private ShaderPackEntry applied = null;
+//	@Setter
+//	protected boolean renderBackground = true;
 
 	public ShaderPackSelectionList(ShaderPackScreen screen, Minecraft client, int width, int height, int top, int bottom, int left, int right) {
 		super(client, width, height, top, bottom, left, right, 20);
@@ -113,7 +114,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		return this.getSize();
 	}
 
-    public static abstract class BaseEntry implements GuiListExtended.IGuiListEntry {
+	public static abstract class BaseEntry implements GuiListExtended.IGuiListEntry {
 		protected FontRenderer fontRenderer;
 		protected int x;
 		protected int y;

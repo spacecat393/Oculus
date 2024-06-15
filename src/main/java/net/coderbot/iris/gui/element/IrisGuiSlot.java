@@ -170,8 +170,8 @@ public abstract class IrisGuiSlot extends GuiSlot {
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
         buffer.pos(this.left, (this.top + offset), 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 0).endVertex();
         buffer.pos(this.right, (this.top + offset), 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 0).endVertex();
-        buffer.pos(this.right, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 255, 255).endVertex();
-        buffer.pos(this.left, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 255, 255).endVertex();
+        buffer.pos(this.right, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+        buffer.pos(this.left, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
         tessellator.draw();
 //        tessellator.startDrawingQuads();
 //        tessellator.setColorRGBA_I(0, 255);
@@ -181,8 +181,8 @@ public abstract class IrisGuiSlot extends GuiSlot {
 //        tessellator.addVertexWithUV(this.right, (this.bottom - offset), 0.0D, 1.0D, 0.0D);
 //        tessellator.addVertexWithUV(this.left, (this.bottom - offset), 0.0D, 0.0D, 0.0D);
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(this.left, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 255, 255).endVertex();
-        buffer.pos(this.right, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 255, 255).endVertex();
+        buffer.pos(this.left, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+        buffer.pos(this.right, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
         buffer.pos(this.right, (this.bottom - offset), 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 0).endVertex();
         buffer.pos(this.left, (this.bottom - offset), 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 0).endVertex();
         tessellator.draw();

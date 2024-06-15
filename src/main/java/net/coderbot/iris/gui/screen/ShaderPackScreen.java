@@ -15,8 +15,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import net.coderbot.iris.gui.option.ImageButton;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.resources.I18n;
@@ -79,6 +79,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 	private static final int DROP_BUTTON_ID = 2;
 	private static final int OPEN_BUTTON_ID = 3;
 	private static final int LIST_BUTTON_ID = 4;
+	private static final int GUI_BUTTON_ID = 5;
 
 	public ShaderPackScreen(GuiScreen parent) {
 		super();
@@ -191,7 +192,7 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 
 		if (inWorld) {
 			// todo
-			// this.shaderPackList.setRenderBackground(false);
+			this.shaderPackList.setRenderBackground(false);
 			if (shaderOptionList != null) {
 				this.shaderOptionList.setRenderBackground(false);
 			}
@@ -242,12 +243,14 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 				x = (int) (endOfLastButton + (freeSpace / 2.0f)) - 10;
 			}
 
-			this.addButton(new ImageButton(
-					0, x, this.height - 39, 20, 20,
-					this.guiHidden ? 20 : 0, 146,
-					0, 146,
+			// this button toggles the GUI when in world, to demonstrate shader effects
+			GuiButton GUI_BUTTON = new GuiButtonImage(
+					GUI_BUTTON_ID, x, this.height - 39, 20, 20,
+					this.guiHidden ? 20 : 0, 146, 146,
 					GuiUtil.IRIS_WIDGETS_TEX
-			));
+			);
+			GUI_BUTTON.displayString = showOrHide.getFormattedText();
+			this.addButton(GUI_BUTTON);
 		}
 
 		// NB: Don't let comment remain when exiting options screen
@@ -340,6 +343,11 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 					// than opening the settings for the selected (but not applied) pack.
 					this.applyChanges();
 
+					this.initGui();
+				} else if (guibutton.id == GUI_BUTTON_ID) {
+					if (guibutton.isMouseOver()) {
+						this.guiHidden = !this.guiHidden;
+					}
 					this.initGui();
 				} else {
 					throw new RuntimeException("Button not defined: " + guibutton.id);
