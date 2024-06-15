@@ -32,7 +32,6 @@ import net.coderbot.iris.gui.element.widget.CommentedElementWidget;
 import net.coderbot.iris.shaderpack.ShaderPack;
 import net.irisshaders.iris.api.v0.IrisApi;
 import net.minecraft.util.text.*;
-import scala.tools.nsc.Global;
 
 import javax.annotation.Nullable;
 

@@ -1,5 +1,6 @@
 package net.coderbot.iris.gui.element;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import lombok.Getter;
 import lombok.Setter;
 import me.jellysquid.mods.sodium.client.util.math.MatrixStack;
@@ -20,7 +21,8 @@ import java.util.Collection;
 import java.util.function.Function;
 
 public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackSelectionList.BaseEntry> {
-	private static final ITextComponent PACK_LIST_LABEL = new TextComponentTranslation("pack.iris.list.label").setStyle(new Style().setColor(TextFormatting.GRAY).setItalic(true));
+	// drag-and-drop not supported on 1.12.2 ?
+	// private static final ITextComponent PACK_LIST_LABEL = new TextComponentTranslation("pack.iris.list.label").setStyle(new Style().setColor(TextFormatting.GRAY).setItalic(true));
 
 	private final ShaderPackScreen screen;
 	@Getter
@@ -77,7 +79,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			addPackEntry(index, name);
 		}
 
-		this.addLabelEntries(PACK_LIST_LABEL);
+//		this.addLabelEntries(PACK_LIST_LABEL);
 	}
 
 	public void addPackEntry(int index, String name) {
@@ -165,11 +167,6 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		}
 
 		@Override
-		public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
-
-		}
-
-		@Override
 		public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
 			return mouseClicked(mouseX, mouseY, mouseEvent);
 		}
@@ -179,20 +176,35 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 
 		}
 
-		public void render(MatrixStack poseStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		@Override
+		public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
 			FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 			int color = 0xFFFFFF;
 
             boolean shadersEnabled = list.topButtonRow.shadersEnabled;
 
-			String formattedName = new TextComponentString(packName).setStyle(new Style().setBold(true)).getFormattedText();
+			ITextComponent formattedName = new TextComponentString(packName);
 
-			if (font.getStringWidth(formattedName) > list.getListWidth() - 3) {
+			if (font.getStringWidth(formattedName.getFormattedText()) > list.getListWidth() - 3) {
 				int ellipsisWidth = font.getStringWidth("...");
-				formattedName = font.trimStringToWidth(formattedName, list.getListWidth() - 6 - ellipsisWidth) + "...";
+				formattedName = new TextComponentString(font.trimStringToWidth(
+						formattedName.setStyle(new Style().setBold(true)).getFormattedText(), list.getListWidth() - 6 - ellipsisWidth) + "..."
+				);
 			}
 
-			font.drawStringWithShadow(formattedName, (x + 2), (y + 1), color);
+			if (this.isMouseOver(mouseX, mouseY)) {
+				formattedName = formattedName.setStyle(new Style().setBold(true));
+			}
+
+			if (shadersEnabled && this.isApplied()) {
+				color = 0xFFF263;
+			}
+
+			if (!shadersEnabled && !this.isMouseOver(mouseX, mouseY)) {
+				color = 0xA2A2A2;
+			}
+
+			font.drawStringWithShadow(formattedName.getFormattedText(), (x + 2), (y + 1), color);
 		}
 
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -229,17 +241,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			this.label = label;
 		}
 
-		@Override
-		public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
-			setBounds(x, y, this.width, this.height);
-		}
-
-		@Override
-		public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
-
-		}
-
-		@Override
+        @Override
 		public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
 			return false;
 		}
@@ -249,9 +251,10 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 
 		}
 
-		public void render(MatrixStack poseStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		@Override
+		public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
 			FontRenderer font = Minecraft.getMinecraft().fontRenderer;
-			font.drawString(label.getFormattedText(), (x + (float) entryWidth / 2) - 2, y + (float) (entryHeight - 11) / 2, 0xC2C2C2, false);
+			font.drawString(label.getFormattedText(), (x + (float) listWidth / 2) - 2, y + (float) (slotHeight - 11) / 2, 0xC2C2C2, false);
 		}
 	}
 
@@ -305,11 +308,6 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		}
 
 		@Override
-		public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
-
-		}
-
-		@Override
 		public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
 			return this.buttons.mouseClicked(mouseX, mouseY, mouseEvent);
 		}
@@ -319,10 +317,11 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			// Implement mouse released logic if needed
 		}
 
-		public void render(MatrixStack poseStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.buttons.setWidth(this.enableDisableButton, (entryWidth - 1) - REFRESH_BUTTON_WIDTH);
-			this.enableDisableButton.centerX = x + (int) (entryWidth * 0.5);
-			this.buttons.render(x - 2, y - 3, 18, mouseX, mouseY, tickDelta, hovered);
+		@Override
+		public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
+			this.buttons.setWidth(this.enableDisableButton, (listWidth - 1) - REFRESH_BUTTON_WIDTH);
+			this.enableDisableButton.centerX = x + (int) (listWidth * 0.5);
+			this.buttons.render(x - 2, y - 3, 18, mouseX, mouseY, partialTicks, isSelected);
 			if (this.refreshPacksButton.isHovered()) {
 				ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() ->
 						GuiUtil.drawTextPanel(Minecraft.getMinecraft().fontRenderer, REFRESH_SHADER_PACKS_LABEL.getFormattedText(),
