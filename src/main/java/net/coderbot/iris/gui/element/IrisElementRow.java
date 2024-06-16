@@ -1,5 +1,6 @@
 package net.coderbot.iris.gui.element;
 
+import lombok.Getter;
 import net.coderbot.iris.gui.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -121,7 +122,8 @@ public class IrisElementRow {
 
 	public static abstract class Element {
 		public boolean disabled = false;
-		private boolean hovered = false;
+		@Getter
+        private boolean hovered = false;
 
 		public void render(int x, int y, int width, int height, int mouseX, int mouseY, float tickDelta, boolean hovered) {
 			GuiUtil.bindIrisWidgetsTexture();
@@ -140,11 +142,7 @@ public class IrisElementRow {
 		public boolean mouseReleased(double mx, double my, int button) {
 			return false;
 		}
-
-		public boolean isHovered() {
-			return hovered;
-		}
-	}
+    }
 
 	public static abstract class ButtonElement<T extends ButtonElement<T>> extends Element {
 		private final Function<T, Boolean> onClick;

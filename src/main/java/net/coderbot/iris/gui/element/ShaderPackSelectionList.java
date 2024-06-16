@@ -150,6 +150,10 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
 			setBounds(x, y, width, height);
 		}
+
+		public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+			this.mousePressed(0, mouseX, mouseY, mouseButton, 0, 0);
+		}
 	}
 
 	public static class ShaderPackEntry extends BaseEntry {
@@ -330,8 +334,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		@Override
 		public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
 			this.buttons.setWidth(this.enableDisableButton, (listWidth - 1) - REFRESH_BUTTON_WIDTH);
-			this.enableDisableButton.centerX = x + (int) (listWidth * 0.5);
-			this.buttons.render(x - 2, y - 3, 18, mouseX, mouseY, partialTicks, isSelected);
+			this.buttons.render(x - 2, y - 3, 18, mouseX, mouseY, partialTicks, true);
 			if (this.refreshPacksButton.isHovered()) {
 				ShaderPackScreen.TOP_LAYER_RENDER_QUEUE.add(() ->
 						GuiUtil.drawTextPanel(Minecraft.getMinecraft().fontRenderer, REFRESH_SHADER_PACKS_LABEL.getFormattedText(),
@@ -344,16 +347,13 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		}
 
 		public static class EnableShadersButtonElement extends IrisElementRow.TextButtonElement {
-			private int centerX;
-
 			public EnableShadersButtonElement(ITextComponent text, Function<IrisElementRow.TextButtonElement, Boolean> onClick) {
 				super(text.getFormattedText(), onClick);
 			}
 
-			public void renderLabel(MatrixStack poseStack, int x, int y, int width, int height, int mouseX, int mouseY, float tickDelta, boolean hovered) {
-				int textX = this.centerX - (int) (this.font.getStringWidth(this.text) * 0.5);
-				int textY = y + (int) ((height - 8) * 0.5);
-				this.font.drawStringWithShadow(this.text, textX, textY, 0xFFFFFF);
+			@Override
+			public void renderLabel(int x, int y, int width, int height, int mouseX, int mouseY, float tickDelta, boolean hovered) {
+				super.renderLabel(x, y, width, height, mouseX, mouseY, tickDelta, hovered);
 			}
 		}
 	}

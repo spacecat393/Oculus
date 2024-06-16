@@ -298,7 +298,6 @@ public class Iris {
 			shaderPackConfigTxt = getShaderpacksDirectory().resolve(name + ".txt");
 		} catch (InvalidPathException e) {
 			logger.error("Failed to load the shaderpack \"{}\" because it contains invalid characters in its path", name);
-
 			return false;
 		}
 
@@ -506,6 +505,8 @@ public class Iris {
 						.anyMatch(path -> path.endsWith("shaders"));
 			} catch (IOException ignored) {
 				// ignored, not a valid shader pack.
+			} catch (FileSystemNotFoundException ignored) {
+				// ignored, shader pack was deleted
 			}
 		}
 
@@ -522,6 +523,8 @@ public class Iris {
 				Iris.logger.warn("The ZIP at " + pack + " is corrupt");
 			} catch (IOException ignored) {
 				// ignored, not a valid shader pack.
+			} catch (FileSystemNotFoundException ignored) {
+				// ignored, shader pack was deleted
 			}
 		}
 

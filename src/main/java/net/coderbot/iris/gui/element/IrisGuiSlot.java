@@ -91,8 +91,11 @@ public abstract class IrisGuiSlot extends GuiSlot {
             if (mouseX >= elementLeft && mouseX <= elementRight && index >= 0 && relativeY >= 0 && index < size) {
                 final boolean doubleCLick = index == this.selectedElement && Minecraft.getSystemTime() - this.lastClicked < 250L;
 
-                this.elementClicked(index, doubleCLick, mouseX, mouseY);
-                this.selectedElement = index;
+                if (index != 0) {
+                    this.elementClicked(index, doubleCLick, mouseX, mouseY);
+                    this.selectedElement = index;
+                }
+
                 this.lastClicked = Minecraft.getSystemTime();
             } else if (mouseX >= elementLeft && mouseX <= elementRight && relativeY < 0) {
                 this.clickedHeader(mouseX - elementLeft, mouseY - this.top + (int) this.amountScrolled - 4);
