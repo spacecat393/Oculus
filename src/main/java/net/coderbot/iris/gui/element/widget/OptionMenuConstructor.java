@@ -58,8 +58,7 @@ public final class OptionMenuConstructor {
 
 		ElementWidgetScreenData data = createScreenData(screen);
 
-//		optionList.addHeader(data.heading, data.backButton);
-		optionList.addHeader(String.valueOf(data.heading), data.backButton);
+		optionList.addHeader(data.heading, data.backButton);
 		optionList.addWidgets(screen.getColumnCount(), screen.elements.stream().map(element -> {
 			AbstractElementWidget<OptionMenuElement> widget = (AbstractElementWidget<OptionMenuElement>) createWidget(element);
 			widget.init(packScreen, navigation);
@@ -69,7 +68,6 @@ public final class OptionMenuConstructor {
 
 	static {
 		registerScreen(OptionMenuMainElementScreen.class, screen ->
-//				new ElementWidgetScreenData(new TextComponent(Iris.getCurrentPackName()).append(Iris.isFallback() ? " (fallback)" : "").withStyle(ChatFormatting.BOLD), false));
 				new ElementWidgetScreenData(
 						new TextComponentString(Iris.getCurrentPackName())
 								.appendSibling(Iris.isFallback() ? new TextComponentString(" (fallback)") : new TextComponentString(""))

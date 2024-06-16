@@ -217,7 +217,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 			int color = 0xFFFFFF;
 
-            boolean shadersEnabled = list.topButtonRow.shadersEnabled;
+			boolean shadersEnabled = list.topButtonRow.shadersEnabled;
 
 			String trimmedPackName = packName;
 
