@@ -57,7 +57,12 @@ public abstract class IrisGuiSlot extends GuiSlot {
     }
 
     protected boolean elementClicked(int index, boolean doubleClick, int mouseX, int mouseY, int button) {
-        return false;
+        this.elementClicked(index, doubleClick, mouseX, mouseY);
+        if (button != 0) {
+            return false;
+        }
+
+        return false; // todo
     }
 
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
@@ -86,7 +91,7 @@ public abstract class IrisGuiSlot extends GuiSlot {
             if (mouseX >= elementLeft && mouseX <= elementRight && index >= 0 && relativeY >= 0 && index < size) {
                 final boolean doubleCLick = index == this.selectedElement && Minecraft.getSystemTime() - this.lastClicked < 250L;
 
-                handled = this.elementClicked(index, doubleCLick, mouseX, mouseY, mouseButton);
+                this.elementClicked(index, doubleCLick, mouseX, mouseY);
                 this.selectedElement = index;
                 this.lastClicked = Minecraft.getSystemTime();
             } else if (mouseX >= elementLeft && mouseX <= elementRight && relativeY < 0) {

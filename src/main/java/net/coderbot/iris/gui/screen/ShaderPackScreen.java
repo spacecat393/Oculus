@@ -352,6 +352,15 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 				} else {
 					throw new RuntimeException("Button not defined: " + guibutton.id);
 				}
+				return;
+			}
+		}
+
+		if (!this.guiHidden) {
+			if (optionMenuOpen && this.shaderOptionList != null) {
+				this.shaderOptionList.mouseClicked(mouseX, mouseY, mouseButton);
+			} else {
+				this.shaderPackList.mouseClicked(mouseX, mouseY, mouseButton);
 			}
 		}
 	}

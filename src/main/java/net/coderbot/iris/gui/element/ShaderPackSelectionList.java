@@ -110,8 +110,14 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 		}
 	}
 
-	private int getItemCount() {
+	public int getItemCount() {
 		return this.getSize();
+	}
+
+	@Override
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
+		return super.mouseClicked(mouseX, mouseY, mouseEvent);
+		// return true;
 	}
 
 	public static abstract class BaseEntry implements GuiListExtended.IGuiListEntry {
@@ -169,7 +175,28 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 
 		@Override
 		public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
-			return mouseClicked(mouseX, mouseY, mouseEvent);
+			if (mouseEvent != 0) {
+				return false;
+			}
+
+			boolean didAnything = false;
+
+			// UX: If shaders are disabled, then clicking a shader in the list will also
+			//     enable shaders on apply. Previously, it was not possible to select
+			//     a pack when shaders were disabled, but this was a source of confusion
+			//     - people did not realize that they needed to enable shaders before
+			//     selecting a shader pack.
+			if (!list.topButtonRow.shadersEnabled) {
+				list.topButtonRow.setShadersEnabled(true);
+				didAnything = true;
+			}
+
+			if (!this.isSelected()) {
+				this.list.select(this.index);
+				didAnything = true;
+			}
+
+			return didAnything;
 		}
 
 		@Override
@@ -209,33 +236,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 			}
 
 			// todo: should be centered
-			font.drawStringWithShadow(formattedName.getFormattedText(), (x + 2), (y + 1), color);
-		}
-
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			// Only do anything on left-click
-			if (button != 0) {
-				return false;
-			}
-
-			boolean didAnything = false;
-
-			// UX: If shaders are disabled, then clicking a shader in the list will also
-			//     enable shaders on apply. Previously, it was not possible to select
-			//     a pack when shaders were disabled, but this was a source of confusion
-			//     - people did not realize that they needed to enable shaders before
-			//     selecting a shader pack.
-			if (!list.topButtonRow.shadersEnabled) {
-				list.topButtonRow.setShadersEnabled(true);
-				didAnything = true;
-			}
-
-			if (!this.isSelected()) {
-				this.list.select(this.index);
-				didAnything = true;
-			}
-
-			return didAnything;
+			font.drawStringWithShadow(formattedName.getFormattedText(), (x + 2), y + (float) (slotHeight - 9) / 2, color);
 		}
 	}
 
