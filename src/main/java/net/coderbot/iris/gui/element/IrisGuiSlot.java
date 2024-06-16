@@ -203,10 +203,10 @@ public abstract class IrisGuiSlot extends GuiSlot {
             }
 
             buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            buffer.pos(scrollBarX, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 255, 255).endVertex();
-            buffer.pos(rightEdge, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 255, 255).endVertex();
-            buffer.pos(rightEdge, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 255, 255).endVertex();
-            buffer.pos(scrollBarX, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 255, 255).endVertex();
+            buffer.pos(scrollBarX, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 128).endVertex();
+            buffer.pos(rightEdge, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 128).endVertex();
+            buffer.pos(rightEdge, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 128).endVertex();
+            buffer.pos(scrollBarX, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 128).endVertex();
             tessellator.draw();
 
             buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
