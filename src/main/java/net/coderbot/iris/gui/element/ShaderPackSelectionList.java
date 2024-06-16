@@ -117,7 +117,11 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
 		return super.mouseClicked(mouseX, mouseY, mouseEvent);
-		// return true;
+	}
+
+	@Override
+	public boolean mouseReleased(int mouseX, int mouseY, int button) {
+		return super.mouseReleased(mouseX, mouseY, button);
 	}
 
 	public static abstract class BaseEntry implements GuiListExtended.IGuiListEntry {
@@ -320,7 +324,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 
 		@Override
 		public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {
-			// Implement mouse released logic if needed
+			// no-op
 		}
 
 		@Override

@@ -116,8 +116,8 @@ public abstract class IrisGuiSlot extends GuiSlot {
         final int rightEdge = scrollBarX + 6;
         final byte offset = 4;
 
-
         // Scrollbar nonsense
+        // todo: is there a way to modify scroll speed?
         if (scrolling) {
             this.amountScrolled += ((float) mouseY - this.initialClickY);
             this.initialClickY = mouseY;

@@ -365,6 +365,16 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		}
 	}
 
+	@Override
+	protected void mouseReleased(int mouseX, int mouseY, int state) {
+		super.mouseReleased(mouseX, mouseY, state);
+		if (optionMenuOpen && this.shaderOptionList != null) {
+			this.shaderOptionList.mouseReleased(mouseX, mouseY, state);
+		} else {
+			this.shaderPackList.mouseReleased(mouseX, mouseY, state);
+		}
+	}
+
 	public void displayNotification(ITextComponent component) {
 		this.notificationDialog = component;
 		this.notificationDialogTimer = 100;
