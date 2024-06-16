@@ -150,7 +150,6 @@ public abstract class IrisGuiSlot extends GuiSlot {
             this.drawListHeader(elementRight, relativeY, tessellator);
         }
 
-//        this.drawSelectionBox(elementRight, relativeY, mouseX, mouseY);
         this.drawSelectionBox(elementRight, relativeY, mouseX, mouseY, partialTicks);
         GlStateManager.disableDepth();
         this.overlayBackground(0, this.top, 255, 255);
@@ -160,26 +159,14 @@ public abstract class IrisGuiSlot extends GuiSlot {
         GlStateManager.disableAlpha();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
         GlStateManager.disableTexture2D();
-//        tessellator.startDrawingQuads();
-//        tessellator.setColorRGBA_I(0, 0);
-//        tessellator.addVertexWithUV(this.left, (this.top + offset), 0.0D, 0.0D, 1.0D);
-//        tessellator.addVertexWithUV(this.right, (this.top + offset), 0.0D, 1.0D, 1.0D);
-//        tessellator.setColorRGBA_I(0, 255);
-//        tessellator.addVertexWithUV(this.right, this.top, 0.0D, 1.0D, 0.0D);
-//        tessellator.addVertexWithUV(this.left, this.top, 0.0D, 0.0D, 0.0D);
+
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
         buffer.pos(this.left, (this.top + offset), 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 0).endVertex();
         buffer.pos(this.right, (this.top + offset), 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 0).endVertex();
         buffer.pos(this.right, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
         buffer.pos(this.left, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
         tessellator.draw();
-//        tessellator.startDrawingQuads();
-//        tessellator.setColorRGBA_I(0, 255);
-//        tessellator.addVertexWithUV(this.left, this.bottom, 0.0D, 0.0D, 1.0D);
-//        tessellator.addVertexWithUV(this.right, this.bottom, 0.0D, 1.0D, 1.0D);
-//        tessellator.setColorRGBA_I(0, 0);
-//        tessellator.addVertexWithUV(this.right, (this.bottom - offset), 0.0D, 1.0D, 0.0D);
-//        tessellator.addVertexWithUV(this.left, (this.bottom - offset), 0.0D, 0.0D, 0.0D);
+
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
         buffer.pos(this.left, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
         buffer.pos(this.right, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
@@ -207,36 +194,20 @@ public abstract class IrisGuiSlot extends GuiSlot {
                 scrollPos = this.top;
             }
 
-//            tessellator.startDrawingQuads();
-//            tessellator.setColorRGBA_I(0, 255);
-//            tessellator.addVertexWithUV(scrollBarX, this.bottom, 0.0D, 0.0D, 1.0D);
-//            tessellator.addVertexWithUV(rightEdge, this.bottom, 0.0D, 1.0D, 1.0D);
-//            tessellator.addVertexWithUV(rightEdge, this.top, 0.0D, 1.0D, 0.0D);
-//            tessellator.addVertexWithUV(scrollBarX, this.top, 0.0D, 0.0D, 0.0D);
             buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             buffer.pos(scrollBarX, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 255, 255).endVertex();
             buffer.pos(rightEdge, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 255, 255).endVertex();
             buffer.pos(rightEdge, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 255, 255).endVertex();
             buffer.pos(scrollBarX, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 255, 255).endVertex();
             tessellator.draw();
-//            tessellator.startDrawingQuads();
-//            tessellator.setColorRGBA_I(8421504, 255);
-//            tessellator.addVertexWithUV(scrollBarX, (scrollPos + scrollPosSize), 0.0D, 0.0D, 1.0D);
-//            tessellator.addVertexWithUV(rightEdge, (scrollPos + scrollPosSize), 0.0D, 1.0D, 1.0D);
-//            tessellator.addVertexWithUV(rightEdge, scrollPos, 0.0D, 1.0D, 0.0D);
-//            tessellator.addVertexWithUV(scrollBarX, scrollPos, 0.0D, 0.0D, 0.0D);
+
             buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             buffer.pos(scrollBarX, (scrollPos + scrollPosSize), 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
             buffer.pos(rightEdge, (scrollPos + scrollPosSize), 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
             buffer.pos(rightEdge, scrollPos, 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
             buffer.pos(scrollBarX, scrollPos, 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
             tessellator.draw();
-//            tessellator.startDrawingQuads();
-//            tessellator.setColorRGBA_I(12632256, 255);
-//            tessellator.addVertexWithUV(scrollBarX, (scrollPos + scrollPosSize - 1), 0.0D, 0.0D, 1.0D);
-//            tessellator.addVertexWithUV((rightEdge - 1), (scrollPos + scrollPosSize - 1), 0.0D, 1.0D, 1.0D);
-//            tessellator.addVertexWithUV((rightEdge - 1), scrollPos, 0.0D, 1.0D, 0.0D);
-//            tessellator.addVertexWithUV(scrollBarX, scrollPos, 0.0D, 0.0D, 0.0D);
+
             buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             buffer.pos(scrollBarX, (scrollPos + scrollPosSize - 1), 0.0D).tex(0.0D, 1.0D).color(192, 192, 192, 255).endVertex();
             buffer.pos((rightEdge - 1), (scrollPos + scrollPosSize - 1), 0.0D).tex(1.0D, 1.0D).color(192, 192, 192, 255).endVertex();

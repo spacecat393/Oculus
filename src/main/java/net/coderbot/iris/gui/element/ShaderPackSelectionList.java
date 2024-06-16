@@ -184,17 +184,20 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 
             boolean shadersEnabled = list.topButtonRow.shadersEnabled;
 
-			ITextComponent formattedName = new TextComponentString(packName);
+			String trimmedPackName = packName;
 
-			if (font.getStringWidth(formattedName.getFormattedText()) > list.getListWidth() - 3) {
+			if (font.getStringWidth(trimmedPackName) > list.getListWidth() - 3) {
 				int ellipsisWidth = font.getStringWidth("...");
-				formattedName = new TextComponentString(font.trimStringToWidth(
-						formattedName.setStyle(new Style().setBold(true)).getFormattedText(), list.getListWidth() - 6 - ellipsisWidth) + "..."
-				);
+				trimmedPackName = font.trimStringToWidth(
+						new TextComponentString(trimmedPackName).setStyle(new Style().setBold(true)).getFormattedText(),
+						list.getListWidth() - 6 - ellipsisWidth).substring(2) + "...";
 			}
 
+			ITextComponent formattedName = new TextComponentString(trimmedPackName);
+			formattedName.setStyle(new Style().setColor(TextFormatting.YELLOW));
+
 			if (this.isMouseOver(mouseX, mouseY)) {
-				formattedName = formattedName.setStyle(new Style().setBold(true));
+				formattedName = formattedName.setStyle(new Style().setBold(true).setColor(TextFormatting.YELLOW));
 			}
 
 			if (shadersEnabled && this.isApplied()) {
@@ -205,6 +208,7 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 				color = 0xA2A2A2;
 			}
 
+			// todo: should be centered
 			font.drawStringWithShadow(formattedName.getFormattedText(), (x + 2), (y + 1), color);
 		}
 
