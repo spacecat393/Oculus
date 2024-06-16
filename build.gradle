@@ -70,7 +70,9 @@ dependencies {
 	implementation(shadow("org.anarres:jcpp:1.4.14")) {
 		transitive = false
 	}
-	shadow("org.slf4j:slf4j-api:1.7.12") // for jcpp
+	implementation(shadow("org.slf4j:slf4j-api:1.7.12")) /* for jcpp */ {
+		transitive = false;
+	}
 
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 
