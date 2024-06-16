@@ -79,7 +79,6 @@ public final class OptionMenuConstructor {
 
 
 		registerScreen(OptionMenuSubElementScreen.class, screen ->
-//				new ElementWidgetScreenData(GuiUtil.translateOrDefault(new TextComponent(screen.screenId), "screen." + screen.screenId), true));
 				new ElementWidgetScreenData(
 						GuiUtil.translateOrDefault(new TextComponentString(screen.screenId), "screen." + screen.screenId),
 						true

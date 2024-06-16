@@ -39,7 +39,7 @@ public abstract class IrisObjectSelectionList<E extends GuiListExtended.IGuiList
 	@Override
 	protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
 		entries.get(slotIndex).updatePosition(slotIndex, xPos, yPos, partialTicks);
-		entries.get(slotIndex).drawEntry(slotIndex, xPos, yPos, getListWidth(), heightIn, mouseXIn, mouseYIn, isSelected(slotIndex), partialTicks);
+		entries.get(slotIndex).drawEntry(slotIndex, xPos, yPos, getListWidth(), heightIn, mouseXIn, mouseYIn, mouseYIn >= yPos && mouseYIn <= yPos+heightIn, partialTicks);
 	}
 
 	public void select(int entry) {

@@ -27,10 +27,8 @@ public class ShaderPackSelectionList extends IrisObjectSelectionList<ShaderPackS
 	@Getter
 	private final TopButtonRowEntry topButtonRow;
 	@Setter
-    @Getter
-    private ShaderPackEntry applied = null;
-//	@Setter
-//	protected boolean renderBackground = true;
+	@Getter
+	private ShaderPackEntry applied = null;
 
 	public ShaderPackSelectionList(ShaderPackScreen screen, Minecraft client, int width, int height, int top, int bottom, int left, int right) {
 		super(client, width, height, top, bottom, left, right, 20);
