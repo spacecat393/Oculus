@@ -1,6 +1,5 @@
 package net.coderbot.iris.mixin.bettermipmaps;
 
-import nanolive.compat.NativeImage;
 import net.coderbot.iris.helpers.ColorSRGB;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,8 +40,8 @@ public class MixinMipmapGenerator {
 
 	@Unique
 	private static int weightedAverageColor(int one, int two) {
-		int alphaOne = NativeImage.getA(one);
-		int alphaTwo = NativeImage.getA(two);
+		int alphaOne = (one >> 24) & 0xFF;
+		int alphaTwo = (two >> 24) & 0xFF;
 
 		// In the case where the alpha values of the same, we can get by with an unweighted average.
 		if (alphaOne == alphaTwo) {
@@ -66,13 +65,13 @@ public class MixinMipmapGenerator {
 		float relativeWeightTwo = alphaTwo * scale;
 
 		// Convert the color components into linear space, then multiply the corresponding weight.
-		float oneR = ColorSRGB.srgbToLinear(NativeImage.getR(one)) * relativeWeightOne;
-		float oneG = ColorSRGB.srgbToLinear(NativeImage.getG(one)) * relativeWeightOne;
-		float oneB = ColorSRGB.srgbToLinear(NativeImage.getB(one)) * relativeWeightOne;
+		float oneR = ColorSRGB.srgbToLinear((one >> 16) & 0xFF) * relativeWeightOne;
+		float oneG = ColorSRGB.srgbToLinear((one >> 8) & 0xFF) * relativeWeightOne;
+		float oneB = ColorSRGB.srgbToLinear((one & 0xFF)) * relativeWeightOne;
 
-		float twoR = ColorSRGB.srgbToLinear(NativeImage.getR(two)) * relativeWeightTwo;
-		float twoG = ColorSRGB.srgbToLinear(NativeImage.getG(two)) * relativeWeightTwo;
-		float twoB = ColorSRGB.srgbToLinear(NativeImage.getB(two)) * relativeWeightTwo;
+		float twoR = ColorSRGB.srgbToLinear((two >> 16) & 0xFF) * relativeWeightTwo;
+		float twoG = ColorSRGB.srgbToLinear((two >> 8) & 0xFF) * relativeWeightTwo;
+		float twoB = ColorSRGB.srgbToLinear((two & 0xFF)) * relativeWeightTwo;
 
 		// Combine the color components of each color
 		float linearR = oneR + twoR;
@@ -89,13 +88,13 @@ public class MixinMipmapGenerator {
 	// Computes a non-weighted average of the two sRGB colors in linear space, avoiding brightness losses.
 	@Unique
 	private static int averageRgb(int a, int b, int alpha) {
-		float ar = ColorSRGB.srgbToLinear(NativeImage.getR(a));
-		float ag = ColorSRGB.srgbToLinear(NativeImage.getG(a));
-		float ab = ColorSRGB.srgbToLinear(NativeImage.getB(a));
+		float ar = ColorSRGB.srgbToLinear((a >> 16) & 0xFF);
+		float ag = ColorSRGB.srgbToLinear((a >> 8) & 0xFF);
+		float ab = ColorSRGB.srgbToLinear((a & 0xFF));
 
-		float br = ColorSRGB.srgbToLinear(NativeImage.getR(b));
-		float bg = ColorSRGB.srgbToLinear(NativeImage.getG(b));
-		float bb = ColorSRGB.srgbToLinear(NativeImage.getB(b));
+		float br = ColorSRGB.srgbToLinear((b >> 16) & 0xFF);
+		float bg = ColorSRGB.srgbToLinear((b >> 8) & 0xFF);
+		float bb = ColorSRGB.srgbToLinear((b & 0xFF));
 
 		return ColorSRGB.linearToSrgb((ar + br) * 0.5f, (ag + bg) * 0.5f, (ab + bb) * 0.5f, alpha);
 	}
