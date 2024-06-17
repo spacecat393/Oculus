@@ -146,7 +146,6 @@ public class TransformPatcher {
 				Root root = tree.getRoot();
 
 				// check for illegal references to internal Iris shader interfaces
-				// todo patricia
 				Optional<Identifier> violation = root.identifierIndex.prefixQueryFlat("iris_").findAny();
 				if (!violation.isPresent()) {
 					violation = root.identifierIndex.prefixQueryFlat("irisMain").findAny();

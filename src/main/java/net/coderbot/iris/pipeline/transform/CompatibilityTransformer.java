@@ -91,7 +91,6 @@ public class CompatibilityTransformer {
 			// check if this function is ever used
 			FunctionPrototype prototype = definition.getFunctionPrototype();
 			String functionName = prototype.getName().getName();
-			// todo: patricia
 			if (!functionName.equals("main") && root.identifierIndex.getStream(functionName).count() <= 1) {
 				// remove unused functions
 				// unused function removal can be helpful since some drivers don't do some
@@ -141,7 +140,6 @@ public class CompatibilityTransformer {
 		while (!processingQueue.isEmpty()) {
 			String name = processingQueue.poll();
 			processingSet.remove(name);
-			// todo patricia
 			for (Identifier id : root.identifierIndex.get(name)) {
 				// since this searches for reference expressions, this won't accidentally find
 				// the name as the name of a declaration member
@@ -218,7 +216,6 @@ public class CompatibilityTransformer {
 			this.storageType = storageType;
 			markClassWildcard("qualifier", pattern.getRoot().nodeIndex.getOne(TypeQualifier.class));
 			markClassWildcard("type", pattern.getRoot().nodeIndex.getOne(BuiltinNumericTypeSpecifier.class));
-			// todo patricia
 			markClassWildcard("name*", pattern.getRoot().identifierIndex.getOne("name").getAncestor(DeclarationMember.class));
 		}
 
@@ -352,7 +349,6 @@ public class CompatibilityTransformer {
 			Root prevRoot = prevTree.getRoot();
 
 			// test if the prefix tag is used for some reason
-			// todo patricia
 			if (prevRoot.identifierIndex.prefixQueryFlat(tagPrefix).findAny().isPresent()) {
 				LOGGER.warn("The prefix tag " + tagPrefix + " is used in the shader, bailing compatibility transformation.");
 				return;
@@ -403,7 +399,6 @@ public class CompatibilityTransformer {
 						// patch missing declarations with an initialization
 						if (!outDeclarations.containsKey(name)) {
 							// make sure the declared in is actually used
-							// todo patricia
 							if (!currentRoot.identifierIndex.getAncestors(name, ReferenceExpression.class).findAny().isPresent()) {
 								continue;
 							}
@@ -456,7 +451,6 @@ public class CompatibilityTransformer {
 							if (inType == outType) {
 								// if the types match but it's never assigned a value,
 								// an initialization is added
-								// todo patricia
 								if (prevRoot.identifierIndex.get(name).size() > 1) {
 									continue;
 								}
@@ -480,7 +474,6 @@ public class CompatibilityTransformer {
 
 							// rename all references of this out declaration to a new name (iris_)
 							String newName = tagPrefix + name;
-							// todo patricia
 							prevRoot.identifierIndex.rename(name, newName);
 
 							// rename the original out declaration back to the original name

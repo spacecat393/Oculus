@@ -42,16 +42,15 @@ class AttributeTransformer {
 		Stream<Identifier> stream = Stream.empty();
 		boolean hasItems = false;
 		if (!parameters.inputs.lightmap) {
-			// todo: confusion? PatriciaTrieclass?
-//			stream = Stream.concat(stream,
-//					root.identifierIndex.getStream("gl_MultiTexCoord1"));
-//			stream = Stream.concat(stream,
-//					root.identifierIndex.getStream("gl_MultiTexCoord2"));
+			stream = Stream.concat(stream,
+					root.identifierIndex.getStream("gl_MultiTexCoord1"));
+			stream = Stream.concat(stream,
+					root.identifierIndex.getStream("gl_MultiTexCoord2"));
 			hasItems = true;
 		}
 		if (!parameters.inputs.texture) {
-//			stream = Stream.concat(stream,
-//					root.identifierIndex.getStream("gl_MultiTexCoord0"));
+			stream = Stream.concat(stream,
+					root.identifierIndex.getStream("gl_MultiTexCoord0"));
 			hasItems = true;
 		}
 		if (hasItems) {
@@ -64,21 +63,20 @@ class AttributeTransformer {
 			patchOverlayColor(t, tree, root, parameters);
 		}
 
-		// todo: still confusion Patricia
-//		if (parameters.type.glShaderType == ShaderType.VERTEX
-//				&& root.identifierIndex.has("gl_MultiTexCoord3")
-//				&& !root.identifierIndex.has("mc_midTexCoord")) {
-//			// TODO: proper type conversion
-//			// gl_MultiTexCoord3 is a super legacy alias of mc_midTexCoord. We don't do this
-//			// replacement if we think mc_midTexCoord could be defined just we can't handle
-//			// an existing declaration robustly. But basically the proper way to do this is
-//			// to define mc_midTexCoord only if it's not defined, and if it is defined,
-//			// figure out its type, then replace all occurrences of gl_MultiTexCoord3 with
-//			// the correct conversion from mc_midTexCoord's declared type to vec4.
-//			root.rename("gl_MultiTexCoord3", "mc_midTexCoord");
-//			tree.parseAndInjectNode(t, ASTInjectionPoint.BEFORE_FUNCTIONS,
-//					"attribute vec4 mc_midTexCoord;");
-//		}
+		if (parameters.type.glShaderType == ShaderType.VERTEX
+				&& root.identifierIndex.has("gl_MultiTexCoord3")
+				&& !root.identifierIndex.has("mc_midTexCoord")) {
+			// TODO: proper type conversion
+			// gl_MultiTexCoord3 is a super legacy alias of mc_midTexCoord. We don't do this
+			// replacement if we think mc_midTexCoord could be defined just we can't handle
+			// an existing declaration robustly. But basically the proper way to do this is
+			// to define mc_midTexCoord only if it's not defined, and if it is defined,
+			// figure out its type, then replace all occurrences of gl_MultiTexCoord3 with
+			// the correct conversion from mc_midTexCoord's declared type to vec4.
+			root.rename("gl_MultiTexCoord3", "mc_midTexCoord");
+			tree.parseAndInjectNode(t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+					"attribute vec4 mc_midTexCoord;");
+		}
 	}
 
 	private static void patchTextureMatrices(
