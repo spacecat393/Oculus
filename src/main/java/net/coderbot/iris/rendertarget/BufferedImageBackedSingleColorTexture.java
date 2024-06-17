@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 public class BufferedImageBackedSingleColorTexture extends DynamicTexture {
 
 	public BufferedImageBackedSingleColorTexture(int red, int green, int blue, int alpha) {
-		super(create(BufferedImage.combine(alpha, blue, green, red)));
+		super(create((alpha & 255) << 24 | (blue & 255) << 16 | (green & 255) << 8 | (red & 255)));
 	}
 
 	public BufferedImageBackedSingleColorTexture(int rgba) {
@@ -15,8 +15,8 @@ public class BufferedImageBackedSingleColorTexture extends DynamicTexture {
 	}
 
 	private static BufferedImage create(int color) {
-		BufferedImage image = new BufferedImage(BufferedImage.Format.RGBA, 1, 1, false);
-		image.setPixelRGBA(0, 0, color);
+		BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		image.setRGB(0, 0, color);
 		return image;
 	}
 }

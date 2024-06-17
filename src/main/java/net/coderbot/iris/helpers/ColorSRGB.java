@@ -1,7 +1,5 @@
 package net.coderbot.iris.helpers;
 
-import nanolive.compat.NativeImage;
-
 /**
  * This is a port of the fast-srgb8 library from thomcc on <a href="https://github.com/thomcc/fast-srgb8">GitHub</a>.
  * This is also ported from Sodium's 1.19.3 branch for use in 1.18.2 and 1.19.2 versions of Iris.
@@ -82,7 +80,7 @@ public class ColorSRGB {
      * @param a The alpha-component in linear RGB space (0 to 255)
      */
     public static int linearToSrgb(float r, float g, float b, int a) {
-        return NativeImage.combine(a, linearToSrgb(b), linearToSrgb(g), linearToSrgb(r));
+        return (a & 255) << 24 | (linearToSrgb(b) & 255) << 16 | (linearToSrgb(g) & 255) << 8 | (linearToSrgb(r) & 255);
     }
 
     /**
