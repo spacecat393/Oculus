@@ -19,8 +19,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.coderbot.iris.Iris;
-import net.coderbot.iris.rendertarget.NativeImageBackedCustomTexture;
-import net.coderbot.iris.rendertarget.NativeImageBackedNoiseTexture;
+import net.coderbot.iris.rendertarget.BufferedImageBackedCustomTexture;
+import net.coderbot.iris.rendertarget.BufferedImageBackedNoiseTexture;
 import net.coderbot.iris.shaderpack.PackDirectives;
 import net.coderbot.iris.shaderpack.texture.CustomTextureData;
 import net.coderbot.iris.shaderpack.texture.TextureStage;
@@ -74,7 +74,7 @@ public class CustomTextureManager {
 		}).orElseGet(() -> {
 			final int noiseTextureResolution = packDirectives.getNoiseTextureResolution();
 
-			AbstractTexture texture = new NativeImageBackedNoiseTexture(noiseTextureResolution);
+			AbstractTexture texture = new BufferedImageBackedNoiseTexture(noiseTextureResolution);
 			ownedTextures.add(texture);
 
 			return texture::getGlTextureId;
@@ -83,10 +83,11 @@ public class CustomTextureManager {
 
 	private IntSupplier createCustomTexture(CustomTextureData textureData) throws IOException {
 		if (textureData instanceof CustomTextureData.PngData) {
-			AbstractTexture texture = new NativeImageBackedCustomTexture((CustomTextureData.PngData) textureData);
+			AbstractTexture texture = new BufferedImageBackedCustomTexture((CustomTextureData.PngData) textureData);
 			ownedTextures.add(texture);
 
 			return texture::getGlTextureId;
+			// todo
 //		} else if (textureData instanceof CustomTextureData.LightmapMarker) {
 //			// Special code path for the light texture. While shader packs hardcode the primary light texture, it's
 //			// possible that a mod will create a different light texture, so this code path is robust to that.

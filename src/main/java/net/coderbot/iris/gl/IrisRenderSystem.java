@@ -338,7 +338,13 @@ public class IrisRenderSystem {
 
 		@Override
 		public void drawBuffers(int framebuffer, int[] buffers) {
-			ARBDirectStateAccess.glNamedFramebufferDrawBuffers(framebuffer, IntBuffer.wrap(buffers));
+			// todo
+			// java.lang.IllegalArgumentException: IntBuffer is not direct
+			//	at org.lwjgl.BufferChecks.checkDirect(BufferChecks.java:127) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+			//	at org.lwjgl.opengl.GL45.glNamedFramebufferDrawBuffers(GL45.java:590) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+			//	at org.lwjgl.opengl.ARBDirectStateAccess.glNamedFramebufferDrawBuffers(ARBDirectStateAccess.java:263) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+			//	at net.coderbot.iris.gl.IrisRenderSystem$DSAARB.drawBuffers(IrisRenderSystem.java:341) ~[IrisRenderSystem$DSAARB.class:?]
+//			ARBDirectStateAccess.glNamedFramebufferDrawBuffers(framebuffer, IntBuffer.wrap(buffers));
 		}
 
 		@Override

@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.state.StateUpdateNotifiers;
 import net.coderbot.iris.mixin.GlStateManagerAccessor;
-import net.coderbot.iris.rendertarget.NativeImageBackedSingleColorTexture;
+import net.coderbot.iris.rendertarget.BufferedImageBackedSingleColorTexture;
 import net.coderbot.iris.texture.TextureTracker;
 import net.coderbot.iris.texture.pbr.loader.PBRTextureLoader;
 import net.coderbot.iris.texture.pbr.loader.PBRTextureLoader.PBRTextureConsumer;
@@ -33,8 +33,8 @@ public class PBRTextureManager {
 	private final Int2ObjectMap<PBRTextureHolder> holders = new Int2ObjectOpenHashMap<>();
 	private final PBRTextureConsumerImpl consumer = new PBRTextureConsumerImpl();
 
-	private NativeImageBackedSingleColorTexture defaultNormalTexture;
-	private NativeImageBackedSingleColorTexture defaultSpecularTexture;
+	private BufferedImageBackedSingleColorTexture defaultNormalTexture;
+	private BufferedImageBackedSingleColorTexture defaultSpecularTexture;
 	// Not PBRTextureHolderImpl to directly reference fields
 	private final PBRTextureHolder defaultHolder = new PBRTextureHolder() {
 		@Override
@@ -52,8 +52,8 @@ public class PBRTextureManager {
 	}
 
 	public void init() {
-		defaultNormalTexture = new NativeImageBackedSingleColorTexture(PBRType.NORMAL.getDefaultValue());
-		defaultSpecularTexture = new NativeImageBackedSingleColorTexture(PBRType.SPECULAR.getDefaultValue());
+		defaultNormalTexture = new BufferedImageBackedSingleColorTexture(PBRType.NORMAL.getDefaultValue());
+		defaultSpecularTexture = new BufferedImageBackedSingleColorTexture(PBRType.SPECULAR.getDefaultValue());
 	}
 
 	public PBRTextureHolder getHolder(int id) {

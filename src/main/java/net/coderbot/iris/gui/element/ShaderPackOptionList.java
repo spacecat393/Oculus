@@ -97,9 +97,6 @@ public class ShaderPackOptionList extends IrisObjectSelectionList<ShaderPackOpti
 		if (mouseX >= super.getScrollBarX()) {
 			return super.mouseClicked(mouseX, mouseY, mouseEvent);
 		}
-//		for (int i = 0; i < getSize() - 1; ++i) {
-//			getEntry(i).mousePressed(-1, mouseX, mouseY, mouseEvent, 0, 0);
-//		}
 		return false;
 	}
 

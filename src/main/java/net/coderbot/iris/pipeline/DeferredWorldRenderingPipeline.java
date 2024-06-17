@@ -34,7 +34,7 @@ import net.coderbot.iris.postprocess.CenterDepthSampler;
 import net.coderbot.iris.postprocess.CompositeRenderer;
 import net.coderbot.iris.postprocess.FinalPassRenderer;
 import net.coderbot.iris.rendertarget.Blaze3dRenderTargetExt;
-import net.coderbot.iris.rendertarget.NativeImageBackedSingleColorTexture;
+import net.coderbot.iris.rendertarget.BufferedImageBackedSingleColorTexture;
 import net.coderbot.iris.rendertarget.RenderTargets;
 import net.coderbot.iris.samplers.IrisImages;
 import net.coderbot.iris.samplers.IrisSamplers;
@@ -197,7 +197,7 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 
 		customTextureManager = new CustomTextureManager(programs.getPackDirectives(), programs.getPack().getCustomTextureDataMap(), programs.getPack().getCustomNoiseTexture());
 
-		whitePixel = new NativeImageBackedSingleColorTexture(255, 255, 255, 255);
+		whitePixel = new BufferedImageBackedSingleColorTexture(255, 255, 255, 255);
 
 		GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
 

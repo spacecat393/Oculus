@@ -74,7 +74,6 @@ public class ProfileElementWidget extends BaseOptionElementWidget<OptionMenuProf
 		}
 
 		Iris.queueShaderPackOptionsFromProfile(this.next);
-
 		return true;
 	}
 
@@ -101,6 +100,10 @@ public class ProfileElementWidget extends BaseOptionElementWidget<OptionMenuProf
 
 	@Override
 	public boolean mouseClicked(int mx, int my, int button) {
-		return applyPreviousValue();
+		if (button == 1) {
+			return applyPreviousValue();
+		} else {
+			return applyNextValue();
+		}
 	}
 }
