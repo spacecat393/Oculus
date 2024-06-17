@@ -359,6 +359,9 @@ public class ShaderPackScreen extends GuiScreen implements HudHideable {
 		if (!this.guiHidden) {
 			if (optionMenuOpen && this.shaderOptionList != null) {
 				this.shaderOptionList.mouseClicked(mouseX, mouseY, mouseButton);
+				if (this.hoveredElement != null) {
+					this.hoveredElement.mouseClicked(mouseX, mouseY, mouseButton);
+				}
 			} else {
 				this.shaderPackList.mouseClicked(mouseX, mouseY, mouseButton);
 			}

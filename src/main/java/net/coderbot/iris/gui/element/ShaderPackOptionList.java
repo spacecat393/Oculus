@@ -92,6 +92,17 @@ public class ShaderPackOptionList extends IrisObjectSelectionList<ShaderPackOpti
 		}
 	}
 
+	@Override
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
+		if (mouseX >= super.getScrollBarX()) {
+			return super.mouseClicked(mouseX, mouseY, mouseEvent);
+		}
+//		for (int i = 0; i < getSize() - 1; ++i) {
+//			getEntry(i).mousePressed(-1, mouseX, mouseY, mouseEvent, 0, 0);
+//		}
+		return false;
+	}
+
     public abstract static class BaseEntry implements GuiListExtended.IGuiListEntry {
 		protected final NavigationController navigation;
 
@@ -213,7 +224,7 @@ public class ShaderPackOptionList extends IrisObjectSelectionList<ShaderPackOpti
 
 		}
 
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(int mouseX, int mouseY, int button) {
 			boolean backButtonResult = backButton != null && backButton.mouseClicked(mouseX, mouseY, button);
 			boolean utilButtonResult = utilityButtons.mouseClicked(mouseX, mouseY, button);
 
@@ -382,7 +393,7 @@ public class ShaderPackOptionList extends IrisObjectSelectionList<ShaderPackOpti
 			return this.mouseClicked(mouseX, mouseY, mouseEvent);
 		}
 
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(int mouseX, int mouseY, int button) {
 			return this.widgets.get(getHoveredWidget((int) mouseX)).mouseClicked(mouseX, mouseY, button);
 		}
 
@@ -391,7 +402,7 @@ public class ShaderPackOptionList extends IrisObjectSelectionList<ShaderPackOpti
 			this.mouseReleased(x, y, mouseEvent);
 		}
 
-		public void mouseReleased(double mouseX, double mouseY, int button) {
+		public void mouseReleased(int mouseX, int mouseY, int button) {
 			this.widgets.get(getHoveredWidget((int) mouseX)).mouseReleased(mouseX, mouseY, button);
 		}
 	}

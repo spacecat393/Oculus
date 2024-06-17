@@ -92,7 +92,7 @@ public class SliderElementWidget extends StringElementWidget {
 	}
 
 	@Override
-	public boolean mouseClicked(double mx, double my, int button) {
+	public boolean mouseClicked(int mx, int my, int button) {
 		if (button == 0) {
 			if (GuiScreen.isShiftKeyDown()) {
 				if (this.applyOriginalValue()) {
@@ -114,7 +114,7 @@ public class SliderElementWidget extends StringElementWidget {
 	}
 
 	@Override
-	public boolean mouseReleased(double mx, double my, int button) {
+	public boolean mouseReleased(int mx, int my, int button) {
 		if (button == 0) {
 			this.onReleased();
 

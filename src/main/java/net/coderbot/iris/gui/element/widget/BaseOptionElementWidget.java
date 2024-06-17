@@ -173,8 +173,7 @@ public abstract class BaseOptionElementWidget<T extends OptionMenuElement> exten
 	}
 
 	@Override
-	public boolean mouseClicked(double mx, double my, int button) {
-//		if (button == GLFW.GLFW_MOUSE_BUTTON_1 || button == GLFW.GLFW_MOUSE_BUTTON_2) {
+	public boolean mouseClicked(int mx, int my, int button) {
 		if (button == 0 || button == 1) {
 			boolean refresh = false;
 

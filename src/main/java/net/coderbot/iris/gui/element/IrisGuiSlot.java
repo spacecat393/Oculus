@@ -56,15 +56,6 @@ public abstract class IrisGuiSlot extends GuiSlot {
         // Do nothing
     }
 
-    protected boolean elementClicked(int index, boolean doubleClick, int mouseX, int mouseY, int button) {
-        this.elementClicked(index, doubleClick, mouseX, mouseY);
-        if (button != 0) {
-            return false;
-        }
-
-        return false; // todo
-    }
-
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (!this.getEnabled/*enabled*/()) {
             return false;
