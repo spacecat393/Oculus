@@ -16,15 +16,14 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 
 import javax.imageio.ImageIO;
 
-@Getter
 public class BufferedImageBackedCustomTexture extends DynamicTexture {
-	private final int width;
-	private final int height;
+	@Getter
+	private static int width = 0;
+	@Getter
+	private static int height = 0;
 	public BufferedImageBackedCustomTexture(CustomTextureData.PngData textureData) throws IOException {
 		super(create(textureData.getContent()));
 		BufferedImage image = create(textureData.getContent());
-		width = image.getWidth();
-		height = image.getHeight();
 
 		// By default, images are unblurred and not clamped.
 
@@ -41,15 +40,18 @@ public class BufferedImageBackedCustomTexture extends DynamicTexture {
 
 	private static BufferedImage create(byte[] content) throws IOException {
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
-        return ImageIO.read(inputStream);
+		BufferedImage image = ImageIO.read(inputStream);
+		width = image.getWidth();
+		height = image.getHeight();
+		return image;
 	}
 
 	@Override
 	public void updateDynamicTexture() {
 		// create the image
 		int[] textureData = this.getTextureData();
-		int width = this.getWidth();
-		int height = this.getHeight();
+		int width = getWidth();
+		int height = getHeight();
 
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		image.setRGB(0, 0, width, height, textureData, 0, width);

@@ -147,15 +147,15 @@ public class TransformPatcher {
 
 				// check for illegal references to internal Iris shader interfaces
 				// todo patricia
-//				Optional<Identifier> violation = root.identifierIndex.prefixQueryFlat("iris_").findAny();
-//				if (!violation.isPresent()) {
-//					violation = root.identifierIndex.prefixQueryFlat("irisMain").findAny();
-//				}
-//				violation.ifPresent(id -> {
-//					throw new SemanticException(
-//							"Detected a potential reference to unstable and internal Iris shader interfaces (iris_ and irisMain). This isn't currently supported. Violation: "
-//									+ id.getName() + ". See debugging.md for more information.");
-//				});
+				Optional<Identifier> violation = root.identifierIndex.prefixQueryFlat("iris_").findAny();
+				if (!violation.isPresent()) {
+					violation = root.identifierIndex.prefixQueryFlat("irisMain").findAny();
+				}
+				violation.ifPresent(id -> {
+					throw new SemanticException(
+							"Detected a potential reference to unstable and internal Iris shader interfaces (iris_ and irisMain). This isn't currently supported. Violation: "
+									+ id.getName() + ". See debugging.md for more information.");
+				});
 
 				Root.indexBuildSession(tree, () -> {
 					switch (parameters.patch) {

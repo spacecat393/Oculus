@@ -92,23 +92,23 @@ public class CompatibilityTransformer {
 			FunctionPrototype prototype = definition.getFunctionPrototype();
 			String functionName = prototype.getName().getName();
 			// todo: patricia
-//			if (!functionName.equals("main") && root.identifierIndex.getStream(functionName).count() <= 1) {
-//				// remove unused functions
-//				// unused function removal can be helpful since some drivers don't do some
-//				// checks on unused functions. Additionally, sometimes bugs in unused code can
-//				// be avoided this way.
-//				// TODO: integrate into debug mode (allow user to disable this behavior for
-//				// debugging purposes)
-//				unusedFunctions.add(definition);
-//				if (PatchedShaderPrinter.prettyPrintShaders) {
-//					LOGGER.warn("Removing unused function " + functionName);
-//				} else if (unusedFunctions.size() == 1) {
-//					LOGGER.warn(
-//							"Removing unused function " + functionName
-//									+ " and omitting further such messages outside of debug mode. See debugging.md for more information.");
-//				}
-//				continue;
-//			}
+			if (!functionName.equals("main") && root.identifierIndex.getStream(functionName).count() <= 1) {
+				// remove unused functions
+				// unused function removal can be helpful since some drivers don't do some
+				// checks on unused functions. Additionally, sometimes bugs in unused code can
+				// be avoided this way.
+				// TODO: integrate into debug mode (allow user to disable this behavior for
+				// debugging purposes)
+				unusedFunctions.add(definition);
+				if (PatchedShaderPrinter.prettyPrintShaders) {
+					LOGGER.warn("Removing unused function " + functionName);
+				} else if (unusedFunctions.size() == 1) {
+					LOGGER.warn(
+							"Removing unused function " + functionName
+									+ " and omitting further such messages outside of debug mode. See debugging.md for more information.");
+				}
+				continue;
+			}
 
 			// stop on functions without parameters
 			if (prototype.getChildren().isEmpty()) {
@@ -142,57 +142,57 @@ public class CompatibilityTransformer {
 			String name = processingQueue.poll();
 			processingSet.remove(name);
 			// todo patricia
-//			for (Identifier id : root.identifierIndex.get(name)) {
-//				// since this searches for reference expressions, this won't accidentally find
-//				// the name as the name of a declaration member
-//				ReferenceExpression reference = id.getAncestor(ReferenceExpression.class);
-//				if (reference == null) {
-//					continue;
-//				}
-//				TypeAndInitDeclaration taid = reference.getAncestor(TypeAndInitDeclaration.class);
-//				if (taid == null) {
-//					continue;
-//				}
-//				FunctionDefinition inDefinition = taid.getAncestor(FunctionDefinition.class);
-//				if (inDefinition == null) {
-//					continue;
-//				}
-//				Set<String> constIdsInFunction = constFunctions.get(inDefinition);
-//				if (constIdsInFunction == null) {
-//					continue;
-//				}
-//				if (constIdsInFunction.contains(name)) {
-//					// remove the const qualifier from the reference expression
-//					TypeQualifier qualifier = taid.getType().getTypeQualifier();
-//					StorageQualifier constQualifier = getConstQualifier(qualifier);
-//					if (constQualifier == null) {
-//						continue;
-//					}
-//					constQualifier.detachAndDelete();
-//					if (qualifier.getChildren().isEmpty()) {
-//						qualifier.detachAndDelete();
-//					}
-//					constDeclarationHit = true;
-//
-//					// add all members of the declaration to the list of const parameters to process
-//					for (DeclarationMember member : taid.getMembers()) {
-//						String memberName = member.getName().getName();
-//
-//						// the name may not be the same as the parameter name
-//						if (constIdsInFunction.contains(memberName)) {
-//							throw new IllegalStateException("Illegal redefinition of const parameter " + name);
-//						}
-//
-//						constIdsInFunction.add(memberName);
-//
-//						// don't add to the queue twice if it's already been added by a different scope
-//						if (!processingSet.contains(memberName)) {
-//							processingQueue.add(memberName);
-//							processingSet.add(memberName);
-//						}
-//					}
-//				}
-//			}
+			for (Identifier id : root.identifierIndex.get(name)) {
+				// since this searches for reference expressions, this won't accidentally find
+				// the name as the name of a declaration member
+				ReferenceExpression reference = id.getAncestor(ReferenceExpression.class);
+				if (reference == null) {
+					continue;
+				}
+				TypeAndInitDeclaration taid = reference.getAncestor(TypeAndInitDeclaration.class);
+				if (taid == null) {
+					continue;
+				}
+				FunctionDefinition inDefinition = taid.getAncestor(FunctionDefinition.class);
+				if (inDefinition == null) {
+					continue;
+				}
+				Set<String> constIdsInFunction = constFunctions.get(inDefinition);
+				if (constIdsInFunction == null) {
+					continue;
+				}
+				if (constIdsInFunction.contains(name)) {
+					// remove the const qualifier from the reference expression
+					TypeQualifier qualifier = taid.getType().getTypeQualifier();
+					StorageQualifier constQualifier = getConstQualifier(qualifier);
+					if (constQualifier == null) {
+						continue;
+					}
+					constQualifier.detachAndDelete();
+					if (qualifier.getChildren().isEmpty()) {
+						qualifier.detachAndDelete();
+					}
+					constDeclarationHit = true;
+
+					// add all members of the declaration to the list of const parameters to process
+					for (DeclarationMember member : taid.getMembers()) {
+						String memberName = member.getName().getName();
+
+						// the name may not be the same as the parameter name
+						if (constIdsInFunction.contains(memberName)) {
+							throw new IllegalStateException("Illegal redefinition of const parameter " + name);
+						}
+
+						constIdsInFunction.add(memberName);
+
+						// don't add to the queue twice if it's already been added by a different scope
+						if (!processingSet.contains(memberName)) {
+							processingQueue.add(memberName);
+							processingSet.add(memberName);
+						}
+					}
+				}
+			}
 		}
 
 		if (constDeclarationHit) {
@@ -219,7 +219,7 @@ public class CompatibilityTransformer {
 			markClassWildcard("qualifier", pattern.getRoot().nodeIndex.getOne(TypeQualifier.class));
 			markClassWildcard("type", pattern.getRoot().nodeIndex.getOne(BuiltinNumericTypeSpecifier.class));
 			// todo patricia
-//			markClassWildcard("name*", pattern.getRoot().identifierIndex.getOne("name").getAncestor(DeclarationMember.class));
+			markClassWildcard("name*", pattern.getRoot().identifierIndex.getOne("name").getAncestor(DeclarationMember.class));
 		}
 
 		public boolean matchesSpecialized(ExternalDeclaration tree, ShaderType shaderType) {
@@ -353,10 +353,10 @@ public class CompatibilityTransformer {
 
 			// test if the prefix tag is used for some reason
 			// todo patricia
-//			if (prevRoot.identifierIndex.prefixQueryFlat(tagPrefix).findAny().isPresent()) {
-//				LOGGER.warn("The prefix tag " + tagPrefix + " is used in the shader, bailing compatibility transformation.");
-//				return;
-//			}
+			if (prevRoot.identifierIndex.prefixQueryFlat(tagPrefix).findAny().isPresent()) {
+				LOGGER.warn("The prefix tag " + tagPrefix + " is used in the shader, bailing compatibility transformation.");
+				return;
+			}
 
 			// find out declarations
 			Map<String, BuiltinNumericTypeSpecifier> outDeclarations = new HashMap<>();
@@ -404,9 +404,9 @@ public class CompatibilityTransformer {
 						if (!outDeclarations.containsKey(name)) {
 							// make sure the declared in is actually used
 							// todo patricia
-//							if (!currentRoot.identifierIndex.getAncestors(name, ReferenceExpression.class).findAny().isPresent()) {
-//								continue;
-//							}
+							if (!currentRoot.identifierIndex.getAncestors(name, ReferenceExpression.class).findAny().isPresent()) {
+								continue;
+							}
 
 							if (inTypeSpecifier == null) {
 								LOGGER.warn(
@@ -457,9 +457,9 @@ public class CompatibilityTransformer {
 								// if the types match but it's never assigned a value,
 								// an initialization is added
 								// todo patricia
-//								if (prevRoot.identifierIndex.get(name).size() > 1) {
-//									continue;
-//								}
+								if (prevRoot.identifierIndex.get(name).size() > 1) {
+									continue;
+								}
 
 								// add an initialization statement for this declaration
 								prevTree.prependMain(getInitializer(prevRoot, name, inType));
@@ -481,7 +481,7 @@ public class CompatibilityTransformer {
 							// rename all references of this out declaration to a new name (iris_)
 							String newName = tagPrefix + name;
 							// todo patricia
-//							prevRoot.identifierIndex.rename(name, newName);
+							prevRoot.identifierIndex.rename(name, newName);
 
 							// rename the original out declaration back to the original name
 							TypeAndInitDeclaration outDeclaration = outTypeSpecifier.getAncestor(TypeAndInitDeclaration.class);

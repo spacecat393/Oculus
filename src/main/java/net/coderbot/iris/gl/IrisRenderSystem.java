@@ -149,11 +149,14 @@ public class IrisRenderSystem {
 		dsaState.readBuffer(framebuffer, buffer);
 	}
 
-	public static String getActiveUniform(int program, int index, int size, IntBuffer type, IntBuffer name) {
-		IntBuffer length = BufferUtils.createIntBuffer(1);
-		ByteBuffer nameBuffer = BufferUtils.createByteBuffer(size);
-		GL20.glGetActiveUniform(program, index, length, IntBuffer.allocate(size), type, nameBuffer);
-		byte[] nameBytes = new byte[length.get(0)];
+	public static String getActiveUniform(int program, int index, int maxLength, IntBuffer size, IntBuffer type) {
+		IntBuffer lengthBuffer = BufferUtils.createIntBuffer(1);
+		ByteBuffer nameBuffer = BufferUtils.createByteBuffer(maxLength);
+
+		GL20.glGetActiveUniform(program, index, lengthBuffer, size, type, nameBuffer);
+
+		int length = lengthBuffer.get(0);
+		byte[] nameBytes = new byte[length];
 		nameBuffer.get(nameBytes);
 		return new String(nameBytes);
 	}
