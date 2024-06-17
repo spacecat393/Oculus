@@ -1,24 +1,24 @@
 package net.coderbot.iris.texture.util;
 
-import nanolive.compat.NativeImage;
+import java.awt.image.BufferedImage;
 
 public class ImageManipulationUtil {
-	public static NativeImage scaleNearestNeighbor(NativeImage image, int newWidth, int newHeight) {
-		NativeImage scaled = new NativeImage(image.getFormat(), newWidth, newHeight, false);
+	public static BufferedImage scaleNearestNeighbor(BufferedImage image, int newWidth, int newHeight) {
+		BufferedImage scaled = new BufferedImage(newWidth, newHeight, image.getType());
 		float xScale = (float) newWidth / image.getWidth();
 		float yScale = (float) newHeight / image.getHeight();
 		for (int y = 0; y < newHeight; ++y) {
 			for (int x = 0; x < newWidth; ++x) {
 				float unscaledX = (x + 0.5f) / xScale;
 				float unscaledY = (y + 0.5f) / yScale;
-				scaled.setPixelRGBA(x, y, image.getPixelRGBA((int) unscaledX, (int) unscaledY));
+				scaled.setRGB(x, y, image.getRGB((int) unscaledX, (int) unscaledY));
 			}
 		}
 		return scaled;
 	}
 
-	public static NativeImage scaleBilinear(NativeImage image, int newWidth, int newHeight) {
-		NativeImage scaled = new NativeImage(image.getFormat(), newWidth, newHeight, false);
+	public static BufferedImage scaleBilinear(BufferedImage image, int newWidth, int newHeight) {
+		BufferedImage scaled = new BufferedImage(newWidth, newHeight, image.getType());
 		float xScale = (float) newWidth / image.getWidth();
 		float yScale = (float) newHeight / image.getHeight();
 		for (int y = 0; y < newHeight; ++y) {
@@ -60,10 +60,10 @@ public class ImageManipulationUtil {
 					float weightBL = leftWeight * bottomWeight;
 					float weightBR = rightWeight * bottomWeight;
 
-					int colorTL = image.getPixelRGBA(x0, y0);
-					int colorTR = image.getPixelRGBA(x1, y0);
-					int colorBL = image.getPixelRGBA(x0, y1);
-					int colorBR = image.getPixelRGBA(x1, y1);
+					int colorTL = image.getRGB(x0, y0);
+					int colorTR = image.getRGB(x1, y0);
+					int colorBL = image.getRGB(x0, y1);
+					int colorBR = image.getRGB(x1, y1);
 
 					finalColor = blendColor(colorTL, colorTR, colorBL, colorBR, weightTL, weightTR, weightBL, weightBR);
 				} else if (x0valid & x1valid) {
@@ -71,8 +71,8 @@ public class ImageManipulationUtil {
 					float rightWeight = unscaledX - (x0 + 0.5f);
 
 					int validY = y0valid ? y0 : y1;
-					int colorLeft = image.getPixelRGBA(x0, validY);
-					int colorRight = image.getPixelRGBA(x1, validY);
+					int colorLeft = image.getRGB(x0, validY);
+					int colorRight = image.getRGB(x1, validY);
 
 					finalColor = blendColor(colorLeft, colorRight, leftWeight, rightWeight);
 				} else if (y0valid & y1valid) {
@@ -80,25 +80,25 @@ public class ImageManipulationUtil {
 					float bottomWeight = unscaledY - (y0 + 0.5f);
 
 					int validX = x0valid ? x0 : x1;
-					int colorTop = image.getPixelRGBA(validX, y0);
-					int colorBottom = image.getPixelRGBA(validX, y1);
+					int colorTop = image.getRGB(validX, y0);
+					int colorBottom = image.getRGB(validX, y1);
 
 					finalColor = blendColor(colorTop, colorBottom, topWeight, bottomWeight);
 				} else {
-					finalColor = image.getPixelRGBA(x0valid ? x0 : x1, y0valid ? y0 : y1);
+					finalColor = image.getRGB(x0valid ? x0 : x1, y0valid ? y0 : y1);
 				}
-				scaled.setPixelRGBA(x, y, finalColor);
+				scaled.setRGB(x, y, finalColor);
 			}
 		}
 		return scaled;
 	}
 
 	private static int blendColor(int c0, int c1, int c2, int c3, float w0, float w1, float w2, float w3) {
-		return NativeImage.combine(
-				blendChannel(NativeImage.getA(c0), NativeImage.getA(c1), NativeImage.getA(c2), NativeImage.getA(c3), w0, w1, w2, w3),
-				blendChannel(NativeImage.getB(c0), NativeImage.getB(c1), NativeImage.getB(c2), NativeImage.getB(c3), w0, w1, w2, w3),
-				blendChannel(NativeImage.getG(c0), NativeImage.getG(c1), NativeImage.getG(c2), NativeImage.getG(c3), w0, w1, w2, w3),
-				blendChannel(NativeImage.getR(c0), NativeImage.getR(c1), NativeImage.getR(c2), NativeImage.getR(c3), w0, w1, w2, w3)
+		return combine(
+				blendChannel((c0 >> 24) & 0xFF, (c0 >> 24) & 0xFF, (c0 >> 24) & 0xFF, (c0 >> 24) & 0xFF, w0, w1, w2, w3),
+				blendChannel((c0 & 0xFF), (c1 & 0xFF), (c2 & 0xFF), (c3 & 0xFF), w0, w1, w2, w3),
+				blendChannel((c0 >> 8) & 0xFF, (c1 >> 8) & 0xFF, (c2 >> 8) & 0xFF, (c3 >> 8) & 0xFF, w0, w1, w2, w3),
+				blendChannel((c0 >> 16) & 0xFF, (c1 >> 16) & 0xFF, (c2 >> 16) & 0xFF, (c3 >> 16) & 0xFF, w0, w1, w2, w3)
 		);
 	}
 
@@ -107,15 +107,24 @@ public class ImageManipulationUtil {
 	}
 
 	private static int blendColor(int c0, int c1, float w0, float w1) {
-		return NativeImage.combine(
-				blendChannel(NativeImage.getA(c0), NativeImage.getA(c1), w0, w1),
-				blendChannel(NativeImage.getB(c0), NativeImage.getB(c1), w0, w1),
-				blendChannel(NativeImage.getG(c0), NativeImage.getG(c1), w0, w1),
-				blendChannel(NativeImage.getR(c0), NativeImage.getR(c1), w0, w1)
+		return combine(
+				blendChannel((c0 >> 24) & 0xFF, (c0 >> 24) & 0xFF, w0, w1),
+				blendChannel((c0 & 0xFF), (c1 & 0xFF), w0, w1),
+				blendChannel((c0 >> 8) & 0xFF, (c1 >> 8) & 0xFF, w0, w1),
+				blendChannel((c0 >> 16) & 0xFF, (c1 >> 16) & 0xFF, w0, w1)
 		);
 	}
 
 	private static int blendChannel(int v0, int v1, float w0, float w1) {
 		return Math.round(v0 * w0 + v1 * w1);
+	}
+
+	private static int combine(int alpha, int blue, int green, int red) {
+		alpha = (alpha & 0xFF) << 24;
+		red = (red & 0xFF) << 16;
+		green = (green & 0xFF) << 8;
+		blue = blue & 0xFF;
+
+		return alpha | red | green | blue;
 	}
 }
