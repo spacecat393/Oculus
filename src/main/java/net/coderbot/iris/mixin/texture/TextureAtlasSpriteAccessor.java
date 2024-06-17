@@ -1,6 +1,5 @@
 package net.coderbot.iris.mixin.texture;
 
-import nanolive.compat.NativeImage;
 import net.minecraft.client.resources.data.AnimationMetadataSection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;

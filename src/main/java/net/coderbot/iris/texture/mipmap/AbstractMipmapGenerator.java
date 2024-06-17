@@ -1,25 +1,25 @@
 package net.coderbot.iris.texture.mipmap;
 
-import nanolive.compat.NativeImage;
+import java.awt.image.BufferedImage;
 
 public abstract class AbstractMipmapGenerator implements CustomMipmapGenerator {
 	@Override
-	public NativeImage[] generateMipLevels(NativeImage image, int mipLevel) {
-		NativeImage[] images = new NativeImage[mipLevel + 1];
+	public BufferedImage[] generateMipLevels(BufferedImage image, int mipLevel) {
+		BufferedImage[] images = new BufferedImage[mipLevel + 1];
 		images[0] = image;
 		if (mipLevel > 0) {
 			for (int level = 1; level <= mipLevel; ++level) {
-				NativeImage prevMipmap = images[level - 1];
-				NativeImage mipmap = new NativeImage(prevMipmap.getWidth() >> 1, prevMipmap.getHeight() >> 1, false);
+				BufferedImage prevMipmap = images[level - 1];
+				BufferedImage mipmap = new BufferedImage(prevMipmap.getWidth() >> 1, prevMipmap.getHeight() >> 1, BufferedImage.TYPE_INT_ARGB);
 				int width = mipmap.getWidth();
 				int height = mipmap.getHeight();
 				for (int x = 0; x < width; ++x) {
 					for (int y = 0; y < height; ++y) {
-						mipmap.setPixelRGBA(x, y, blend(
-								prevMipmap.getPixelRGBA(x * 2, y * 2),
-								prevMipmap.getPixelRGBA(x * 2 + 1, y * 2),
-								prevMipmap.getPixelRGBA(x * 2, y * 2 + 1),
-								prevMipmap.getPixelRGBA(x * 2 + 1, y * 2 + 1)
+						mipmap.setRGB(x, y, blend(
+								prevMipmap.getRGB(x * 2, y * 2),
+								prevMipmap.getRGB(x * 2 + 1, y * 2),
+								prevMipmap.getRGB(x * 2, y * 2 + 1),
+								prevMipmap.getRGB(x * 2 + 1, y * 2 + 1)
 						));
 					}
 				}

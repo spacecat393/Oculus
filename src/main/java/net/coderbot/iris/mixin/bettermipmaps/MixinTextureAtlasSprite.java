@@ -1,7 +1,6 @@
 package net.coderbot.iris.mixin.bettermipmaps;
 
 import nanolive.compat.CompatMemoryUtil;
-import nanolive.compat.NativeImage;
 import net.coderbot.iris.helpers.ColorSRGB;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureUtil;
