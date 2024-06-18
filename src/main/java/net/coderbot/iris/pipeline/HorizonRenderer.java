@@ -2,14 +2,21 @@ package net.coderbot.iris.pipeline;
 
 import nanolive.compat.VertexUtils;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.minecraft.client.Minecraft;
+import org.lwjgl.opengl.GL15;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 /**
  * Renders the sky horizon. Vanilla Minecraft simply uses the "clear color" for its horizon, and then draws a plane
@@ -44,6 +51,7 @@ public class HorizonRenderer {
 	private static final double SIN_22_5 = Math.sin(Math.toRadians(22.5));
 	private VertexBuffer buffer;
 	private int currentRenderDistance;
+	private int bufferCount;
 
 	public HorizonRenderer() {
 		currentRenderDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks;
@@ -65,7 +73,14 @@ public class HorizonRenderer {
 
 		this.buffer = new VertexBuffer(DefaultVertexFormats.POSITION);
 		this.buffer.bindBuffer();
-		// this.buffer.upload(buffer);
+		// replacement for this.buffer.upload()
+		ByteBuffer lvt_2_1_ = buffer.getByteBuffer();
+		if (OpenGlHelper.glGenBuffers() != -1) {
+			this.bufferCount = lvt_2_1_.remaining() / DefaultVertexFormats.POSITION.getSize();
+			this.buffer.bindBuffer();
+			GL15.glBufferData(34962, lvt_2_1_, 35044);
+			this.buffer.unbindBuffer();
+		}
 		this.buffer.unbindBuffer();
 	}
 
@@ -173,9 +188,21 @@ public class HorizonRenderer {
 
 		buffer.bindBuffer();
 		VertexUtils.setupBufferState(DefaultVertexFormats.POSITION, 0L);
-		buffer.drawArrays(GL11.GL_QUADS);
+
+		// replacement for buffer.draw(matrix, GL11.GL_QUADS);
+		GlStateManager.pushMatrix();
+		GlStateManager.loadIdentity();
+		FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(16);
+		if (matrix != null) {
+			matrix.get(floatBuffer);
+			floatBuffer.flip();
+			GlStateManager.multMatrix(floatBuffer);
+		}
+		GL11.glDrawArrays(GL11.GL_QUADS, 0, bufferCount);
+		GlStateManager.popMatrix();
+
 		VertexUtils.clearBufferState(DefaultVertexFormats.POSITION);
-		buffer.unbindBuffer();
+		this.buffer.unbindBuffer();
 	}
 
 	public void destroy() {
