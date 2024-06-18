@@ -3,7 +3,6 @@ package net.coderbot.iris.pipeline;
 import lombok.Getter;
 import net.coderbot.iris.vendored.joml.Matrix4f;
 
-import net.coderbot.batchedentityrendering.impl.FullyBufferedMultiBufferSource;
 import net.irisshaders.iris.api.v0.IrisApi;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -25,8 +24,6 @@ public class HandRenderer {
 	private boolean ACTIVE;
 	@Getter
     private boolean renderingSolid;
-	@Getter
-    private final FullyBufferedMultiBufferSource bufferSource = new FullyBufferedMultiBufferSource();
 
 	public static final float DEPTH = 0.125F;
 
@@ -97,8 +94,6 @@ public class HandRenderer {
 		mc.profiler.endSection();
 		GL11.glPopMatrix();
 
-		bufferSource.endBatch();
-
 		renderingSolid = false;
 
 		ACTIVE = false;
@@ -125,8 +120,6 @@ public class HandRenderer {
 
 		mc.profiler.endSection();
 		GL11.glPopMatrix();
-
-		bufferSource.endBatch();
 
 		ACTIVE = false;
 	}
