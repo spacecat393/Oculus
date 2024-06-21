@@ -9,7 +9,7 @@ import net.coderbot.iris.gl.uniform.UniformHolder;
 import net.coderbot.iris.pipeline.ShadowRenderer;
 import net.coderbot.iris.shaderpack.PackDirectives;
 import net.coderbot.iris.shadow.ShadowMatrices;
-import net.coderbot.iris.vendored.joml.Matrix4f;
+import net.minecraft.client.renderer.Matrix4f;
 
 public final class MatrixUniforms {
 	private MatrixUniforms() {
@@ -22,15 +22,15 @@ public final class MatrixUniforms {
 		addMatrix(uniforms, "Projection", CapturedRenderingState.INSTANCE::getGbufferProjection);
 		// todo
 //		addShadowMatrix(uniforms, "ModelView", () ->
-//				ShadowRenderer.createShadowModelView(directives.getSunPathRotation(), directives.getShadowDirectives().getIntervalSize()).last().pose().copy());
+//				ShadowRenderer.createShadowModelView(directives.getSunPathRotation(), directives.getShadowDirectives().getIntervalSize()));
 		addShadowArrayMatrix(uniforms, "Projection", () -> ShadowMatrices.createOrthoMatrix(directives.getShadowDirectives().getDistance()));
 	}
 
 	private static void addMatrix(UniformHolder uniforms, String name, Supplier<Matrix4f> supplier) {
 		uniforms
-			.uniformMatrix(PER_FRAME, "gbuffer" + name, supplier)
-			.uniformJomlMatrix(PER_FRAME, "gbuffer" + name + "Inverse", new Inverted(supplier))
-			.uniformMatrix(PER_FRAME, "gbufferPrevious" + name, new Previous(supplier));
+				.uniformMatrix(PER_FRAME, "gbuffer" + name, supplier)
+				.uniformJomlMatrix(PER_FRAME, "gbuffer" + name + "Inverse", new Inverted(supplier))
+				.uniformMatrix(PER_FRAME, "gbufferPrevious" + name, new Previous(supplier));
 	}
 
 	private static void addShadowMatrix(UniformHolder uniforms, String name, Supplier<Matrix4f> supplier) {
@@ -55,11 +55,10 @@ public final class MatrixUniforms {
 		@Override
 		public net.coderbot.iris.vendored.joml.Matrix4f get() {
 			// PERF: Don't copy + allocate this matrix every time?
-			final Matrix4f copy = new Matrix4f(parent.get());
+			Matrix4f copy = parent.get();
 
 			FloatBuffer buffer = FloatBuffer.allocate(16);
-			// todo
-//			copy.store(buffer);
+			copy.store(buffer);
 			buffer.rewind();
 
 			net.coderbot.iris.vendored.joml.Matrix4f matrix4f = new net.coderbot.iris.vendored.joml.Matrix4f(buffer);
@@ -101,12 +100,12 @@ public final class MatrixUniforms {
 		@Override
 		public Matrix4f get() {
 			// PERF: Don't copy + allocate these matrices every time?
-			final Matrix4f copy = new Matrix4f(parent.get());
-			final Matrix4f prev = new Matrix4f(this.previous);
+			Matrix4f copy = parent.get();
+			Matrix4f previous = this.previous;
 
 			this.previous = copy;
 
-			return prev;
+			return previous;
 		}
 	}
 }

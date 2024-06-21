@@ -2,11 +2,12 @@ package net.coderbot.iris.shadow;
 
 import java.nio.FloatBuffer;
 
-import net.coderbot.iris.vendored.joml.Matrix4f;
-import net.coderbot.iris.vendored.joml.Vector3f;
+import net.coderbot.iris.vendored.joml.MemUtil;
+import net.minecraft.client.renderer.Matrix4f;
+
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.math.Vec3d;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.util.vector.Vector3f;
 
 public class ShadowMatrices {
 	private static final float NEAR = 0.05f;
@@ -52,17 +53,22 @@ public class ShadowMatrices {
 		}
 
 		Matrix4f matrix = new Matrix4f();
-		matrix.identity();
+		matrix.setIdentity();
 
-		matrix.translate(0.0f, 0.0f, -100.0f);
-		matrix.rotate(90.0F, 1.0f, 0.0f, 0.0f);
-		matrix.rotate(skyAngle * -360.0f, 0.0f, 0.0f, 1.0f);
-		matrix.rotate(sunPathRotation, 1.0f, 0.0f, 0.0f);
+		matrix.translate(new Vector3f(0.0f, 0.0f, -100.0f));
+		Matrix4f.rotate(90.0F, new Vector3f(1.0f, 0.0f, 0.0f), matrix, matrix);
+		Matrix4f.rotate(skyAngle * -360.0f, new Vector3f(0.0f, 0.0f, 1.0f), matrix, matrix);
+		Matrix4f.rotate(sunPathRotation, new Vector3f(1.0f, 0.0f, 0.0f), matrix, matrix);
 
 		GlStateManager.loadIdentity();
 
 		FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-		matrix.get(matrixBuffer);
+		MemUtil.INSTANCE.put(new net.coderbot.iris.vendored.joml.Matrix4f(
+				matrix.m00,matrix.m01,matrix.m02,matrix.m03,
+				matrix.m10,matrix.m11,matrix.m12,matrix.m13,
+				matrix.m20,matrix.m21,matrix.m22,matrix.m23,
+				matrix.m30,matrix.m31,matrix.m32,matrix.m33
+		), matrixBuffer.position(), matrixBuffer);
 
 		GlStateManager.multMatrix(matrixBuffer);
 	}
@@ -97,13 +103,18 @@ public class ShadowMatrices {
 		offsetZ -= halfIntervalSize;
 
 		Matrix4f matrix = new Matrix4f();
-		matrix.identity();
-		matrix.translate(offsetX, offsetY, offsetZ);
+		matrix.setIdentity();
+		matrix.translate(new Vector3f(offsetX, offsetY, offsetZ));
 
 		GlStateManager.loadIdentity();
 
 		FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-		matrix.get(matrixBuffer);
+		MemUtil.INSTANCE.put(new net.coderbot.iris.vendored.joml.Matrix4f(
+				matrix.m00,matrix.m01,matrix.m02,matrix.m03,
+				matrix.m10,matrix.m11,matrix.m12,matrix.m13,
+				matrix.m20,matrix.m21,matrix.m22,matrix.m23,
+				matrix.m30,matrix.m31,matrix.m32,matrix.m33
+		), matrixBuffer.position(), matrixBuffer);
 
 		GlStateManager.multMatrix(matrixBuffer);
 	}
@@ -171,7 +182,7 @@ public class ShadowMatrices {
 			};
 
 			Matrix4f modelView = new Matrix4f();
-			modelView.identity();
+			modelView.setIdentity();
 
 			// NB: At dawn, the shadow angle is NOT zero.
 			// When DayTime=0, skyAngle = 282 degrees.
@@ -182,9 +193,14 @@ public class ShadowMatrices {
 			test("model view at dawn", expectedModelViewAtDawn, toFloatArray(modelView));
 		}
 
-		private static float[] toFloatArray(Matrix4f matrix4f) {
+		private static float[] toFloatArray(Matrix4f matrix) {
 			FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
-			matrix4f.get(buffer);
+			MemUtil.INSTANCE.put(new net.coderbot.iris.vendored.joml.Matrix4f(
+					matrix.m00,matrix.m01,matrix.m02,matrix.m03,
+					matrix.m10,matrix.m11,matrix.m12,matrix.m13,
+					matrix.m20,matrix.m21,matrix.m22,matrix.m23,
+					matrix.m30,matrix.m31,matrix.m32,matrix.m33
+			), buffer.position(), buffer);
 
 			return buffer.array();
 		}

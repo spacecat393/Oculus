@@ -3,10 +3,8 @@ package net.coderbot.iris.gl.uniform;
 import java.nio.FloatBuffer;
 import java.util.function.Supplier;
 
+import net.minecraft.client.renderer.Matrix4f;
 import org.lwjgl.BufferUtils;
-
-//import com.mojang.math.Matrix4f;
-import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.coderbot.iris.gl.IrisRenderSystem;
 
@@ -27,14 +25,9 @@ public class MatrixUniform extends Uniform {
 		Matrix4f newValue = value.get();
 
 		if (!newValue.equals(cachedValue)) {
-			try {
-				cachedValue = (Matrix4f) newValue.clone();
-			} catch (CloneNotSupportedException e) {
-				throw new RuntimeException("Unexpected CloneNotSupportedException", e);
-			}
+			cachedValue = newValue;
 
-			// todo
-//			cachedValue.store(buffer);
+			cachedValue.store(buffer);
 			buffer.rewind();
 
 			IrisRenderSystem.uniformMatrix4fv(location, false, buffer);

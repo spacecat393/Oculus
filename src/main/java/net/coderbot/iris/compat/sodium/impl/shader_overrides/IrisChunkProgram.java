@@ -3,13 +3,8 @@ package net.coderbot.iris.compat.sodium.impl.shader_overrides;
 import java.nio.FloatBuffer;
 
 import me.jellysquid.mods.sodium.client.render.GameRendererContext;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.util.ResourceLocation;
-//import org.jetbrains.annotations.Nullable;
-//import org.lwjgl.system.MemoryStack;
-
-//import com.mojang.blaze3d.vertex.PoseStack;
-//import com.mojang.math.Matrix4f;
-import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgram;
@@ -18,7 +13,6 @@ import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.program.ProgramImages;
 import net.coderbot.iris.gl.program.ProgramSamplers;
 import net.coderbot.iris.gl.program.ProgramUniforms;
-//import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 

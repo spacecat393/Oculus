@@ -1,16 +1,16 @@
 package net.coderbot.iris.pipeline;
 
 import nanolive.compat.VertexUtils;
+import net.coderbot.iris.vendored.joml.MemUtil;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-
-import net.coderbot.iris.vendored.joml.Matrix4f;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL15;
@@ -194,7 +194,12 @@ public class HorizonRenderer {
 		GlStateManager.loadIdentity();
 		FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(16);
 		if (matrix != null) {
-			matrix.get(floatBuffer);
+			MemUtil.INSTANCE.put(new net.coderbot.iris.vendored.joml.Matrix4f(
+					matrix.m00,matrix.m01,matrix.m02,matrix.m03,
+					matrix.m10,matrix.m11,matrix.m12,matrix.m13,
+					matrix.m20,matrix.m21,matrix.m22,matrix.m23,
+					matrix.m30,matrix.m31,matrix.m32,matrix.m33
+			), floatBuffer.position(), floatBuffer);
 			floatBuffer.flip();
 			GlStateManager.multMatrix(floatBuffer);
 		}

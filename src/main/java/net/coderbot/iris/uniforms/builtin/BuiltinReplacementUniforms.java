@@ -1,10 +1,13 @@
 package net.coderbot.iris.uniforms.builtin;
 
-import net.coderbot.iris.vendored.joml.Matrix4f;
+import net.minecraft.client.renderer.Matrix4f;
 
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.uniform.UniformHolder;
 import net.coderbot.iris.gl.uniform.UniformUpdateFrequency;
+import org.lwjgl.util.vector.Vector3f;
+
+import java.util.Arrays;
 
 public class BuiltinReplacementUniforms {
 	private static final Matrix4f lightmapTextureMatrix;
@@ -12,19 +15,12 @@ public class BuiltinReplacementUniforms {
 	static {
 		// This mimics the transformations done in LightmapTextureManager to the GL_TEXTURE matrix.
 		lightmapTextureMatrix = new Matrix4f();
-//		lightmapTextureMatrix.setIdentity();
-		lightmapTextureMatrix.identity();
-		float value = 0.00390625f;
-		Matrix4f tempMatrix = new Matrix4f(
-				value, value, value, value,
-				value, value, value, value,
-				value, value, value, value,
-				value, value, value, value
-		);
-//		lightmapTextureMatrix.multiply(0.00390625f);
-		lightmapTextureMatrix.mul(tempMatrix);
-//		lightmapTextureMatrix.multiply(Matrix4f.createTranslateMatrix(8.0f, 8.0f, 8.0f));
-		lightmapTextureMatrix.translate(8.0f, 8.0f, 8.0f);
+		lightmapTextureMatrix.setIdentity();
+		float[] valueArray = new float[16];
+		Arrays.fill(valueArray, 0.00390625f);
+		Matrix4f tempMatrix = new Matrix4f(valueArray);
+		Matrix4f.mul(lightmapTextureMatrix, tempMatrix, lightmapTextureMatrix);
+		lightmapTextureMatrix.translate(new Vector3f(8.0f, 8.0f, 8.0f));
 	}
 
 	public static void addBuiltinReplacementUniforms(UniformHolder uniforms) {
