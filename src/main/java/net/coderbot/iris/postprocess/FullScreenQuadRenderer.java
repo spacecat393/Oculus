@@ -1,12 +1,12 @@
 package net.coderbot.iris.postprocess;
 
 import nanolive.compat.VertexUtils;
-import net.coderbot.iris.gl.IrisRenderSystem;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+
+import net.coderbot.iris.gl.IrisRenderSystem;
 
 /**
  * Renders a full-screen textured quad to the screen. Used in composite / deferred rendering.
@@ -43,21 +43,20 @@ public class FullScreenQuadRenderer {
 		GlStateManager.pushMatrix();
 		GlStateManager.loadIdentity();
 
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		OpenGlHelper.glBindBuffer(GL15.GL_ARRAY_BUFFER, quadBuffer);
-
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, quadBuffer);
 		VertexUtils.setupBufferState(DefaultVertexFormats.POSITION_TEX, 0L);
 	}
 
 	public void renderQuad() {
-		GlStateManager.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);
+		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);
 	}
 
 	@SuppressWarnings("deprecation")
 	public static void end() {
 		VertexUtils.clearBufferState(DefaultVertexFormats.POSITION_TEX);
-		OpenGlHelper.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
 		GlStateManager.enableDepth();
 
@@ -72,18 +71,18 @@ public class FullScreenQuadRenderer {
 	 */
 	private static int createQuad() {
 		float[] vertices = new float[] {
-			// Vertex 0: Top right corner
-			1.0F, 1.0F, 0.0F,
-			1.0F, 1.0F,
-			// Vertex 1: Top left corner
-			0.0F, 1.0F, 0.0F,
-			0.0F, 1.0F,
-			// Vertex 2: Bottom right corner
-			1.0F, 0.0F, 0.0F,
-			1.0F, 0.0F,
-			// Vertex 3: Bottom left corner
-			0.0F, 0.0F, 0.0F,
-			0.0F, 0.0F
+				// Vertex 0: Top right corner
+				1.0F, 1.0F, 0.0F,
+				1.0F, 1.0F,
+				// Vertex 1: Top left corner
+				0.0F, 1.0F, 0.0F,
+				0.0F, 1.0F,
+				// Vertex 2: Bottom right corner
+				1.0F, 0.0F, 0.0F,
+				1.0F, 0.0F,
+				// Vertex 3: Bottom left corner
+				0.0F, 0.0F, 0.0F,
+				0.0F, 0.0F
 		};
 
 		return IrisRenderSystem.bufferStorage(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);

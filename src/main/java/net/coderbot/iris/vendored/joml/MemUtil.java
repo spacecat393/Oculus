@@ -36,7 +36,7 @@ import java.nio.IntBuffer;
  * @author The LWJGL authors
  * @author Kai Burjack
  */
-public abstract class MemUtil {
+abstract class MemUtil {
     public static final MemUtil INSTANCE = createInstance();
     private static MemUtil createInstance() {
         return new MemUtilNIO();

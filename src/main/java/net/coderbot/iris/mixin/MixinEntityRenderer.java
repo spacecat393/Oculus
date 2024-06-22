@@ -9,6 +9,8 @@ import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.coderbot.iris.uniforms.SystemTimeUniforms;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.settings.GameSettings;
 import org.spongepowered.asm.mixin.Final;
@@ -34,8 +36,8 @@ public class MixinEntityRenderer {
     @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;clear(I)V", ordinal = 0, shift = At.Shift.AFTER))
     private void iris$beginLevelRender(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
         // todo
-        //CapturedRenderingState.INSTANCE.setGbufferModelView(poseStack.last().pose());
-        //CapturedRenderingState.INSTANCE.setGbufferProjection(projection);
+        CapturedRenderingState.INSTANCE.setGbufferModelView(new Matrix4f(ClippingHelperImpl.getInstance().modelviewMatrix));
+        CapturedRenderingState.INSTANCE.setGbufferProjection(new Matrix4f(ClippingHelperImpl.getInstance().projectionMatrix));
         CapturedRenderingState.INSTANCE.setTickDelta(partialTicks);
         SystemTimeUniforms.COUNTER.beginFrame();
         SystemTimeUniforms.TIMER.beginFrame(finishTimeNano);

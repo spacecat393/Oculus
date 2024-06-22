@@ -57,12 +57,18 @@ public final class MatrixUniforms {
 			// PERF: Don't copy + allocate this matrix every time?
 			Matrix4f copy = parent.get();
 
-			FloatBuffer buffer = FloatBuffer.allocate(16);
-			copy.store(buffer);
-			buffer.rewind();
+			net.coderbot.iris.vendored.joml.Matrix4f matrix4f;
 
-			net.coderbot.iris.vendored.joml.Matrix4f matrix4f = new net.coderbot.iris.vendored.joml.Matrix4f(buffer);
-			matrix4f.invert();
+			if (copy == null) {
+				FloatBuffer buffer = FloatBuffer.allocate(16);
+				copy.store(buffer);
+				buffer.rewind();
+
+				matrix4f = new net.coderbot.iris.vendored.joml.Matrix4f(buffer);
+				matrix4f.invert();
+			} else {
+				matrix4f = new net.coderbot.iris.vendored.joml.Matrix4f();
+			}
 
 			return matrix4f;
 		}

@@ -1,7 +1,6 @@
 package net.coderbot.iris.pipeline;
 
 import nanolive.compat.VertexUtils;
-import net.coderbot.iris.vendored.joml.MemUtil;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Matrix4f;
@@ -194,14 +193,24 @@ public class HorizonRenderer {
 		GlStateManager.loadIdentity();
 		FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(16);
 		if (matrix != null) {
-			MemUtil.INSTANCE.put(new net.coderbot.iris.vendored.joml.Matrix4f(
-					matrix.m00,matrix.m01,matrix.m02,matrix.m03,
-					matrix.m10,matrix.m11,matrix.m12,matrix.m13,
-					matrix.m20,matrix.m21,matrix.m22,matrix.m23,
-					matrix.m30,matrix.m31,matrix.m32,matrix.m33
-			), floatBuffer.position(), floatBuffer);
-			floatBuffer.flip();
-			GlStateManager.multMatrix(floatBuffer);
+			floatBuffer.put(0, matrix.m00)
+					.put(1, matrix.m01)
+					.put(2, matrix.m02)
+					.put(3, matrix.m03)
+					.put(4, matrix.m10)
+					.put(5, matrix.m11)
+					.put(6, matrix.m12)
+					.put(7, matrix.m13)
+					.put(8, matrix.m20)
+					.put(9, matrix.m21)
+					.put(10, matrix.m22)
+					.put(11, matrix.m23)
+					.put(12, matrix.m30)
+					.put(13, matrix.m31)
+					.put(14, matrix.m32)
+					.put(15, matrix.m33);
+			floatBuffer.rewind();
+			GL11.glMultMatrix(floatBuffer);
 		}
 		GL11.glDrawArrays(GL11.GL_QUADS, 0, bufferCount);
 		GlStateManager.popMatrix();
