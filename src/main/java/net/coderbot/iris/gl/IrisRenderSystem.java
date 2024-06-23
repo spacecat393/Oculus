@@ -375,7 +375,10 @@ public class IrisRenderSystem {
 		@Override
 		public int bufferStorage(int target, float[] data, int usage) {
 			int buffer = GL45.glCreateBuffers();
-			GL45.glNamedBufferStorage(buffer, FloatBuffer.wrap(data), usage);
+			FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(data.length);
+			floatBuffer.put(data);
+			floatBuffer.flip();
+			GL45.glNamedBufferData(buffer, floatBuffer, usage);
 			return buffer;
 		}
 

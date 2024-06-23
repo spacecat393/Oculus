@@ -1,8 +1,10 @@
 package net.coderbot.iris.gl.sampler;
 
+import lombok.Getter;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL20;
 
+@Getter
 public class SamplerLimits {
 	private final int maxTextureUnits;
 	private final int maxDrawBuffers;
@@ -13,15 +15,7 @@ public class SamplerLimits {
 		this.maxDrawBuffers = GlStateManager.glGetInteger(GL20.GL_MAX_DRAW_BUFFERS);
 	}
 
-	public int getMaxTextureUnits() {
-		return maxTextureUnits;
-	}
-
-	public int getMaxDrawBuffers() {
-		return maxDrawBuffers;
-	}
-
-	public static SamplerLimits get() {
+    public static SamplerLimits get() {
 		if (instance == null) {
 			instance = new SamplerLimits();
 		}

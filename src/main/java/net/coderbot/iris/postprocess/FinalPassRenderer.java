@@ -240,7 +240,7 @@ public class FinalPassRenderer {
 		ProgramSamplers.clearActiveSamplers();
 		OpenGlHelper.glUseProgram(0);
 
-		for (int i = 0; i < SamplerLimits.get().getMaxTextureUnits(); i++) {
+		for (int i = 0; i < 8; i++) {
 			// Unbind all textures that we may have used.
 			// NB: This is necessary for shader pack reloading to work properly
 			GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + i);

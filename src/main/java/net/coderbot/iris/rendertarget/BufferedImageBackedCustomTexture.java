@@ -73,37 +73,12 @@ public class BufferedImageBackedCustomTexture extends DynamicTexture {
 		buffer.flip();
 
 		// upload
-		// image.upload(0, 0, 0, 0, 0, image.getWidth(), image.getHeight(), false, false, false, false);
-		// private void _upload(int 0, int 0, int 0, int 0, int 0, int p_85096_, int p_85097_, boolean p_85098_, boolean p_85099_, boolean p_85100_, boolean p_85101_) {
-		//        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		//        this.checkAllocated();
-		//        setFilter(p_85098_, p_85100_);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		//        if (p_85096_ == this.getWidth()) {
-		//            GlStateManager._pixelStore(3314, 0);
 		GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, 0);
-		//        } else {
-		//            GlStateManager._pixelStore(3314, this.getWidth());
-		//        }
-		//
-		//        GlStateManager._pixelStore(3316, p_85094_);
-		//        GlStateManager._pixelStore(3315, p_85095_);
 		GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_PIXELS, 0);
 		GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_ROWS, 0);
-		//        this.format.setUnpackPixelStoreState();
 		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 4);
-		//        GlStateManager._texSubImage2D(3553, p_85091_, p_85092_, p_85093_, p_85096_, p_85097_, this.format.glFormat(), 5121, this.pixels);
 		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-		//        if (p_85099_) {
-		//            GlStateManager._texParameter(3553, 10242, 33071);
-		//            GlStateManager._texParameter(3553, 10243, 33071);
-		//        }
-		//
-		//        if (p_85101_) {
-		//            this.close();
-		//        }
-		//
-		//    }
 	}
 }

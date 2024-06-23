@@ -52,8 +52,7 @@ public class GlyphVertexBufferWriterUnsafe extends VertexBufferWriterUnsafe impl
 
 	@Override
 	public void writeGlyph(float x, float y, float z, int color, float u, float v, int light) {
-		// todo
-//		writeQuad(x, y, z, color, u, v, light, OverlayTexture.NO_OVERLAY, 0);
+		writeQuad(x, y, z, color, u, v, light, 10 << 16, 0);
 	}
 
 	private void endQuad(int normal) {
