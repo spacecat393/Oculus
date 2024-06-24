@@ -6,7 +6,6 @@ import net.coderbot.iris.vertices.*;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-//import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,13 +14,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-//import com.mojang.blaze3d.vertex.BufferBuilder;
-import net.minecraft.client.renderer.BufferBuilder;
-//import com.mojang.blaze3d.vertex.BufferVertexConsumer;
-//import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-//import com.mojang.blaze3d.vertex.VertexFormat;
-//import com.mojang.blaze3d.vertex.VertexFormatElement;
 
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.vendored.joml.Vector3f;
@@ -42,7 +34,7 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 	@Unique
 	private boolean iris$isTerrain = false;
 
-	@Unique
+	@Shadow
 	private int vertexCount;
 
 	@Unique
@@ -69,31 +61,34 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 	@Unique
 	private int currentLocalPosZ;
 
-	private boolean fastFormat;
+	@Shadow
+	private ByteBuffer byteBuffer;
 
-	private boolean fullFormat;
+	@Shadow
+	private int drawMode;
 
-	private ByteBuffer buffer;
+	@Shadow
+	private VertexFormat vertexFormat;
 
-	private int mode;
-
-	private VertexFormat format;
-
-	private int nextElementByte;
-
-	private @Nullable VertexFormatElement currentElement;
+	@Shadow
+	private @Nullable VertexFormatElement vertexFormatElement;
 
 	@Shadow
 	public abstract void begin(int drawMode, VertexFormat vertexFormat);
 
-	@Shadow protected abstract void nextVertexFormatIndex();
+	@Unique
+	private int nextElementByte;
 
-	public abstract void putShort(int i, short s);
+	private void switchFormat(VertexFormat vertexFormat) {
+		if (this.vertexFormat != vertexFormat) {
+			this.vertexFormat = vertexFormat;
+		}
+	}
 
-	protected abstract void switchFormat(VertexFormat format);
+	@Shadow
+	private void nextVertexFormatIndex() {};
 
-	protected abstract void ensureCapacity(int i);
-
+	@Override
 	public void iris$beginWithoutExtending(int drawMode, VertexFormat vertexFormat) {
 		iris$shouldNotExtend = true;
 		begin(drawMode, vertexFormat);
@@ -103,13 +98,11 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 	@Inject(method = "begin", at = @At("HEAD"))
 	private void iris$onBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		boolean shouldExtend = (!iris$shouldNotExtend) && BlockRenderingSettings.INSTANCE.shouldUseExtendedVertexFormat();
-//		extending = shouldExtend && (format == DefaultVertexFormats.BLOCK || format == DefaultVertexFormats.NEW_ENTITY
-//			|| format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
-		extending = shouldExtend && (format == DefaultVertexFormats.BLOCK || format == DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
+		extending = shouldExtend && (format == DefaultVertexFormats.BLOCK || format == DefaultVertexFormats.ITEM
+				|| format == DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
 		vertexCount = 0;
 
 		if (extending) {
-//			injectNormal = format == DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP;
 			injectNormal = format == DefaultVertexFormats.POSITION_TEX_LMAP_COLOR;
 		}
 	}
@@ -117,33 +110,16 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 	@Inject(method = "begin", at = @At("RETURN"))
 	private void iris$afterBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		if (extending) {
-//			if (format == DefaultVertexFormats.NEW_ENTITY) {
-			if (false) {
+			if (format == DefaultVertexFormats.ITEM) {
 				this.switchFormat(IrisVertexFormats.ENTITY);
 				this.iris$isTerrain = false;
 			} else {
 				this.switchFormat(IrisVertexFormats.TERRAIN);
 				this.iris$isTerrain = true;
 			}
-			this.currentElement = this.format.getElements().get(0);
+			this.vertexFormatElement = this.vertexFormat.getElements().get(0);
 		}
 	}
-
-//	@Inject(method = "discard", at = @At("HEAD"))
-//	private void iris$onReset(CallbackInfo ci) {
-//		extending = false;
-//		vertexCount = 0;
-//	}
-//
-//	@Inject(method = "switchFormat", at = @At("RETURN"))
-//	private void iris$preventHardcodedVertexWriting(VertexFormat format, CallbackInfo ci) {
-//		if (!extending) {
-//			return;
-//		}
-//
-//		fastFormat = false;
-//		fullFormat = false;
-//	}
 
 	@Inject(method = "endVertex", at = @At("HEAD"))
 	private void iris$beforeNext(CallbackInfo ci) {
@@ -151,41 +127,37 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 			return;
 		}
 
-//		if (injectNormal && currentElement == DefaultVertexFormats.ELEMENT_NORMAL) {
-		if (injectNormal && currentElement == DefaultVertexFormats.NORMAL_3B) {
+		if (injectNormal && vertexFormatElement == DefaultVertexFormats.NORMAL_3B) {
 			this.putInt(0, 0);
-//			this.nextElement();
+			this.nextVertexFormatIndex();
 		}
-		
-		// For Create Contraptions
-		this.ensureCapacity(15);
 
 		if (iris$isTerrain) {
 			// ENTITY_ELEMENT
-			this.putShort(0, currentBlock);
-			this.putShort(2, currentRenderType);
-//			this.nextElement();
+			this.byteBuffer.putShort(0, currentBlock);
+			this.byteBuffer.putShort(2, currentRenderType);
+			this.nextVertexFormatIndex();
 		}
 		// MID_TEXTURE_ELEMENT
-//		this.putFloat(0, 0);
-//		this.putFloat(4, 0);
-//		this.nextElement();
+		byteBuffer.putFloat(0, 0);
+		byteBuffer.putFloat(4, 0);
+		this.nextVertexFormatIndex();
 		// TANGENT_ELEMENT
 		this.putInt(0, 0);
-//		this.nextElement();
+		this.nextVertexFormatIndex();
 		if (iris$isTerrain) {
 			// MID_BLOCK_ELEMENT
 			int posIndex = this.nextElementByte - 48;
-			float x = buffer.getFloat(posIndex);
-			float y = buffer.getFloat(posIndex + 4);
-			float z = buffer.getFloat(posIndex + 8);
+			float x = byteBuffer.getFloat(posIndex);
+			float y = byteBuffer.getFloat(posIndex + 4);
+			float z = byteBuffer.getFloat(posIndex + 8);
 			this.putInt(0, ExtendedDataHelper.computeMidBlock(x, y, z, currentLocalPosX, currentLocalPosY, currentLocalPosZ));
-//			this.nextElement();
+			this.nextVertexFormatIndex();
 		}
 
 		vertexCount++;
 
-		if (mode == GL11.GL_QUADS && vertexCount == 4 || mode == GL11.GL_TRIANGLES && vertexCount == 3) {
+		if (drawMode == GL11.GL_QUADS && vertexCount == 4 || drawMode == GL11.GL_TRIANGLES && vertexCount == 3) {
 			fillExtendedData(vertexCount);
 		}
 	}
@@ -194,9 +166,9 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 	private void fillExtendedData(int vertexAmount) {
 		vertexCount = 0;
 
-		int stride = format.getSize();
+		int stride = vertexFormat.getSize();
 
-		polygon.setup(buffer, nextElementByte, stride, vertexAmount);
+		polygon.setup(byteBuffer, nextElementByte, stride, vertexAmount);
 
 		float midU = 0;
 		float midV = 0;
@@ -229,13 +201,13 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 			// NormalHelper.computeFaceNormalTri(normal, polygon);	// Removed to enable smooth shaded triangles. Mods rendering triangles with bad normals need to recalculate their normals manually or otherwise shading might be inconsistent.
 
 			for (int vertex = 0; vertex < vertexAmount; vertex++) {
-				int packedNormal = buffer.getInt(nextElementByte - normalOffset - stride * vertex); // retrieve per-vertex normal
+				int packedNormal = byteBuffer.getInt(nextElementByte - normalOffset - stride * vertex); // retrieve per-vertex normal
 
 				int tangent = NormalHelper.computeTangentSmooth(NormI8.unpackX(packedNormal), NormI8.unpackY(packedNormal), NormI8.unpackZ(packedNormal), polygon);
 
-				buffer.putFloat(nextElementByte - midUOffset - stride * vertex, midU);
-				buffer.putFloat(nextElementByte - midVOffset - stride * vertex, midV);
-				buffer.putInt(nextElementByte - tangentOffset - stride * vertex, tangent);
+				byteBuffer.putFloat(nextElementByte - midUOffset - stride * vertex, midU);
+				byteBuffer.putFloat(nextElementByte - midVOffset - stride * vertex, midV);
+				byteBuffer.putInt(nextElementByte - tangentOffset - stride * vertex, tangent);
 			}
 		} else {
 			NormalHelper.computeFaceNormal(normal, polygon);
@@ -243,10 +215,10 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 			int tangent = NormalHelper.computeTangent(normal.x, normal.y, normal.z, polygon);
 
 			for (int vertex = 0; vertex < vertexAmount; vertex++) {
-				buffer.putFloat(nextElementByte - midUOffset - stride * vertex, midU);
-				buffer.putFloat(nextElementByte - midVOffset - stride * vertex, midV);
-				buffer.putInt(nextElementByte - normalOffset - stride * vertex, packedNormal);
-				buffer.putInt(nextElementByte - tangentOffset - stride * vertex, tangent);
+				byteBuffer.putFloat(nextElementByte - midUOffset - stride * vertex, midU);
+				byteBuffer.putFloat(nextElementByte - midVOffset - stride * vertex, midV);
+				byteBuffer.putInt(nextElementByte - normalOffset - stride * vertex, packedNormal);
+				byteBuffer.putInt(nextElementByte - tangentOffset - stride * vertex, tangent);
 			}
 		}
 	}
@@ -271,6 +243,6 @@ public abstract class MixinBufferBuilder implements BlockSensitiveBufferBuilder,
 
 	@Unique
 	private void putInt(int i, int value) {
-		this.buffer.putInt(this.nextElementByte + i, value);
+		this.byteBuffer.putInt(this.nextElementByte + i, value);
 	}
 }
