@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import net.coderbot.batchedentityrendering.impl.DrawCallTrackingRenderBuffers;
 import net.coderbot.batchedentityrendering.impl.Groupable;
-import net.coderbot.batchedentityrendering.impl.RenderBuffersExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
