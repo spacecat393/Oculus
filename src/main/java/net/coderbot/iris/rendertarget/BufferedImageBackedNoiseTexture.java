@@ -5,19 +5,15 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 import lombok.Getter;
+import net.coderbot.iris.mixin.texture.DynamicTextureAccessor;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 
 @Getter
 public class BufferedImageBackedNoiseTexture extends DynamicTexture {
-	private final int width;
-	private final int height;
 	public BufferedImageBackedNoiseTexture(int size) {
 		super(create(size));
-		BufferedImage image = create(size);
-		width = image.getWidth();
-		height = image.getHeight();
 	}
 
 	private static BufferedImage create(int size) {
@@ -39,8 +35,8 @@ public class BufferedImageBackedNoiseTexture extends DynamicTexture {
 	public void updateDynamicTexture() {
 		// create the image
 		int[] textureData = this.getTextureData();
-		int width = this.getWidth();
-		int height = this.getHeight();
+		int width = ((DynamicTextureAccessor) this).getWidth();
+		int height = ((DynamicTextureAccessor) this).getHeight();
 
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		image.setRGB(0, 0, width, height, textureData, 0, width);

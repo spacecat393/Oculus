@@ -51,6 +51,7 @@
     "statelisteners.BooleanStateAccessor",
     "statelisteners.MixinGlStateManager",
     "texture.AnimationMetadataSectionAccessor",
+    "texture.DynamicTextureAccessor",
     "texture.MixinAbstractTexture",
     "texture.MixinGlStateManager",
     "texture.MixinTextureManager",

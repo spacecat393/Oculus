@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import lombok.Getter;
+import net.coderbot.iris.mixin.texture.DynamicTextureAccessor;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -17,10 +18,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import javax.imageio.ImageIO;
 
 public class BufferedImageBackedCustomTexture extends DynamicTexture {
-	@Getter
-	private static int width = 0;
-	@Getter
-	private static int height = 0;
 	public BufferedImageBackedCustomTexture(CustomTextureData.PngData textureData) throws IOException {
 		super(create(textureData.getContent()));
 		BufferedImage image = create(textureData.getContent());
@@ -41,8 +38,6 @@ public class BufferedImageBackedCustomTexture extends DynamicTexture {
 	private static BufferedImage create(byte[] content) throws IOException {
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
 		BufferedImage image = ImageIO.read(inputStream);
-		width = image.getWidth();
-		height = image.getHeight();
 		return image;
 	}
 
@@ -50,8 +45,8 @@ public class BufferedImageBackedCustomTexture extends DynamicTexture {
 	public void updateDynamicTexture() {
 		// create the image
 		int[] textureData = this.getTextureData();
-		int width = getWidth();
-		int height = getHeight();
+		int width = ((DynamicTextureAccessor) this).getWidth();
+		int height = ((DynamicTextureAccessor) this).getHeight();
 
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		image.setRGB(0, 0, width, height, textureData, 0, width);
