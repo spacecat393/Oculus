@@ -250,7 +250,7 @@ public class CompositeRenderer {
 		OpenGlHelper.glUseProgram(0);
 
 		// NB: Unbinding all of these textures is necessary for proper shaderpack reloading.
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < SamplerLimits.get().getMaxTextureUnits(); i++) {
 			// Unbind all textures that we may have used.
 			// NB: This is necessary for shader pack reloading to work propely
 			GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + i);

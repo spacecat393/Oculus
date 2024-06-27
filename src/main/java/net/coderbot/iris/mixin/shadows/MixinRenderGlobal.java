@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 
 @Mixin(RenderGlobal.class)
-public class MixinLevelRenderer implements CullingDataCache {
+public class MixinRenderGlobal implements CullingDataCache {
 
 	// TODO Let's replace with FastUtils' collection
 	@Shadow

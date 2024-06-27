@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RenderGlobal.class)
-public class MixinLevelRenderer implements RenderGlobalExtended {
-	private static final String RENDER_WEATHER = "Lnet/minecraft/client/renderer/LevelRenderer;renderSnowAndRain(Lnet/minecraft/client/renderer/LightTexture;FDDD)V";
+public class MixinRenderGlobal implements RenderGlobalExtended {
+	private static final String RENDER_WEATHER = "Lnet/minecraft/client/renderer/RenderGlobal;renderSnowAndRain(Lnet/minecraft/client/renderer/LightTexture;FDDD)V";
 
 	@Unique
 	private WorldRenderingPipeline pipeline;

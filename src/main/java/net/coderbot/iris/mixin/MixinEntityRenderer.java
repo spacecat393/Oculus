@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import nanolive.utils.RenderGlobalExtended;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.gl.program.Program;
+import net.coderbot.iris.pipeline.HandRenderer;
 import net.coderbot.iris.pipeline.WorldRenderingPhase;
 import net.coderbot.iris.uniforms.CapturedRenderingState;
 import net.coderbot.iris.uniforms.SystemTimeUniforms;
@@ -24,7 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public class MixinEntityRenderer {
-
     @Shadow
     @Final
     private Minecraft mc;
@@ -35,7 +35,6 @@ public class MixinEntityRenderer {
     // all pixels.
     @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;clear(I)V", ordinal = 0, shift = At.Shift.AFTER))
     private void iris$beginLevelRender(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
-        // todo
         CapturedRenderingState.INSTANCE.setGbufferModelView(new Matrix4f(ClippingHelperImpl.getInstance().modelviewMatrix));
         CapturedRenderingState.INSTANCE.setGbufferProjection(new Matrix4f(ClippingHelperImpl.getInstance().projectionMatrix));
         CapturedRenderingState.INSTANCE.setTickDelta(partialTicks);
@@ -54,8 +53,7 @@ public class MixinEntityRenderer {
     // render their waypoint beams.
     @Inject(method = "renderWorldPass", at = @At(value = "RETURN", shift = At.Shift.BEFORE))
     private void iris$endLevelRender(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
-        // todo
-        //HandRenderer.INSTANCE.renderTranslucent(poseStack, tickDelta, camera, gameRenderer, pipeline);
+        HandRenderer.INSTANCE.renderTranslucent(partialTicks, this.mc.entityRenderer);
         mc.profiler.endStartSection("iris_final");
 
         RenderGlobalExtended renderGlobalExtended = (RenderGlobalExtended) this.mc.renderGlobal;
