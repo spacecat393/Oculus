@@ -75,11 +75,11 @@ public final class GLDebug {
 		if (caps.GL_KHR_debug) {
 			callbackKHR = new KHRDebugCallback((source, type, id, severity, message) -> {
 				stream.println("[LWJGL] KHR_debug message");
-				printDetail(stream, "ID", String.format("0x%X", id));
-				printDetail(stream, "Source", getDebugSource(source));
-				printDetail(stream, "Type", getDebugType(type));
-				printDetail(stream, "Severity", getDebugSeverity(severity));
-				stream.println("\tMessage: " + message);
+				stream.println("ID: " + String.format("0x%X", id));
+				stream.println("Source: " + getDebugSource(source));
+				stream.println("Type: " + getDebugType(type));
+				stream.println("Severity: " + getDebugSeverity(severity));
+				stream.println("Message: " + message);
 			});
 			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_HIGH, (IntBuffer)null, true);
 			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_MEDIUM, (IntBuffer)null, false);
@@ -94,12 +94,12 @@ public final class GLDebug {
 			return 1;
 		} else if (caps.GL_ARB_debug_output) {
 			callbackARB = new ARBDebugOutputCallback((source, type, id, severity, message) -> {
-                stream.println("[LWJGL] ARB_debug_output message");
-				printDetail(stream, "ID", String.format("0x%X", id));
-				printDetail(stream, "Source", getSourceARB(source));
-				printDetail(stream, "Type", getTypeARB(type));
-				printDetail(stream, "Severity", getSeverityARB(severity));
-                stream.println("\tMessage: " + message);
+				stream.println("[LWJGL] ARB_debug_output message");
+				stream.println("ID: " + String.format("0x%X", id));
+				stream.println("Source: " + getSourceARB(source));
+				stream.println("Type: " + getTypeARB(type));
+				stream.println("Severity: " + getSeverityARB(severity));
+				stream.println("Message: " + message);
             });
 			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_HIGH, (IntBuffer)null, true);
 			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_MEDIUM, (IntBuffer)null, false);
@@ -109,11 +109,11 @@ public final class GLDebug {
 			return 1;
 		} else if (caps.GL_AMD_debug_output) {
 			callbackAMD = new AMDDebugOutputCallback((id, category, severity, message) -> {
-                stream.println("[LWJGL] AMD_debug_output message");
-                printDetail(stream, "ID", String.format("0x%X", id));
-				printDetail(stream, "Category", getCategoryAMD(category));
-				printDetail(stream, "Severity", getSeverityAMD(severity));
-                stream.println("\tMessage: " + message);
+				stream.println("[LWJGL] AMD_debug_output message");
+				stream.println("ID: " + String.format("0x%X", id));
+				stream.println("Category: " + getCategoryAMD(category));
+				stream.println("Severity: " + getSeverityAMD(severity));
+				stream.println("Message: " + message);
             });
 			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_HIGH, (IntBuffer)null, true);
 			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_MEDIUM, (IntBuffer)null, false);
