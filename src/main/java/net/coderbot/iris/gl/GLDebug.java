@@ -9,14 +9,8 @@ import java.io.PrintStream;
 import java.nio.IntBuffer;
 import java.util.function.Consumer;
 
+import net.coderbot.iris.IrisLogging;
 import org.lwjgl.opengl.*;
-//import org.lwjgl.opengl.GL;
-//import org.lwjgl.opengl.GL43C;
-//import org.lwjgl.opengl.GLCapabilities;
-//import org.lwjgl.opengl.GLDebugMessageAMDCallback;
-//import org.lwjgl.opengl.GLDebugMessageARBCallback;
-//import org.lwjgl.opengl.GLDebugMessageCallback;
-//import org.lwjgl.system.APIUtil;
 
 import net.coderbot.iris.Iris;
 
@@ -25,8 +19,12 @@ public final class GLDebug {
 	 * Sets up debug callbacks
 	 * @return 0 for failure, 1 for success, 2 for restart required.
 	 */
+	private static KHRDebugCallback callbackKHR;
+	private static ARBDebugOutputCallback callbackARB;
+	private static AMDDebugOutputCallback callbackAMD;
+
 	public static int setupDebugMessageCallback() {
-		return setupDebugMessageCallback(System.out);
+		return setupDebugMessageCallback(System.err);
 	}
 
 	private static void trace(Consumer<String> output) {
@@ -74,45 +72,20 @@ public final class GLDebug {
 
 	public static int setupDebugMessageCallback(PrintStream stream) {
 		ContextCapabilities caps = GLContext.getCapabilities();
-		if (caps.OpenGL43) {
-			Iris.logger.info("[GL] Using OpenGL 4.3 for error logging.");
-// todo
-//			GLDebugMessageCallback proc = GLDebugMessageCallback.create((source, type, id, severity, length, message, userParam) -> {
-//				stream.println("[LWJGL] OpenGL debug message");
-//				printDetail(stream, "ID", String.format("0x%X", id));
-//				printDetail(stream, "Source", getDebugSource(source));
-//				printDetail(stream, "Type", getDebugType(type));
-//				printDetail(stream, "Severity", getDebugSeverity(severity));
-//				printDetail(stream, "Message", GLDebugMessageCallback.getMessage(length, message));
-//				printTrace(stream);
-//			});
-//			GL43C.glDebugMessageControl(4352, 4352, GL43C.GL_DEBUG_SEVERITY_HIGH, (int[])null, true);
-//			GL43C.glDebugMessageControl(4352, 4352, GL43C.GL_DEBUG_SEVERITY_MEDIUM, (int[])null, false);
-//			GL43C.glDebugMessageControl(4352, 4352, GL43C.GL_DEBUG_SEVERITY_LOW, (int[])null, false);
-//			GL43C.glDebugMessageControl(4352, 4352, GL43C.GL_DEBUG_SEVERITY_NOTIFICATION, (int[])null, false);
-//			GL43C.glDebugMessageCallback(proc, 0L);
-			if ((GL11.glGetInteger(33310) & 2) == 0) {
-				Iris.logger.warn("[GL] Warning: A non-debug context may not produce any debug output.");
-				GL11.glEnable(37600);
-				return 2;
-			}
-			return 1;
-		} else if (caps.GL_KHR_debug) {
-			Iris.logger.info("[GL] Using KHR_debug for error logging.");
-//			KHRDebugCallback proc = KHRDebugCallback.create((source, type, id, severity, length, message, userParam) -> {
-//				stream.println("[LWJGL] OpenGL debug message");
-//				printDetail(stream, "ID", String.format("0x%X", id));
-//				printDetail(stream, "Source", getDebugSource(source));
-//				printDetail(stream, "Type", getDebugType(type));
-//				printDetail(stream, "Severity", getDebugSeverity(severity));
-//				printDetail(stream, "Message", KHRDebugCallback.getMessage(length, message));
-//				printTrace(stream);
-//			});
-			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_HIGH, IntBuffer.wrap((int[])null), true);
-			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_MEDIUM, IntBuffer.wrap((int[])null), false);
-			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_LOW, IntBuffer.wrap((int[])null), false);
-			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_NOTIFICATION, IntBuffer.wrap((int[])null), false);
-//			KHRDebug.glDebugMessageCallback(proc);
+		if (caps.GL_KHR_debug) {
+			callbackKHR = new KHRDebugCallback((source, type, id, severity, message) -> {
+				stream.println("[LWJGL] KHR_debug message");
+				printDetail(stream, "ID", String.format("0x%X", id));
+				printDetail(stream, "Source", getDebugSource(source));
+				printDetail(stream, "Type", getDebugType(type));
+				printDetail(stream, "Severity", getDebugSeverity(severity));
+				stream.println("\tMessage: " + message);
+			});
+			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_HIGH, (IntBuffer)null, true);
+			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_MEDIUM, (IntBuffer)null, false);
+			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_LOW, (IntBuffer)null, false);
+			KHRDebug.glDebugMessageControl(4352, 4352, GL43.GL_DEBUG_SEVERITY_NOTIFICATION, (IntBuffer)null, false);
+			KHRDebug.glDebugMessageCallback(callbackKHR);
 			if (caps.OpenGL30 && (GL11.glGetInteger(33310) & 2) == 0) {
 				Iris.logger.warn("[GL] Warning: A non-debug context may not produce any debug output.");
 				GL11.glEnable(37600);
@@ -120,37 +93,33 @@ public final class GLDebug {
 			}
 			return 1;
 		} else if (caps.GL_ARB_debug_output) {
-			Iris.logger.info("[GL] Using ARB_debug_output for error logging.");
-//			ARBDebugOutputCallback proc = ARBDebugOutputCallback.create((source, type, id, severity, length, message, userParam) -> {
-//				stream.println("[LWJGL] ARB_debug_output message");
-//				printDetail(stream, "ID", String.format("0x%X", id));
-//				printDetail(stream, "Source", getSourceARB(source));
-//				printDetail(stream, "Type", getTypeARB(type));
-//				printDetail(stream, "Severity", getSeverityARB(severity));
-//				printDetail(stream, "Message", ARBDebugOutputCallback.getMessage(length, message));
-//				printTrace(stream);
-//			});
-			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_HIGH, IntBuffer.wrap((int[])null), true);
-			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_MEDIUM, IntBuffer.wrap((int[])null), false);
-			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_LOW, IntBuffer.wrap((int[])null), false);
-			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_NOTIFICATION, IntBuffer.wrap((int[])null), false);
-//			ARBDebugOutput.glDebugMessageCallbackARB(proc);
+			callbackARB = new ARBDebugOutputCallback((source, type, id, severity, message) -> {
+                stream.println("[LWJGL] ARB_debug_output message");
+				printDetail(stream, "ID", String.format("0x%X", id));
+				printDetail(stream, "Source", getSourceARB(source));
+				printDetail(stream, "Type", getTypeARB(type));
+				printDetail(stream, "Severity", getSeverityARB(severity));
+                stream.println("\tMessage: " + message);
+            });
+			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_HIGH, (IntBuffer)null, true);
+			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_MEDIUM, (IntBuffer)null, false);
+			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_LOW, (IntBuffer)null, false);
+			ARBDebugOutput.glDebugMessageControlARB(4352, 4352, GL43.GL_DEBUG_SEVERITY_NOTIFICATION, (IntBuffer)null, false);
+			ARBDebugOutput.glDebugMessageCallbackARB(callbackARB);
 			return 1;
 		} else if (caps.GL_AMD_debug_output) {
-			Iris.logger.info("[GL] Using AMD_debug_output for error logging.");
-//			AMDDebugOutputCallback proc = AMDDebugOutputCallback.create((id, category, severity, length, message, userParam) -> {
-//				stream.println("[LWJGL] AMD_debug_output message");
-//				printDetail(stream, "ID", String.format("0x%X", id));
-//				printDetail(stream, "Category", getCategoryAMD(category));
-//				printDetail(stream, "Severity", getSeverityAMD(severity));
-//				printDetail(stream, "Message", AMDDebugOutputCallback.getMessage(length, message));
-//				printTrace(stream);
-//			});
-			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_HIGH, IntBuffer.wrap((int[])null), true);
-			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_MEDIUM, IntBuffer.wrap((int[])null), false);
-			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_LOW, IntBuffer.wrap((int[])null), false);
-			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_NOTIFICATION, IntBuffer.wrap((int[])null), false);
-//			AMDDebugOutput.glDebugMessageCallbackAMD(proc);
+			callbackAMD = new AMDDebugOutputCallback((id, category, severity, message) -> {
+                stream.println("[LWJGL] AMD_debug_output message");
+                printDetail(stream, "ID", String.format("0x%X", id));
+				printDetail(stream, "Category", getCategoryAMD(category));
+				printDetail(stream, "Severity", getSeverityAMD(severity));
+                stream.println("\tMessage: " + message);
+            });
+			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_HIGH, (IntBuffer)null, true);
+			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_MEDIUM, (IntBuffer)null, false);
+			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_LOW, (IntBuffer)null, false);
+			AMDDebugOutput.glDebugMessageEnableAMD(0, GL43.GL_DEBUG_SEVERITY_NOTIFICATION, (IntBuffer)null, false);
+			AMDDebugOutput.glDebugMessageCallbackAMD(callbackAMD);
 			return 1;
 		} else {
 			Iris.logger.info("[GL] No debug output implementation is available, cannot return debug info.");
@@ -208,7 +177,7 @@ public final class GLDebug {
 			case 33355:
 				return "OTHER";
 			default:
-				return Integer.toString(source);
+				return String.format("%s [0x%X]", "Unknown", source);
 		}
 	}
 
@@ -229,7 +198,7 @@ public final class GLDebug {
 			case 33384:
 				return "MARKER";
 			default:
-				return Integer.toString(type);
+				return String.format("%s [0x%X]", "Unknown", type);
 		}
 	}
 
@@ -244,7 +213,7 @@ public final class GLDebug {
 			case 37192:
 				return "LOW";
 			default:
-				return Integer.toString(severity);
+				return String.format("%s [0x%X]", "Unknown", severity);
 		}
 	}
 
@@ -263,7 +232,7 @@ public final class GLDebug {
 			case 33355:
 				return "OTHER";
 			default:
-				return Integer.toString(source);
+				return String.format("%s [0x%X]", "Unknown", source);
 		}
 	}
 
@@ -282,7 +251,7 @@ public final class GLDebug {
 			case 33361:
 				return "OTHER";
 			default:
-				return Integer.toString(type);
+				return String.format("%s [0x%X]", "Unknown", type);
 		}
 	}
 
@@ -295,7 +264,7 @@ public final class GLDebug {
 			case 37192:
 				return "LOW";
 			default:
-				return Integer.toString(severity);
+				return String.format("%s [0x%X]", "Unknown", severity);
 		}
 	}
 
@@ -318,7 +287,7 @@ public final class GLDebug {
 			case 37200:
 				return "OTHER";
 			default:
-				return Integer.toString(category);
+				return String.format("%s [0x%X]", "Unknown", category);
 		}
 	}
 
@@ -331,7 +300,7 @@ public final class GLDebug {
 			case 37192:
 				return "LOW";
 			default:
-				return Integer.toString(severity);
+				return String.format("%s [0x%X]", "Unknown", severity);
 		}
 	}
 
@@ -388,7 +357,7 @@ public final class GLDebug {
 		}
 	}
 
-    public static void nameObject(int id, int object, String name) {
+	public static void nameObject(int id, int object, String name) {
 		debugState.nameObject(id, object, name);
-    }
+	}
 }

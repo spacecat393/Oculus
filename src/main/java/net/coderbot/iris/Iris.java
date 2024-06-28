@@ -23,6 +23,7 @@ import net.coderbot.iris.shaderpack.option.values.OptionValues;
 import net.coderbot.iris.texture.pbr.PBRTextureManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -52,6 +53,7 @@ import java.util.Properties;
 import java.util.stream.Stream;
 import java.util.zip.ZipError;
 import java.util.zip.ZipException;
+
 
 @Mod(modid = Iris.MODID, name = Iris.MODNAME, useMetadata = true)
 public class Iris {
@@ -427,7 +429,7 @@ public class Iris {
 		if (enable) {
 			success = GLDebug.setupDebugMessageCallback();
 		} else {
-			// GlDebug.enableDebugCallback(Minecraft.getMinecraft().gameSettings.glDebugVerbosity, false);
+//			GlDebug.enableDebugCallback(GameSettings.Options.REDUCED_DEBUG_INFO, false);
 			success = 1;
 		}
 
