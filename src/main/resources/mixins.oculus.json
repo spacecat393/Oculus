@@ -26,6 +26,7 @@
     "MixinItemInHandRenderer",
     "MixinLanguageMap",
     "MixinRenderGlobal",
+    "MixinMinecraft_Debug",
     "MixinMinecraft_PipelineManagement",
     "MixinOptions_Entrypoint",
     "MixinParticleEngine",
