@@ -37,7 +37,6 @@
     "gui.MixinGui",
     "gui.MixinGuiIngameForge",
     "gui.MixinVideoSettingsScreen",
-    "rendertype.RenderTypeAccessor",
     "shadows.ChunkInfoAccessor",
     "shadows.MixinBeaconRenderer",
     "shadows.MixinRenderGlobal",

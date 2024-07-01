@@ -6,11 +6,9 @@
   "client": [
     "MixinBufferBuilder",
     "MixinBufferBuilder_SegmentRendering",
-    "MixinRenderType",
     "MixinDebugScreenOverlay",
     "MixinRenderGlobal",
-    "MixinRenderGlobal_EntityListSorting",
-    "RenderTypeAccessor"
+    "MixinRenderGlobal_EntityListSorting"
   ],
   "injectors": {
     "defaultRequire": 1
