@@ -99,6 +99,7 @@ public class CenterDepthSampler {
 
 	public void setupColorTexture(int texture, InternalTextureFormat format) {
 		IrisRenderSystem.texImage2D(texture, GL11.GL_TEXTURE_2D, 0, format.getGlFormat(), 1, 1, 0, format.getPixelFormat().getGlFormat(), PixelType.FLOAT.getGlFormat(), null);
+//		IrisRenderSystem.texImage2D(texture, GL11.GL_TEXTURE_2D, 0, GL11.GL_DEPTH_COMPONENT, 1, 1, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, null);
 
 		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 		IrisRenderSystem.texParameteri(texture, GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);

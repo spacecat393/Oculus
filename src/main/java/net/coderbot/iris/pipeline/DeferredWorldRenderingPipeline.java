@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.primitives.Ints;
 import com.mojang.realmsclient.util.Pair;
 import net.coderbot.iris.Iris;
+import net.coderbot.iris.Nali;
 import net.coderbot.iris.block_rendering.BlockMaterialMapping;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.coderbot.iris.colorspace.ColorSpace;
@@ -61,7 +62,6 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -165,6 +165,9 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 		this.renderTargets = new RenderTargets(mainTarget.framebufferWidth, mainTarget.framebufferHeight, depthTextureId,
 			((Blaze3dRenderTargetExt) mainTarget).iris$getDepthBufferVersion(),
 			depthBufferFormat, programs.getPackDirectives().getRenderTargetDirectives().getRenderTargetSettings(), programs.getPackDirectives());
+
+//		Iris.logger.info("t 17");
+//		Nali.checkTextureInfo(17);
 
 		this.sunPathRotation = programs.getPackDirectives().getSunPathRotation();
 
@@ -841,9 +844,9 @@ public class DeferredWorldRenderingPipeline implements WorldRenderingPipeline, R
 		horizonRenderer.destroy();
 
 		// Make sure that any custom framebuffers are not bound before destroying render targets
-		OpenGlHelper.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, 0);
-		OpenGlHelper.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
-		OpenGlHelper.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+//		OpenGlHelper.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, 0);
+//		OpenGlHelper.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
+		OpenGlHelper.glBindFramebuffer(OpenGlHelper.GL_FRAMEBUFFER, 0);
 
 		Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
 

@@ -1,16 +1,15 @@
 package net.coderbot.iris.mixin.state_tracking;
 
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.gbuffer_overrides.state.StateTracker;
+import net.coderbot.iris.pipeline.WorldRenderingPipeline;
+import net.coderbot.iris.samplers.IrisSamplers;
 import net.minecraft.client.renderer.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.gbuffer_overrides.state.StateTracker;
-import net.coderbot.iris.pipeline.WorldRenderingPipeline;
-import net.coderbot.iris.samplers.IrisSamplers;
 
 @Mixin(GlStateManager.class)
 public class MixinGlStateManager {
@@ -48,7 +47,21 @@ public class MixinGlStateManager {
 	}
 
 	@Inject(method = "glDrawArrays", at = @At("HEAD"))
-	private static void iris$beforeDrawArrays(int mode, int first, int count, CallbackInfo ci) {
+	private static void iris$beforeDrawArrays(int mode, int first, int count, CallbackInfo ci)
+	{
 		Iris.getPipelineManager().getPipeline().ifPresent(WorldRenderingPipeline::syncProgram);
+//		if (Minecraft.getMinecraft().world != null)
+//		{
+//			GL30.glGetFramebufferAttachmentParameter(OpenGlHelper.GL_FRAMEBUFFER, OpenGlHelper.GL_COLOR_ATTACHMENT0, GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, OPENGL_INTBUFFER);
+//			int gl_color_attachment0 = OPENGL_INTBUFFER.get(0);
+//			GL30.glGetFramebufferAttachmentParameter(OpenGlHelper.GL_FRAMEBUFFER, OpenGlHelper.GL_DEPTH_ATTACHMENT, GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, OPENGL_INTBUFFER);
+//			int gl_depth_attachment = OPENGL_INTBUFFER.get(0);
+//
+//			Iris.logger.info("gl_color_attachment0 " + gl_color_attachment0);
+//			checkTextureInfo(gl_color_attachment0);
+//
+//			Iris.logger.info("gl_depth_attachment " + gl_depth_attachment);
+//			checkTextureInfo(gl_depth_attachment);
+//		}
 	}
 }

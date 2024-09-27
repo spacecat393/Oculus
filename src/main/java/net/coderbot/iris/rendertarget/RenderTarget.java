@@ -1,17 +1,16 @@
 package net.coderbot.iris.rendertarget;
 
-import java.nio.ByteBuffer;
-
 import lombok.Getter;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.texture.InternalTextureFormat;
 import net.coderbot.iris.gl.texture.PixelFormat;
 import net.coderbot.iris.gl.texture.PixelType;
 import net.coderbot.iris.vendored.joml.Vector2i;
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+import java.nio.ByteBuffer;
 
 public class RenderTarget {
 	@Getter

@@ -2,7 +2,6 @@
 
 package net.coderbot.iris.gl.shader;
 
-import net.coderbot.iris.gl.GLDebug;
 import net.coderbot.iris.gl.GlResource;
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -33,7 +32,7 @@ public class GlShader extends GlResource {
 		ShaderWorkarounds.safeShaderSource(handle, src);
 		OpenGlHelper.glCompileShader(handle);
 
-		GLDebug.nameObject(KHRDebug.GL_SHADER, handle, name + "(" + type.name().toLowerCase(Locale.ROOT) + ")");
+//		GLDebug.nameObject(KHRDebug.GL_SHADER, handle, name + "(" + type.name().toLowerCase(Locale.ROOT) + ")");
 
 		String log = IrisRenderSystem.getShaderInfoLog(handle);
 

@@ -1,14 +1,6 @@
 package net.coderbot.iris.rendertarget;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.ImmutableSet;
-
 import net.coderbot.iris.gl.IrisRenderSystem;
 import net.coderbot.iris.gl.framebuffer.GlFramebuffer;
 import net.coderbot.iris.gl.texture.DepthBufferFormat;
@@ -16,6 +8,12 @@ import net.coderbot.iris.gl.texture.DepthCopyStrategy;
 import net.coderbot.iris.shaderpack.PackDirectives;
 import net.coderbot.iris.shaderpack.PackRenderTargetDirectives;
 import net.coderbot.iris.vendored.joml.Vector2i;
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class RenderTargets {
 	private final RenderTarget[] targets;
@@ -305,9 +303,23 @@ public class RenderTargets {
 
 			RenderTarget target = this.get(drawBuffers[i]);
 
+//			Iris.logger.info("target.getMainTexture() " + target.getMainTexture());
+//			checkTextureInfo(target.getMainTexture());
+//			Iris.logger.info("target.getAltTexture() " + target.getAltTexture());
+//			checkTextureInfo(target.getAltTexture());
+
+//			Iris.logger.info("use " + (stageWritesToMain.contains(drawBuffers[i]) ? target.getMainTexture() : target.getAltTexture()));
 			int textureId = stageWritesToMain.contains(drawBuffers[i]) ? target.getMainTexture() : target.getAltTexture();
+//			checkTextureInfo(stageWritesToMain.contains(drawBuffers[i]) ? target.getMainTexture() : target.getAltTexture());
 
 			framebuffer.addColorAttachment(i, textureId);
+
+//			GL30.glGetFramebufferAttachmentParameter(OpenGlHelper.GL_FRAMEBUFFER, OpenGlHelper.GL_COLOR_ATTACHMENT0, GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, OPENGL_INTBUFFER);
+//			int gl_color_attachment0 = OPENGL_INTBUFFER.get(0);
+//			GL30.glGetFramebufferAttachmentParameter(OpenGlHelper.GL_FRAMEBUFFER, OpenGlHelper.GL_DEPTH_ATTACHMENT, GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, OPENGL_INTBUFFER);
+//			int gl_depth_attachment = OPENGL_INTBUFFER.get(0);
+//			Iris.logger.info("gl_color_attachment0 " + gl_color_attachment0);
+//			Iris.logger.info("gl_depth_attachment " + gl_depth_attachment);
 		}
 
 		framebuffer.drawBuffers(actualDrawBuffers);

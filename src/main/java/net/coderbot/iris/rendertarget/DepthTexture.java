@@ -22,9 +22,10 @@ public class DepthTexture extends GlResource {
 		GlStateManager.bindTexture(0);
 	}
 
-	void resize(int width, int height, DepthBufferFormat format) {
-		IrisRenderSystem.texImage2D(getTextureId(), GL11.GL_TEXTURE_2D, 0, format.getGlInternalFormat(), width, height, 0,
-			format.getGlType(), format.getGlFormat(), null);
+	void resize(int width, int height, DepthBufferFormat format)
+	{
+		IrisRenderSystem.texImage2D(getTextureId(), GL11.GL_TEXTURE_2D, 0, format.getGlInternalFormat(), width, height, 0, format.getGlType(), format.getGlFormat(), null);
+//		IrisRenderSystem.texImage2D(getTextureId(), GL11.GL_TEXTURE_2D, 0, GL11.GL_DEPTH_COMPONENT, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, null);
 	}
 
 	public int getTextureId() {

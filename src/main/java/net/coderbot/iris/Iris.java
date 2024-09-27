@@ -3,7 +3,6 @@ package net.coderbot.iris;
 import com.google.common.base.Throwables;
 import lombok.Getter;
 import net.coderbot.iris.config.IrisConfig;
-import net.coderbot.iris.gl.GLDebug;
 import net.coderbot.iris.gl.shader.StandardMacros;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.coderbot.iris.pipeline.DeferredWorldRenderingPipeline;
@@ -98,12 +97,18 @@ public class Iris {
     private static boolean fallback;
 
 	// Wrapped in try-catch due to early initializing class
-	public Iris() {
-		try {
+	@Mod.EventHandler
+	public void initBus(FMLInitializationEvent event) {
+		try
+		{
 //			MinecraftForge.EVENT_BUS.register(this::onInitializeClient);
 //			MinecraftForge.EVENT_BUS.register(this::onKeyInput);
 			MinecraftForge.EVENT_BUS.register(this);
-		} catch(Exception ignored) {}
+		}
+		catch (Exception e)
+		{
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	@Mod.EventHandler
@@ -181,7 +186,7 @@ public class Iris {
 			return;
 		}
 
-		setDebug(irisConfig.areDebugOptionsEnabled());
+//		setDebug(irisConfig.areDebugOptionsEnabled());
 
 		PBRTextureManager.INSTANCE.init();
 
@@ -424,30 +429,30 @@ public class Iris {
 		logger.info("Shaders are disabled");
 	}
 
-	private static void setDebug(boolean enable) {
-		int success;
-		if (enable) {
-			success = GLDebug.setupDebugMessageCallback();
-		} else {
-//			GlDebug.enableDebugCallback(GameSettings.Options.REDUCED_DEBUG_INFO, false);
-			success = 1;
-		}
-
-		logger.info("Debug functionality is " + (enable ? "enabled, logging will be more verbose!" : "disabled."));
-		if (Minecraft.getMinecraft().player != null) {
-			Minecraft.getMinecraft().player.sendMessage(new TextComponentTranslation(success != 0 ? (enable ? "iris.shaders.debug.enabled" : "iris.shaders.debug.disabled") : "iris.shaders.debug.failure"));
-			if (success == 2) {
-				Minecraft.getMinecraft().player.sendMessage(new TextComponentTranslation("iris.shaders.debug.restart"));
-			}
-		}
-
-		try {
-			irisConfig.setDebugEnabled(enable);
-			irisConfig.save();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	private static void setDebug(boolean enable) {
+//		int success;
+//		if (enable) {
+//			success = GLDebug.setupDebugMessageCallback();
+//		} else {
+////			GlDebug.enableDebugCallback(GameSettings.Options.REDUCED_DEBUG_INFO, false);
+//			success = 1;
+//		}
+//
+//		logger.info("Debug functionality is " + (enable ? "enabled, logging will be more verbose!" : "disabled."));
+//		if (Minecraft.getMinecraft().player != null) {
+//			Minecraft.getMinecraft().player.sendMessage(new TextComponentTranslation(success != 0 ? (enable ? "iris.shaders.debug.enabled" : "iris.shaders.debug.disabled") : "iris.shaders.debug.failure"));
+//			if (success == 2) {
+//				Minecraft.getMinecraft().player.sendMessage(new TextComponentTranslation("iris.shaders.debug.restart"));
+//			}
+//		}
+//
+//		try {
+//			irisConfig.setDebugEnabled(enable);
+//			irisConfig.save();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	private static Optional<Properties> tryReadConfigProperties(Path path) {
 		Properties properties = new Properties();

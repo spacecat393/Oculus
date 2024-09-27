@@ -1,16 +1,15 @@
 package net.coderbot.iris.gl;
 
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.vendored.joml.Vector3i;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.*;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import net.coderbot.iris.mixin.GlStateManagerAccessor;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.opengl.*;
-import org.lwjgl.BufferUtils;
-
-import net.coderbot.iris.Iris;
-import net.coderbot.iris.vendored.joml.Vector3i;
 
 /**
  * This class is responsible for abstracting calls to OpenGL and asserting that calls are run on the render thread.
@@ -21,6 +20,7 @@ public class IrisRenderSystem {
 	private static boolean supportsCompute;
 
 	public static void initRenderer() {
+		//use gl method
 		if (GLContext.getCapabilities().OpenGL45) {
 			dsaState = new DSACore();
 			Iris.logger.info("OpenGL 4.5 detected, enabling DSA.");
@@ -439,7 +439,7 @@ public class IrisRenderSystem {
 
 		@Override
 		public void drawBuffers(int framebuffer, int[] buffers) {
-			GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
+			OpenGlHelper.glBindFramebuffer(OpenGlHelper.GL_FRAMEBUFFER, framebuffer);
 			IntBuffer buffer = BufferUtils.createIntBuffer(buffers.length);
 			buffer.put(buffers);
 			buffer.flip();
@@ -466,30 +466,30 @@ public class IrisRenderSystem {
 
 		@Override
 		public int bufferStorage(int target, float[] data, int usage) {
-			int buffer = GL15.glGenBuffers();
-			GL15.glBindBuffer(target, buffer);
+			int buffer = OpenGlHelper.glGenBuffers();
+			OpenGlHelper.glBindBuffer(target, buffer);
 			bufferData(target, data, usage);
-			GL15.glBindBuffer(target, 0);
+			OpenGlHelper.glBindBuffer(target, 0);
 			return buffer;
 		}
 
 		@Override
 		public void blitFramebuffer(int source, int dest, int offsetX, int offsetY, int width, int height, int offsetX2, int offsetY2, int width2, int height2, int bufferChoice, int filter) {
-			GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, source);
-			GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, dest);
+			OpenGlHelper.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, source);
+			OpenGlHelper.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, dest);
 			GL30.glBlitFramebuffer(offsetX, offsetY, width, height, offsetX2, offsetY2, width2, height2, bufferChoice, filter);
 		}
 
 		@Override
 		public void framebufferTexture2D(int fb, int fbtarget, int attachment, int target, int texture, int levels) {
-			GL30.glBindFramebuffer(fbtarget, fb);
-			GL30.glFramebufferTexture2D(fbtarget, attachment, target, texture, levels);
+			OpenGlHelper.glBindFramebuffer(fbtarget, fb);
+			OpenGlHelper.glFramebufferTexture2D(fbtarget, attachment, target, texture, levels);
 		}
 
 		@Override
 		public int createFramebuffer() {
-			int framebuffer = GL30.glGenFramebuffers();
-			GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
+			int framebuffer = OpenGlHelper.glGenFramebuffers();
+			OpenGlHelper.glBindFramebuffer(OpenGlHelper.GL_FRAMEBUFFER, framebuffer);
 			return framebuffer;
 		}
 
